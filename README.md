@@ -1,8 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rumah Qur'an Management
+
+Aplikasi web internal Rumah Qur'an untuk mencatat dan memonitor setoran hafalan santri.
+
+MVP fokus pada:
+- Login untuk Admin, Kepala, dan Pengajar.
+- Data santri, wali sebagai kontak, pengajar, halaqah, dan periode.
+- Pencatatan Sabaq, Sabqi, dan Manzil.
+- Predikat Lancar, Cukup Lancar, dan Kurang Lancar.
+- Riwayat setoran, koreksi dengan audit, dashboard kepala, dan laporan PDF/cetak.
+
+Di luar scope MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payment gateway, aplikasi native, AI, audio recording, microservices, dan Kubernetes.
+
+## Dokumentasi
+
+Sebelum mengubah kode, baca:
+- [AGENTS.md](./AGENTS.md)
+- Semua file Markdown di [docs/](./docs)
+
+Dokumentasi utama:
+- [docs/PRODUCT.md](./docs/PRODUCT.md): tujuan, pengguna, scope, dan indikator keberhasilan.
+- [docs/PERMISSIONS.md](./docs/PERMISSIONS.md): role, permission, audit access, dan authorization rules.
+- [docs/DATA_MODEL.md](./docs/DATA_MODEL.md): struktur data awal dan constraint penting.
+- [docs/MEMORIZATION_RULES.md](./docs/MEMORIZATION_RULES.md): aturan setoran, koreksi, void, duplikasi, periode, dan laporan.
+- [docs/USER_FLOWS.md](./docs/USER_FLOWS.md): alur utama pengguna.
+- [docs/ACCEPTANCE_CRITERIA.md](./docs/ACCEPTANCE_CRITERIA.md): kriteria MVP dianggap selesai.
+- [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md): rencana vertical slice.
+
+Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
+
+## Keputusan MVP yang Dikunci
+
+- Admin mengelola data operasional, bukan penilaian hafalan.
+- Kepala memegang otorisasi akademik seperti koreksi/void setoran dan reopen periode.
+- Hak melihat audit dipisahkan dari hak melakukan aksi yang tercatat di audit.
+- Role Kepala hanya dapat dikelola oleh pengguna aktif yang sudah memiliki role Kepala.
+- Sistem wajib menjaga minimal satu pengguna aktif dengan role Kepala.
+- Wali hanya kontak dan tidak memiliki akun login.
+- Satu record setoran hanya mencakup satu surah.
+- PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
 
 ## Getting Started
 
-First, run the development server:
+Jalankan development server:
 
 ```bash
 npm run dev
@@ -14,23 +53,14 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality Gate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Sebelum menyelesaikan task implementasi, jalankan lint, typecheck, dan test sesuai script proyek.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Referensi framework:
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)

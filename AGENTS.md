@@ -30,6 +30,18 @@ Selalu baca seluruh file di folder `docs/` sebelum mengubah kode.
 - Gunakan status/arsip, bukan hard delete.
 - Tambahkan test untuk authorization dan business rule penting.
 - Jalankan lint, typecheck, dan test sebelum menyelesaikan task.
+- Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
+- Jika ada perubahan scope atau keputusan MVP, update `README.md` dan file terkait di `docs/`.
+
+## Locked MVP Decisions
+- Admin mengelola data operasional, bukan penilaian hafalan.
+- Kepala memegang otorisasi akademik seperti koreksi/void setoran dan reopen periode.
+- Hak melihat audit dipisahkan dari hak melakukan aksi yang tercatat di audit.
+- Role Kepala hanya dapat dikelola oleh pengguna aktif yang sudah memiliki role Kepala.
+- Sistem wajib menjaga minimal satu pengguna aktif dengan role Kepala.
+- Wali hanya kontak dan tidak memiliki akun login.
+- Satu record setoran hanya mencakup satu surah.
+- PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
 
 ## Out of Scope
 Jangan membuat login wali, portal wali, absensi, infaq internal, WhatsApp otomatis, payment gateway, aplikasi native, fitur AI, audio recording, microservices, atau Kubernetes.
