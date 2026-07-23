@@ -3,9 +3,20 @@
 - `PRODUCT.md`: tujuan, pengguna, scope, dan indikator keberhasilan.
 - `USER_FLOWS.md`: alur admin, pengajar, kepala, dan laporan.
 - `PERMISSIONS.md`: role dan hak akses.
-- `MEMORIZATION_RULES.md`: aturan Sabaq, Sabqi, Manzil, dan kelancaran.
+- `MEMORIZATION_RULES.md`: aturan Sabaq, Sabqi, Manzil, kelancaran, duplikasi, koreksi, void, dan laporan.
 - `DATA_MODEL.md`: struktur data awal.
 - `ACCEPTANCE_CRITERIA.md`: syarat MVP dianggap selesai.
 - `IMPLEMENTATION_PLAN.md`: urutan development.
 
 Prinsip utama: MVP fokus pada pencatatan hafalan internal dan laporan PDF/cetak. Wali belum login dan infaq tetap memakai aplikasi eksternal.
+
+Keputusan MVP yang sudah dikunci:
+- Admin mengelola data operasional, bukan penilaian hafalan.
+- Kepala memegang otorisasi akademik seperti koreksi/void setoran dan reopen periode.
+- Hak melihat audit dipisahkan dari hak melakukan aksi yang tercatat di audit.
+- Role Kepala hanya dapat dikelola oleh pengguna aktif yang sudah memiliki role Kepala, dan sistem wajib menjaga minimal satu Kepala aktif.
+- Wali hanya kontak dan tidak memiliki akun login.
+- Satu record setoran hanya mencakup satu surah.
+- PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+
+Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

@@ -12,13 +12,13 @@ Pencatatan hafalan masih manual. Pertumbuhan santri membuat pengajar dan kepala 
 
 ## Pengguna MVP
 ### Admin
-Mengelola pengguna, santri, wali sebagai kontak, pengajar, halaqah, periode, dan penempatan.
+Mengelola data operasional: pengguna, santri, wali sebagai kontak, pengajar, halaqah, periode, assignment, dan membership. Admin tidak mencatat, mengoreksi, atau membatalkan hasil setoran secara default.
 
 ### Pengajar
 Melihat halaqahnya, mencatat setoran, melihat riwayat, dan melakukan koreksi sesuai aturan.
 
 ### Kepala
-Melihat seluruh data, dashboard, perkembangan santri, audit penting, dan membuat laporan.
+Melihat seluruh data, dashboard, perkembangan santri, audit akademik, koreksi/void setoran sesuai aturan, reopen periode, menjaga role penting, dan membuat laporan.
 
 ### Wali Santri
 Belum memiliki akun. Menerima laporan PDF/hard copy secara manual.
@@ -32,7 +32,7 @@ Belum memiliki akun. Menerima laporan PDF/hard copy secara manual.
 - Riwayat dan koreksi setoran.
 - Dashboard kepala.
 - Generate, download, dan print laporan PDF.
-- Audit perubahan sederhana.
+- Audit operasional dan audit akademik sederhana sesuai role.
 
 ## Out of Scope
 Login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payment gateway, aplikasi native, AI, audio, gamifikasi, dan multi-cabang kompleks.
@@ -44,6 +44,9 @@ Login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payme
 - Laporan santri dapat dibuat langsung dari data.
 - Minimal 80% pengguna pilot menyatakan aplikasi mudah digunakan.
 - Tidak ada kebocoran akses antarhalaqah.
+- Admin tidak dapat mengubah penilaian hafalan tanpa role Kepala.
+- Admin tidak dapat mengubah role Kepala.
+- Sistem selalu memiliki minimal satu pengguna aktif dengan role Kepala.
 
 ## Pilot
 1 kepala, 1 admin, 2 pengajar, 1–2 halaqah, dan 10–20 santri.

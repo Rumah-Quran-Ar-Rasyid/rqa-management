@@ -7,23 +7,57 @@
 
 Satu pengguna dapat memiliki lebih dari satu role.
 
+Prinsip role:
+- `ADMIN`: mengelola data operasional, bukan penilaian hafalan.
+- `HEAD`: monitoring dan otorisasi akademik.
+- `TEACHER`: pencatatan hafalan pada halaqah yang diampu.
+
+Jika satu orang menjalankan administrasi dan fungsi kepala, berikan dua role: `ADMIN` + `HEAD`.
+
+Permission teknis harus memisahkan hak melihat audit dari hak melakukan aksi. Contoh:
+- `VIEW_OPERATIONAL_AUDIT`
+- `VIEW_ACADEMIC_AUDIT`
+- `MANAGE_USER`
+- `MANAGE_TEACHER_ROLE`
+- `MANAGE_ADMIN_ROLE`
+- `MANAGE_HEAD_ROLE`
+
 ## Matriks Hak Akses
 | Aktivitas | Admin | Kepala | Pengajar |
 |---|---:|---:|---:|
 | Login | Ya | Ya | Ya |
-| Dashboard keseluruhan | Terbatas | Ya | Tidak |
-| Kelola santri/wali | Ya | Ya | Tidak |
-| Kelola halaqah/periode | Ya | Ya | Tidak |
-| Assignment pengajar/santri | Ya | Ya | Tidak |
+| Dashboard keseluruhan | Ringkasan operasional | Ya | Tidak |
+| Membuat user operasional | Ya | Tidak | Tidak |
+| Assign/revoke role `TEACHER` | Ya | Tidak | Tidak |
+| Assign/revoke role `ADMIN` | Tidak | Ya | Tidak |
+| Assign/revoke role `HEAD` | Tidak | Ya | Tidak |
+| Kelola santri/wali | Ya | Lihat | Tidak |
+| Kelola halaqah | Ya | Lihat | Tidak |
+| Kelola periode PLANNED/ACTIVE | Ya | Lihat | Tidak |
+| Tutup periode | Tidak | Ya dengan alasan | Tidak |
+| Reopen periode CLOSED | Tidak | Ya dengan alasan | Tidak |
+| Assignment pengajar/santri | Ya | Lihat | Tidak |
 | Lihat seluruh halaqah | Ya | Ya | Tidak |
 | Lihat halaqah yang diampu | Ya | Ya | Ya |
-| Input setoran | Opsional | Opsional | Halaqahnya |
+| Input setoran | Tidak | Tidak | Halaqahnya |
 | Lihat riwayat | Semua | Semua | Halaqahnya |
-| Koreksi setoran | Terbatas | Ya dengan alasan | Miliknya sesuai batas waktu |
-| Void setoran | Terbatas | Ya dengan alasan | Tidak |
-| Generate laporan | Ya | Ya | Opsional untuk halaqahnya |
-| Audit log | Terbatas | Ya | Tidak |
-| Export seluruh data | Terbatas | Ya | Tidak |
+| Koreksi setoran | Tidak | Ya dengan alasan | Miliknya dalam 24 jam |
+| Void setoran | Tidak | Ya dengan alasan | Tidak |
+| Generate laporan | Ya | Ya | Tidak |
+| Audit operasional | Detail | Ringkasan | Tidak |
+| Audit akademik | Tidak melihat detail sensitif | Detail | Terbatas pada miliknya |
+| Export seluruh data | Tidak pada MVP | Tidak pada MVP | Tidak |
+
+Catatan:
+- Hak melihat audit tidak berarti hak melakukan seluruh aksi yang tercatat di audit.
+- Admin boleh membuat dan mengelola pengguna operasional, tetapi tidak boleh assign, revoke, atau mengubah role `HEAD`.
+- Role `HEAD` hanya dapat diberikan atau dicabut oleh pengguna aktif yang sudah memiliki role `HEAD`.
+- Sistem wajib memiliki minimal satu pengguna aktif dengan role `HEAD`.
+- Role `HEAD` terakhir tidak boleh dicabut atau dinonaktifkan.
+- Seed pertama membuat satu akun awal `ADMIN` + `HEAD`. Setelah itu, pengelolaan role `HEAD` dilakukan oleh pengguna yang sudah memiliki role `HEAD`.
+- Selama periode `CLOSED`, input setoran dan koreksi ditolak untuk semua role. Kepala harus reopen periode terlebih dahulu dengan alasan.
+- Semua tipe assignment pengajar aktif (`PRIMARY`, `ASSISTANT`, `SUBSTITUTE`) boleh mencatat setoran pada halaqah terkait.
+- Hanya pengajar pembuat setoran yang boleh mengoreksi setoran tersebut dalam batas 24 jam.
 
 ## Aturan Authorization
 - Akses ditolak secara default.
@@ -32,3 +66,34 @@ Satu pengguna dapat memiliki lebih dari satu role.
 - Santri harus aktif pada halaqah terkait.
 - Semua data harus berada pada organisasi yang sama.
 - Pengguna nonaktif tidak dapat login.
+- Wali adalah kontak dan tidak memiliki akun login, password, session, atau role.
+- Endpoint preview/download PDF harus memeriksa authorization di server.
+
+## Audit
+
+### Audit Operasional
+Mencakup perubahan pengguna, role, data santri, wali, halaqah, assignment pengajar, membership santri, dan periode pembelajaran.
+
+Hak akses:
+- Admin: detail audit operasional.
+- Kepala: ringkasan audit operasional, detail audit perubahan role `ADMIN`/`HEAD`, dan detail event periode yang menjadi kewenangannya.
+- Pengajar: tidak ada.
+
+Admin dapat melihat detail audit operasional untuk kebutuhan administrasi. Namun, Admin tidak boleh assign, revoke, atau mengubah role `HEAD`, dan perubahan role `HEAD` tetap bersifat read-only bagi Admin.
+
+Khusus event periode seperti `PERIOD_CREATED`, `PERIOD_ACTIVATED`, `PERIOD_CLOSED`, dan `PERIOD_REOPENED`, Kepala dapat melihat detail audit karena periode memengaruhi data akademik, setoran, koreksi, dan laporan.
+
+Detail event periode mencakup:
+- Status sebelumnya.
+- Status baru.
+- Alasan perubahan.
+- Pengguna yang melakukan.
+- Waktu perubahan.
+
+### Audit Akademik
+Mencakup pembuatan setoran, koreksi setoran, void setoran, perubahan kategori, surah/ayat, predikat, catatan, target, dan duplicate override.
+
+Hak akses:
+- Kepala: detail audit akademik.
+- Admin: tidak melihat detail akademik sensitif.
+- Pengajar: riwayat perubahan setoran miliknya secara terbatas.
