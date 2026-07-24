@@ -78,7 +78,9 @@ Buka [http://localhost:3000](http://localhost:3000). Endpoint health tersedia di
 
 Setelah seed, akun awal dapat masuk menggunakan nilai `SEED_ADMIN_EMAIL` dan `SEED_ADMIN_PASSWORD` dari `.env`. Akun tersebut memiliki akses Admin + Kepala. Wali tidak memiliki akun login.
 
-Status pengembangan saat ini: Slice 0 (fondasi) dan Slice 1 (login, logout, database session, serta proteksi halaman internal) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Menjalankan `npm run db:seed` ulang akan menyelaraskan nama, status, dan password akun awal dengan nilai seed saat ini tanpa menghapus data operasional. Session aktif akun awal akan dicabut agar password baru langsung berlaku.
+
+Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), dan Slice 2A (pengelolaan pengguna/role) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 

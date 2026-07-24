@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { CircleCheck, ShieldCheck } from "lucide-react";
+import { ArrowRight, CircleCheck, ShieldCheck, UsersRound } from "lucide-react";
+import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import type { RoleCode } from "@/generated/prisma/enums";
 import { requireUser } from "@/modules/auth/application/session";
+import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
 
 export const metadata: Metadata = {
   title: "Beranda",
@@ -23,16 +26,30 @@ const ROLE_LABELS: Record<RoleCode, string> = {
 
 export default async function AppPage() {
   const user = await requireUser();
+  const canManageUsers = canAccessUserDirectory(user.roles);
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6">
-        <p className="mb-1 text-sm text-muted-foreground">Selamat datang</p>
-        <h1 className="text-2xl font-semibold">{user.name}</h1>
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-2 text-sm font-medium text-primary">Beranda</p>
+          <h1 className="text-2xl font-semibold">Selamat datang, {user.name}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Akun Anda siap digunakan.
+          </p>
+        </div>
+        {canManageUsers ? (
+          <Button asChild>
+            <Link href="/app/pengguna">
+              <UsersRound aria-hidden="true" />
+              Kelola Pengguna
+            </Link>
+          </Button>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+      <div className="grid gap-4 md:grid-cols-2 xl:max-w-4xl">
+        <Card className="shadow-sm">
           <CardHeader>
             <div className="mb-2 flex size-10 items-center justify-center rounded-[8px] bg-accent text-accent-foreground">
               <CircleCheck className="size-5" aria-hidden="true" />
@@ -42,7 +59,7 @@ export default async function AppPage() {
           </CardHeader>
         </Card>
 
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader>
             <div className="mb-2 flex size-10 items-center justify-center rounded-[8px] bg-secondary text-secondary-foreground">
               <ShieldCheck className="size-5" aria-hidden="true" />
@@ -63,6 +80,18 @@ export default async function AppPage() {
           </CardContent>
         </Card>
       </div>
+
+      {canManageUsers ? (
+        <div className="mt-8 border-t pt-5 text-sm text-muted-foreground">
+          <Link
+            href="/app/pengguna"
+            className="inline-flex items-center gap-2 font-medium text-primary hover:underline"
+          >
+            Lihat akses pengguna
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+      ) : null}
     </main>
   );
 }

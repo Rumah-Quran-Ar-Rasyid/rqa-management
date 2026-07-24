@@ -25,6 +25,6 @@ Keputusan MVP yang sudah dikunci:
 - Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
 - Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0 dan Slice 1 telah diimplementasikan. Slice berikutnya adalah setup minimal halaqah sesuai `IMPLEMENTATION_PLAN.md`.
+- Slice 0, Slice 1, dan Slice 2A (pengguna/role) telah diimplementasikan. Tahap berikutnya adalah periode dan halaqah, lalu santri/wali/assignment/membership sesuai `IMPLEMENTATION_PLAN.md`.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

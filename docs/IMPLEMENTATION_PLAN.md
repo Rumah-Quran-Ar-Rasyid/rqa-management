@@ -201,6 +201,15 @@ DoD:
 - Satu santri tidak memiliki dua membership halaqah aktif pada waktu yang sama.
 - Satu halaqah tidak memiliki dua pengajar `PRIMARY` aktif pada waktu yang sama.
 
+Status implementasi per 24 Juli 2026:
+- Slice 2A selesai: daftar pengguna responsif, pembuatan akun Pengajar, perubahan status aktif/nonaktif, pengelolaan role, audit operasional, dan toast hasil aksi telah tersedia.
+- Admin dapat membuat akun aktif dengan role Pengajar awal. Kepala dapat mengelola role Admin dan Kepala; Admin tidak dapat mengelola role tersebut kecuali akunnya juga memiliki role Kepala.
+- Perubahan status, pemberian/pencabutan role, audit, dan pencabutan session saat diperlukan berjalan dalam transaksi serializable serta selalu difilter organisasi.
+- Kepala aktif terakhir tidak dapat dicabut atau dinonaktifkan. Admin tanpa role Kepala juga tidak dapat menonaktifkan pengguna yang masih memiliki role Kepala aktif; pengguna tidak dapat mengubah status sendiri.
+- Tampilan desktop memakai tabel; mobile memakai daftar kartu tanpa bergantung pada scroll horizontal halaman.
+- Kerangka aplikasi menggunakan sidebar pada desktop, navigasi ringkas pada mobile, serta pencarian lokal pada daftar pengguna agar alur operasional cepat dipindai.
+- Slice 2B (periode dan halaqah) serta Slice 2C (santri, wali, assignment, membership) masih belum dibuat.
+
 ### Slice 3 — Setoran End-to-End
 Tujuan: satu pengajar dapat mencatat Sabaq/Sabqi/Manzil dari HP dan Kepala langsung melihat hasilnya.
 

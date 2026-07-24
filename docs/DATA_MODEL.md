@@ -33,11 +33,13 @@ Role seed: `ADMIN`, `HEAD`, `TEACHER`.
 
 Aturan:
 - Seed pertama membuat satu akun awal `ADMIN` + `HEAD`.
+- Admin membuat akun Pengajar baru dalam status `ACTIVE` dengan role `TEACHER` awal.
 - Perubahan role `HEAD` adalah aksi sensitif dan harus masuk audit operasional.
 - Role `HEAD` hanya dapat diberikan atau dicabut oleh pengguna aktif yang sudah memiliki role `HEAD`.
 - Sistem wajib memiliki minimal satu pengguna aktif dengan role `HEAD`.
 - Role `HEAD` terakhir tidak boleh dicabut atau dinonaktifkan.
 - Admin dapat melihat audit perubahan role `HEAD` secara read-only, tetapi tidak dapat melakukan perubahan role `HEAD`.
+- Pengguna tidak dapat mengubah status sendiri. Admin tanpa role `HEAD` juga tidak dapat mengubah status pengguna yang masih memiliki role `HEAD` aktif.
 
 ### user_sessions
 `id`, `organization_id`, `user_id`, `token_hash`, `expires_at`, `revoked_at`, `created_at`.
@@ -124,6 +126,8 @@ Domain: `USER`, `ROLE`, `STUDENT`, `GUARDIAN`, `HALAQAH`, `TEACHER_ASSIGNMENT`, 
 Contoh action periode: `PERIOD_CREATED`, `PERIOD_ACTIVATED`, `PERIOD_CLOSED`, `PERIOD_REOPENED`.
 
 Audit perubahan role sensitif harus menyimpan role target, pengguna target, status sebelum/sesudah, alasan jika diperlukan, pengguna yang melakukan, dan waktu perubahan.
+
+Contoh action pengguna/role yang telah digunakan: `USER_CREATED`, `USER_STATUS_CHANGED`, `ROLE_ASSIGNED`, dan `ROLE_REVOKED`.
 
 Detail audit periode yang dapat dilihat Kepala mencakup status sebelumnya, status baru, alasan perubahan, pengguna yang melakukan, dan waktu perubahan.
 

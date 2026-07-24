@@ -12,11 +12,15 @@
 ## Pengguna dan Role
 - Seed pertama membuat satu akun awal dengan role `ADMIN` + `HEAD`.
 - Admin dapat membuat user operasional.
+- Akun Pengajar baru dibuat aktif dengan role `TEACHER` dan kata sandi awal yang divalidasi minimal 12 karakter.
 - Admin dapat assign/revoke role `TEACHER`.
 - Admin tidak dapat assign/revoke role `ADMIN` atau `HEAD`.
 - Kepala dapat assign/revoke role `ADMIN` dan `HEAD`.
 - Role `HEAD` terakhir tidak dapat dicabut.
 - Pengguna aktif terakhir dengan role `HEAD` tidak dapat dinonaktifkan.
+- Admin tanpa role `HEAD` tidak dapat mengubah status pengguna yang masih memiliki role `HEAD` aktif.
+- Pengguna tidak dapat mengubah status akun sendiri.
+- Menonaktifkan pengguna mencabut session aktif pengguna tersebut.
 - Perubahan role `ADMIN` dan `HEAD` masuk audit operasional.
 
 ```gherkin

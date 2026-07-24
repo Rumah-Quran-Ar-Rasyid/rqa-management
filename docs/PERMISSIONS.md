@@ -54,6 +54,9 @@ Catatan:
 - Role `HEAD` hanya dapat diberikan atau dicabut oleh pengguna aktif yang sudah memiliki role `HEAD`.
 - Sistem wajib memiliki minimal satu pengguna aktif dengan role `HEAD`.
 - Role `HEAD` terakhir tidak boleh dicabut atau dinonaktifkan.
+- Admin tanpa role `HEAD` tidak dapat menonaktifkan pengguna yang masih memiliki role `HEAD` aktif.
+- Pengguna tidak dapat mengubah status akunnya sendiri.
+- Role hanya dapat diberikan kepada pengguna aktif. Jika role aktif terakhir dicabut dari pengguna, session aktif pengguna tersebut dicabut.
 - Seed pertama membuat satu akun awal `ADMIN` + `HEAD`. Setelah itu, pengelolaan role `HEAD` dilakukan oleh pengguna yang sudah memiliki role `HEAD`.
 - Selama periode `CLOSED`, input setoran dan koreksi ditolak untuk semua role. Kepala harus reopen periode terlebih dahulu dengan alasan.
 - Semua tipe assignment pengajar aktif (`PRIMARY`, `ASSISTANT`, `SUBSTITUTE`) boleh mencatat setoran pada halaqah terkait.
@@ -67,6 +70,7 @@ Catatan:
 - Santri harus aktif pada halaqah terkait.
 - Semua data harus berada pada organisasi yang sama.
 - Pengguna nonaktif tidak dapat login.
+- Ketika pengguna dinonaktifkan, semua session aktifnya dicabut dalam transaksi yang sama.
 - Wali adalah kontak dan tidak memiliki akun login, password, session, atau role.
 - Endpoint preview/download PDF harus memeriksa authorization di server.
 

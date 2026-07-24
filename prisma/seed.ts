@@ -74,6 +74,7 @@ async function main() {
       },
       update: {
         name: seedEnv.SEED_ADMIN_NAME,
+        passwordHash,
         status: "ACTIVE",
       },
       create: {
@@ -83,6 +84,15 @@ async function main() {
         passwordHash,
         status: "ACTIVE",
       },
+    });
+
+    await tx.userSession.updateMany({
+      where: {
+        organizationId: organization.id,
+        userId: admin.id,
+        revokedAt: null,
+      },
+      data: { revokedAt: new Date() },
     });
 
     for (const role of roles.filter(({ code }) =>

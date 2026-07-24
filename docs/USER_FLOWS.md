@@ -12,7 +12,7 @@ Aturan:
 - Wali tidak mengikuti alur ini karena tidak memiliki akun login pada MVP.
 
 ## 1. Admin Menyiapkan Data
-Admin login → membuat pengajar → membuat santri → mencatat wali → membuat halaqah → menetapkan pengajar → memasukkan santri → mengaktifkan periode.
+Admin login → membuka Pengguna → membuat akun Pengajar dengan kata sandi awal → membuat santri → mencatat wali → membuat halaqah → menetapkan pengajar → memasukkan santri → mengaktifkan periode.
 
 Aturan:
 - Satu pengajar dapat mengampu beberapa halaqah.
@@ -22,6 +22,8 @@ Aturan:
 - Admin mengelola data operasional, bukan mencatat atau mengubah penilaian hafalan.
 - Admin dapat membuat user operasional dan mengelola role `TEACHER`.
 - Admin tidak dapat assign, revoke, atau mengubah role `HEAD`.
+- Admin tanpa role `HEAD` tidak dapat menonaktifkan pengguna yang memiliki role `HEAD` aktif.
+- Pengguna tidak dapat menonaktifkan akun sendiri.
 - Jika Admin juga berperan sebagai Kepala, akun diberi role `ADMIN` + `HEAD`.
 
 ## 2. Kepala Mengelola Role Penting
@@ -31,6 +33,7 @@ Aturan:
 - Role `HEAD` hanya dapat diberikan atau dicabut oleh pengguna aktif yang sudah memiliki role `HEAD`.
 - Sistem wajib memiliki minimal satu pengguna aktif dengan role `HEAD`.
 - Role `HEAD` terakhir tidak boleh dicabut atau dinonaktifkan.
+- Role hanya dapat diberikan kepada pengguna aktif.
 - Seed pertama membuat satu akun awal `ADMIN` + `HEAD`; tidak ada menu Super Admin pada MVP.
 
 ## 3. Pengajar Mencatat Setoran
