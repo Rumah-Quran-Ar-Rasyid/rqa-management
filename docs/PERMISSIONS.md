@@ -21,6 +21,9 @@ Permission teknis harus memisahkan hak melihat audit dari hak melakukan aksi. Co
 - `MANAGE_TEACHER_ROLE`
 - `MANAGE_ADMIN_ROLE`
 - `MANAGE_HEAD_ROLE`
+- `MANAGE_ACADEMIC_PERIOD`
+- `CLOSE_ACADEMIC_PERIOD`
+- `REOPEN_ACADEMIC_PERIOD`
 
 ## Matriks Hak Akses
 | Aktivitas | Admin | Kepala | Pengajar |
@@ -58,6 +61,7 @@ Catatan:
 - Pengguna tidak dapat mengubah status akunnya sendiri.
 - Role hanya dapat diberikan kepada pengguna aktif. Jika role aktif terakhir dicabut dari pengguna, session aktif pengguna tersebut dicabut.
 - Seed pertama membuat satu akun awal `ADMIN` + `HEAD`. Setelah itu, pengelolaan role `HEAD` dilakukan oleh pengguna yang sudah memiliki role `HEAD`.
+- Admin dapat membuat periode `PLANNED` dan mengaktifkannya jika belum ada periode aktif. Kepala dapat menutup periode aktif atau membuka kembali periode ditutup dengan alasan.
 - Selama periode `CLOSED`, input setoran dan koreksi ditolak untuk semua role. Kepala harus reopen periode terlebih dahulu dengan alasan.
 - Semua tipe assignment pengajar aktif (`PRIMARY`, `ASSISTANT`, `SUBSTITUTE`) boleh mencatat setoran pada halaqah terkait.
 - Hanya pengajar pembuat setoran yang boleh mengoreksi setoran tersebut dalam batas 24 jam.

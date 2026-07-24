@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/modules/auth/application/actions";
 import { requireUser } from "@/modules/auth/application/session";
 import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
+import { canAccessAcademicPeriods } from "@/modules/periods/domain/academic-period-policy";
 import { AppBrand, AppNavigation } from "./app-navigation";
 
 export default async function ProtectedLayout({
@@ -13,13 +14,18 @@ export default async function ProtectedLayout({
 }>) {
   const user = await requireUser();
   const canAccessUsers = canAccessUserDirectory(user.roles);
+  const canAccessPeriods = canAccessAcademicPeriods(user.roles);
 
   return (
     <div className="min-h-svh bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="hidden border-r bg-card lg:flex lg:min-h-svh lg:flex-col lg:p-4">
         <AppBrand />
         <div className="my-7 h-px bg-border" />
-        <AppNavigation canAccessUserDirectory={canAccessUsers} variant="desktop" />
+        <AppNavigation
+          canAccessUserDirectory={canAccessUsers}
+          canAccessAcademicPeriods={canAccessPeriods}
+          variant="desktop"
+        />
         <div className="mt-auto border-t pt-4">
           <div className="mb-3 min-w-0 px-3">
             <p className="truncate text-sm font-medium">{user.name}</p>
@@ -52,7 +58,11 @@ export default async function ProtectedLayout({
               </Button>
             </form>
           </div>
-          <AppNavigation canAccessUserDirectory={canAccessUsers} variant="mobile" />
+          <AppNavigation
+            canAccessUserDirectory={canAccessUsers}
+            canAccessAcademicPeriods={canAccessPeriods}
+            variant="mobile"
+          />
         </header>
         <div className="hidden h-16 items-center border-b bg-card px-8 lg:flex">
           <p className="text-sm text-muted-foreground">Rumah Qur’an Ar-Rasyid</p>

@@ -16,6 +16,7 @@ Admin login → membuka Pengguna → membuat akun Pengajar dengan kata sandi awa
 
 Aturan:
 - Satu pengajar dapat mengampu beberapa halaqah.
+- Admin hanya dapat mengaktifkan periode jika tidak ada periode aktif lain pada organisasi.
 - Satu halaqah dapat memiliki pengajar utama dan pendamping.
 - Satu wali dapat memiliki beberapa anak.
 - Santri dapat pindah halaqah tanpa kehilangan histori.
@@ -82,6 +83,7 @@ Kepala membuka periode `CLOSED` → Reopen → isi alasan → status menjadi `AC
 
 Aturan:
 - Admin tanpa role `HEAD` tidak dapat reopen periode.
+- Reopen ditolak jika masih ada periode aktif lain.
 - Selama periode `CLOSED`, setoran baru dan koreksi ditolak untuk semua role.
 - Kepala dapat melihat detail audit event periode: status sebelumnya, status baru, alasan, pelaku, dan waktu.
 - Setelah perubahan selesai, Kepala menutup kembali periode dengan audit.

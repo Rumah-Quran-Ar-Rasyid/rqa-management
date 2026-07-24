@@ -208,7 +208,10 @@ Status implementasi per 24 Juli 2026:
 - Kepala aktif terakhir tidak dapat dicabut atau dinonaktifkan. Admin tanpa role Kepala juga tidak dapat menonaktifkan pengguna yang masih memiliki role Kepala aktif; pengguna tidak dapat mengubah status sendiri.
 - Tampilan desktop memakai tabel; mobile memakai daftar kartu tanpa bergantung pada scroll horizontal halaman.
 - Kerangka aplikasi menggunakan sidebar pada desktop, navigasi ringkas pada mobile, serta pencarian lokal pada daftar pengguna agar alur operasional cepat dipindai.
-- Slice 2B (periode dan halaqah) serta Slice 2C (santri, wali, assignment, membership) masih belum dibuat.
+- Slice periode pada 2B selesai: Admin dapat membuat periode `PLANNED` dan mengaktifkannya; Kepala dapat menutup atau membuka kembali periode dengan alasan. Semua transisi diaudit dan detailnya dapat dilihat pada riwayat periode.
+- Satu organisasi hanya dapat memiliki satu periode aktif. Aktivasi dan reopen diperiksa di dalam transaksi serializable agar periode aktif tidak ambigu.
+- Periode memakai tabel pada desktop, daftar kartu pada mobile, dialog form, konfirmasi untuk transisi sensitif, dan banner saat periode hasil reopen masih aktif.
+- Halaqah pada 2B serta santri, wali, assignment, dan membership pada 2C masih belum dibuat.
 
 ### Slice 3 — Setoran End-to-End
 Tujuan: satu pengajar dapat mencatat Sabaq/Sabqi/Manzil dari HP dan Kepala langsung melihat hasilnya.

@@ -107,6 +107,7 @@ Santri perlu perhatian apabila:
 
 ## Periode
 - Admin dapat membuat dan mengelola periode `PLANNED`/`ACTIVE`.
+- Satu organisasi hanya dapat memiliki satu periode aktif. Aktivasi atau reopen ditolak jika masih ada periode aktif lain.
 - Admin tanpa role `HEAD` tidak dapat reopen periode `CLOSED`.
 - Kepala dapat menutup dan reopen periode dengan alasan.
 - Reopen dan penutupan periode masuk audit operasional.
@@ -126,6 +127,12 @@ And pengguna memiliki role HEAD
 When pengguna memasukkan alasan dan membuka kembali periode
 Then status periode menjadi ACTIVE
 And event PERIOD_REOPENED tersimpan dalam audit operasional
+```
+
+```gherkin
+Given sudah ada periode ACTIVE pada organisasi
+When Admin mencoba mengaktifkan periode PLANNED lain
+Then sistem menolak permintaan
 ```
 
 ## Audit

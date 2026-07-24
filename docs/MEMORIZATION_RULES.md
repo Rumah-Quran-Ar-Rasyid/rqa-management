@@ -72,6 +72,8 @@ Santri masuk daftar perlu perhatian jika:
 - Predikat pada setoran terakhir adalah `LESS_FLUENT`.
 
 ## Periode Pembelajaran
+Setiap organisasi hanya memiliki satu periode `ACTIVE` pada satu waktu.
+
 Periode yang sudah `CLOSED` tidak dapat menerima setoran baru atau koreksi.
 
 Hanya pengguna dengan role `HEAD` yang dapat membuka kembali periode `CLOSED`.

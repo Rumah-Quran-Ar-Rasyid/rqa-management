@@ -91,6 +91,8 @@ Status: `PLANNED`, `ACTIVE`, `CLOSED`.
 Aturan:
 - Admin dapat mengelola periode `PLANNED`/`ACTIVE`.
 - Kepala dapat menutup periode dan reopen periode `CLOSED` dengan alasan.
+- Satu organisasi hanya dapat memiliki satu periode `ACTIVE` pada satu waktu. Mengaktifkan atau reopen periode ditolak selama masih ada periode aktif lain.
+- Siklus status: `PLANNED` menjadi `ACTIVE` oleh Admin; `ACTIVE` menjadi `CLOSED` oleh Kepala; `CLOSED` hanya dapat kembali menjadi `ACTIVE` oleh Kepala dengan alasan.
 - Selama periode `CLOSED`, setoran baru dan koreksi ditolak untuk semua role.
 - Reopen dan penutupan periode wajib masuk audit operasional.
 
@@ -148,6 +150,7 @@ Aturan:
 - `quran_surahs.surah_number` unik.
 - `generated_reports.report_number` unik per organisasi.
 - `user_sessions.token_hash` unik.
+- Periode `ACTIVE` tunggal divalidasi dalam transaction pada application layer karena MySQL tidak menyediakan partial unique index.
 - Query data organisasi wajib memfilter `organization_id`.
 - Foreign key entitas organisasi memakai pasangan `id` + `organization_id` agar relasi lintas organisasi ditolak oleh database.
 - Constraint rentang aktif yang saling overlap, satu membership santri aktif, dan satu pengajar `PRIMARY` aktif tetap harus divalidasi dalam transaction pada application layer karena MySQL tidak menyediakan partial unique index.

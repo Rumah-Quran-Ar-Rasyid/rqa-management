@@ -1,6 +1,11 @@
 "use client";
 
-import { BookOpenText, LayoutDashboard, UsersRound } from "lucide-react";
+import {
+  BookOpenText,
+  CalendarDays,
+  LayoutDashboard,
+  UsersRound,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,13 +16,19 @@ const navigation = [
     href: "/app",
     label: "Beranda",
     icon: LayoutDashboard,
-    requiresUserDirectory: false,
+    requiredAccess: "none",
   },
   {
     href: "/app/pengguna",
     label: "Pengguna",
     icon: UsersRound,
-    requiresUserDirectory: true,
+    requiredAccess: "users",
+  },
+  {
+    href: "/app/periode",
+    label: "Periode",
+    icon: CalendarDays,
+    requiredAccess: "periods",
   },
 ] as const;
 
@@ -43,9 +54,11 @@ export function AppBrand({ compact = false }: { compact?: boolean }) {
 
 export function AppNavigation({
   canAccessUserDirectory,
+  canAccessAcademicPeriods,
   variant,
 }: {
   canAccessUserDirectory: boolean;
+  canAccessAcademicPeriods: boolean;
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
@@ -60,9 +73,15 @@ export function AppNavigation({
       )}
     >
       {navigation
-        .filter(
-          (item) => !item.requiresUserDirectory || canAccessUserDirectory,
-        )
+        .filter((item) => {
+          if (item.requiredAccess === "users") {
+            return canAccessUserDirectory;
+          }
+
+          return (
+            item.requiredAccess !== "periods" || canAccessAcademicPeriods
+          );
+        })
         .map((item) => {
           const active =
             item.href === "/app"
