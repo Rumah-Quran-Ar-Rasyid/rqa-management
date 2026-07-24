@@ -1,4 +1,4 @@
-# Dokumentasi Rumah Qur'an Web App
+# Dokumentasi Rumah Qur’an Ar-Rasyid
 
 - `PRODUCT.md`: tujuan, pengguna, scope, dan indikator keberhasilan.
 - `USER_FLOWS.md`: alur admin, pengajar, kepala, dan laporan.
@@ -18,5 +18,9 @@ Keputusan MVP yang sudah dikunci:
 - Wali hanya kontak dan tidak memiliki akun login.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+- Nama produk pada tampilan adalah “Rumah Qur’an Ar-Rasyid” dan istilah teknis tidak ditampilkan mentah kepada pengguna.
+- Form input setoran dirancang mobile-first dengan tombol utama yang jelas.
+- Komponen UI ditambahkan secara minimal sesuai kebutuhan slice aktif.
+- Katalog komponen awal dibatasi pada daftar yang dikunci di `IMPLEMENTATION_PLAN.md`; feedback toast menggunakan Sonner.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

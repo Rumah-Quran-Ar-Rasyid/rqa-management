@@ -1,6 +1,6 @@
-# Rumah Qur'an Management
+# Rumah Qur’an Ar-Rasyid
 
-Aplikasi web internal Rumah Qur'an untuk mencatat dan memonitor setoran hafalan santri.
+Aplikasi web internal Rumah Qur’an Ar-Rasyid untuk mencatat dan memonitor setoran hafalan santri.
 
 MVP fokus pada:
 - Login untuk Admin, Kepala, dan Pengajar.
@@ -38,6 +38,13 @@ Setiap perubahan requirement, business rule, authorization, data model, atau ren
 - Wali hanya kontak dan tidak memiliki akun login.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+
+## Prinsip Antarmuka
+
+- Nama yang tampil kepada pengguna adalah “Rumah Qur’an Ar-Rasyid”.
+- Antarmuka memakai Bahasa Indonesia dan istilah kegiatan Rumah Qur’an, bukan enum atau permission teknis.
+- Form setoran dibuat mobile-first, cepat, konsisten, dan memiliki tombol utama yang jelas.
+- `shadcn/ui` boleh digunakan secara minimal. Komponen ditambahkan hanya ketika dibutuhkan oleh slice aktif.
 
 ## Getting Started
 

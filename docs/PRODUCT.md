@@ -1,7 +1,7 @@
-# Product Specification — Rumah Qur'an Web App
+# Product Specification — Rumah Qur’an Ar-Rasyid
 
 ## Latar Belakang
-Pencatatan hafalan masih manual. Pertumbuhan santri membuat pengajar dan kepala Rumah Qur'an semakin sulit melakukan pencatatan, monitoring, ri'ayah, dan rekap secara konsisten.
+Pencatatan hafalan masih manual. Pertumbuhan santri membuat pengajar dan Kepala Rumah Qur’an Ar-Rasyid semakin sulit melakukan pencatatan, monitoring, ri'ayah, dan rekap secara konsisten.
 
 ## Tujuan
 - Memudahkan pengajar mencatat setoran melalui HP.
@@ -47,6 +47,26 @@ Login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payme
 - Admin tidak dapat mengubah penilaian hafalan tanpa role Kepala.
 - Admin tidak dapat mengubah role Kepala.
 - Sistem selalu memiliki minimal satu pengguna aktif dengan role Kepala.
+
+## Prinsip Pengalaman Pengguna
+- Nama produk yang tampil adalah “Rumah Qur’an Ar-Rasyid”.
+- Tampilan harus jelas, cepat, konsisten, bersih, dan mudah dipakai pada layar mobile.
+- Alur pengajar, terutama input setoran, dirancang mobile-first dan menjadi prioritas ergonomi.
+- Tombol utama harus menonjol secara visual dan memakai label aksi yang spesifik.
+- Pesan kesalahan tampil dekat field terkait dan tidak menghapus data yang sudah diisi.
+- Status loading, berhasil, kosong, dan gagal harus terlihat jelas tanpa menghambat alur kerja.
+- Enum, permission, nama tabel, dan identifier teknis tidak ditampilkan secara mentah kepada pengguna.
+
+Contoh istilah pada tampilan:
+
+| Istilah internal | Teks untuk pengguna |
+|---|---|
+| `HEAD` | Kepala |
+| `TEACHER` | Pengajar |
+| `ACTIVE` | Aktif |
+| `CLOSED` | Ditutup |
+| `LESS_FLUENT` | Kurang Lancar |
+| `VOID` | Dibatalkan |
 
 ## Pilot
 1 kepala, 1 admin, 2 pengajar, 1–2 halaqah, dan 10–20 santri.

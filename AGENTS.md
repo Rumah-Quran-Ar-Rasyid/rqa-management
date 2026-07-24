@@ -1,7 +1,7 @@
 # Project Instructions for Coding Agents
 
 ## Context
-Aplikasi ini digunakan Rumah Qur'an untuk mencatat dan memonitor setoran hafalan santri.
+Aplikasi ini digunakan Rumah Qur’an Ar-Rasyid untuk mencatat dan memonitor setoran hafalan santri.
 
 Selalu baca seluruh file di folder `docs/` sebelum mengubah kode.
 
@@ -20,6 +20,16 @@ Selalu baca seluruh file di folder `docs/` sebelum mengubah kode.
 - Database access hanya di server.
 - Authorization diperiksa di server.
 - Jangan membuat microservices atau menambah infrastruktur tanpa kebutuhan nyata.
+
+## UI dan Bahasa
+- Gunakan nama “Rumah Qur’an Ar-Rasyid” pada tampilan pengguna.
+- Gunakan Bahasa Indonesia dan istilah yang dipahami pengguna, seperti Kepala, Pengajar, Aktif, Ditutup, dan Dibatalkan. Jangan tampilkan enum, permission, atau identifier teknis secara mentah.
+- Form input setoran wajib mobile-first, cepat dipindai, dan nyaman digunakan dengan satu tangan.
+- Tombol utama harus mudah dikenali dan memakai label aksi yang spesifik, misalnya “Simpan Setoran”, bukan “Submit”.
+- Hindari horizontal scroll pada halaman. Tampilan tabel desktop harus memiliki alternatif daftar yang mudah dipakai di mobile.
+- Jika memakai `shadcn/ui`, instal hanya komponen yang dibutuhkan oleh slice aktif. UI library bukan fokus produk.
+- Katalog komponen awal dibatasi pada Button, Input, Select, Textarea, Card, Table, Dialog, Alert Dialog, Badge, Tabs, Dropdown Menu, Date Picker, Form, dan Sonner.
+- Gunakan Sonner sebagai satu-satunya sistem toast. Primitive pendukung yang dipasang otomatis oleh komponen tersebut diperbolehkan.
 
 ## Engineering Rules
 - TypeScript strict mode.

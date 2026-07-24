@@ -129,10 +129,17 @@ And event PERIOD_REOPENED tersimpan dalam audit operasional
 - Pengajar hanya dapat melihat riwayat perubahan setoran miliknya secara terbatas.
 
 ## Mobile Usability
+- Nama “Rumah Qur’an Ar-Rasyid” tampil konsisten pada halaman masuk dan kerangka aplikasi.
+- Teks antarmuka tidak menampilkan enum, permission, atau identifier teknis secara mentah.
+- Form setoran nyaman digunakan pada viewport selebar 360 piksel.
+- Field setoran disusun satu kolom pada mobile dengan label yang selalu terlihat.
+- Tombol utama memiliki hierarki visual yang jelas dan label aksi yang spesifik, seperti “Simpan Setoran”.
+- Target sentuh kontrol utama minimal 44 × 44 piksel.
 - Minimal 4 dari 5 pengguna pilot dapat mencatat tanpa bantuan.
 - Median input maksimal 90 detik.
-- Tidak ada horizontal scroll.
-- Pesan validasi jelas dan data form tidak hilang.
+- Tidak ada horizontal scroll pada halaman; data tabel tetap dapat dibaca sebagai daftar pada mobile.
+- Pesan validasi tampil dekat field terkait, jelas, dan data form tidak hilang.
+- Status menyimpan, berhasil, gagal, dan data kosong terlihat jelas.
 
 ## Keamanan dan Operasional
 - Semua halaman data membutuhkan login.
