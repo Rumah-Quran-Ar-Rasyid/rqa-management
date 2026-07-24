@@ -48,23 +48,46 @@ Setiap perubahan requirement, business rule, authorization, data model, atau ren
 
 ## Getting Started
 
-Jalankan development server:
+Prasyarat lokal:
+
+- Node.js 20.19 atau lebih baru.
+- OrbStack/Docker dengan Docker Compose.
+
+Salin `.env.example` menjadi `.env`, lalu isi koneksi database, secret aplikasi, dan kredensial seed awal. Password seed minimal 12 karakter dan tidak memiliki nilai bawaan.
+
+Siapkan database:
+
+```bash
+npm install
+docker compose up -d
+docker compose ps
+npm run db:validate
+npm run db:migrate:deploy
+npm run db:seed
+```
+
+Container lokal memakai MySQL 8.4 pada `127.0.0.1:3306` dan menyimpan data pada Docker volume agar tetap tersedia setelah container dihentikan.
+
+Jalankan aplikasi:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser.
+Buka [http://localhost:3000](http://localhost:3000). Endpoint health tersedia di [http://localhost:3000/api/health](http://localhost:3000/api/health).
+
+Setelah seed, akun awal dapat masuk menggunakan nilai `SEED_ADMIN_EMAIL` dan `SEED_ADMIN_PASSWORD` dari `.env`. Akun tersebut memiliki akses Admin + Kepala. Wali tidak memiliki akun login.
+
+Status pengembangan saat ini: Slice 0 (fondasi) dan Slice 1 (login, logout, database session, serta proteksi halaman internal) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 
-Sebelum menyelesaikan task implementasi, jalankan lint, typecheck, dan test sesuai script proyek.
+Sebelum menyelesaikan task implementasi:
+
+```bash
+npm run check
+npm run build
+```
 
 ## Learn More
 

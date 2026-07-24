@@ -3,6 +3,11 @@
 ## Login
 - Akun aktif dengan kredensial benar dapat login dan diarahkan sesuai role.
 - Akun nonaktif ditolak.
+- Akun aktif tanpa role aktif ditolak.
+- Akses langsung ke halaman internal tanpa session valid diarahkan ke halaman masuk oleh server.
+- Logout mencabut session di database sehingga cookie lama tidak dapat digunakan kembali.
+- Session lama pengguna atau organisasi yang dinonaktifkan langsung ditolak.
+- Cookie session memakai `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
 
 ## Pengguna dan Role
 - Seed pertama membuat satu akun awal dengan role `ADMIN` + `HEAD`.

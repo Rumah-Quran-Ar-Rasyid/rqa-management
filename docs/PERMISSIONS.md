@@ -62,12 +62,21 @@ Catatan:
 ## Aturan Authorization
 - Akses ditolak secara default.
 - Pemeriksaan dilakukan di server, bukan hanya menyembunyikan tombol.
+- Halaman data memvalidasi sesi terhadap database pada setiap request.
 - Pengajar hanya mengakses halaqah yang ditugaskan kepadanya.
 - Santri harus aktif pada halaqah terkait.
 - Semua data harus berada pada organisasi yang sama.
 - Pengguna nonaktif tidak dapat login.
 - Wali adalah kontak dan tidak memiliki akun login, password, session, atau role.
 - Endpoint preview/download PDF harus memeriksa authorization di server.
+
+## Aturan Session
+- Session disimpan di database selama tujuh hari dan tidak memakai sliding expiration pada MVP.
+- Cookie hanya menyimpan token acak dengan atribut `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
+- Database hanya menyimpan hash token berbasis `AUTH_SECRET`; token mentah tidak disimpan.
+- Logout mencabut session di database sebelum cookie dihapus.
+- Perubahan status pengguna atau organisasi menjadi nonaktif membuat session lama langsung tidak dapat dipakai.
+- Login MVP berjalan untuk satu organisasi aktif per instalasi. Jika konfigurasi memiliki nol atau lebih dari satu organisasi aktif, login ditolak agar organisasi tidak dipilih secara ambigu.
 
 ## Audit
 

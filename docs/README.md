@@ -22,5 +22,9 @@ Keputusan MVP yang sudah dikunci:
 - Form input setoran dirancang mobile-first dengan tombol utama yang jelas.
 - Komponen UI ditambahkan secara minimal sesuai kebutuhan slice aktif.
 - Katalog komponen awal dibatasi pada daftar yang dikunci di `IMPLEMENTATION_PLAN.md`; feedback toast menggunakan Sonner.
+- Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
+- Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
+- Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
+- Slice 0 dan Slice 1 telah diimplementasikan. Slice berikutnya adalah setup minimal halaqah sesuai `IMPLEMENTATION_PLAN.md`.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

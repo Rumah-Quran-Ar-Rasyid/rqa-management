@@ -1,8 +1,11 @@
 # Initial Data Model
 
+Implementasi awal menggunakan MySQL/MariaDB dengan Prisma ORM v7 dan driver adapter MariaDB. Database access hanya dilakukan dari server.
+
 ## Entitas
 - Organization
 - User dan Role
+- User Session
 - Student
 - Guardian sebagai kontak
 - Halaqah
@@ -35,6 +38,16 @@ Aturan:
 - Sistem wajib memiliki minimal satu pengguna aktif dengan role `HEAD`.
 - Role `HEAD` terakhir tidak boleh dicabut atau dinonaktifkan.
 - Admin dapat melihat audit perubahan role `HEAD` secara read-only, tetapi tidak dapat melakukan perubahan role `HEAD`.
+
+### user_sessions
+`id`, `organization_id`, `user_id`, `token_hash`, `expires_at`, `revoked_at`, `created_at`.
+
+Aturan:
+- Browser hanya menyimpan token sesi acak; database hanya menyimpan hash HMAC-SHA-256.
+- Sesi berlaku tujuh hari dan tidak diperpanjang otomatis pada MVP.
+- Logout mengisi `revoked_at` dan menghapus cookie sesi.
+- Sesi hanya valid jika belum dicabut, belum kedaluwarsa, organisasi aktif, pengguna aktif, dan pengguna masih memiliki minimal satu role aktif.
+- Foreign key pengguna memakai pasangan `user_id` + `organization_id` agar sesi lintas organisasi ditolak database.
 
 ### students
 `id`, `organization_id`, `student_number`, `full_name`, `preferred_name`, `gender`, `birth_date`, `joined_at`, `status`, timestamps.
@@ -83,7 +96,7 @@ Aturan:
 `surah_number`, `arabic_name`, `latin_name`, `verse_count`.
 
 ### memorization_records
-`organization_id`, `academic_period_id`, `student_id`, `halaqah_id`, `teacher_user_id`, `submission_date`, `submission_category`, `surah_number`, `start_verse`, `end_verse`, `fluency_predicate`, `teacher_note`, `next_target`, `page_number`, `duplicate_override`, `duplicate_override_reason`, `duplicate_reference_record_id`, `record_status`, audit timestamps/users.
+`organization_id`, `academic_period_id`, `student_id`, `halaqah_id`, `teacher_user_id`, `submission_date`, `submission_category`, `surah_number`, `start_verse`, `end_verse`, `fluency_predicate`, `teacher_note`, `next_target`, `page_number`, `duplicate_override`, `duplicate_override_reason`, `duplicate_reference_record_id`, `record_status`, snapshot nama santri/halaqah/pengajar/periode, audit timestamps/users.
 
 Category: `SABAQ`, `SABQI`, `MANZIL`.
 Fluency: `FLUENT`, `FAIRLY_FLUENT`, `LESS_FLUENT`.
@@ -96,6 +109,7 @@ Aturan:
 - `duplicate_override = false` berarti `duplicate_override_reason` dan `duplicate_reference_record_id` kosong.
 - `duplicate_override = true` berarti alasan wajib; reference record disimpan jika tersedia.
 - Koreksi memperbarui record yang sama dan menyimpan before/after di audit akademik.
+- Snapshot nama santri, halaqah, pengajar, dan periode disimpan ketika setoran dibuat agar histori tetap dapat dibaca setelah data master berubah.
 
 ### memorization_record_audits
 `organization_id`, `memorization_record_id`, `action`, `before_data`, `after_data`, `reason`, `performed_by`, `performed_at`.
@@ -129,7 +143,10 @@ Aturan:
 - `students.student_number` unik per organisasi.
 - `quran_surahs.surah_number` unik.
 - `generated_reports.report_number` unik per organisasi.
+- `user_sessions.token_hash` unik.
 - Query data organisasi wajib memfilter `organization_id`.
+- Foreign key entitas organisasi memakai pasangan `id` + `organization_id` agar relasi lintas organisasi ditolak oleh database.
+- Constraint rentang aktif yang saling overlap, satu membership santri aktif, dan satu pengajar `PRIMARY` aktif tetap harus divalidasi dalam transaction pada application layer karena MySQL tidak menyediakan partial unique index.
 
 ## Belum Dibuat
 Finance, payments, attendance, notifications, guardian login, audio, certificate, achievement, dan WhatsApp.

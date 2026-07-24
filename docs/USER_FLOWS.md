@@ -1,5 +1,16 @@
 # User Flows
 
+## Masuk dan Keluar
+Admin/Kepala/Pengajar membuka aplikasi → memasukkan email dan kata sandi → sistem memvalidasi akun aktif serta role aktif → sistem membuat session → pengguna masuk ke beranda internal.
+
+Saat keluar, sistem mencabut session di database, menghapus cookie, lalu kembali ke halaman masuk.
+
+Aturan:
+- Pesan kredensial salah, akun nonaktif, dan akun tanpa role dibuat generik agar status akun tidak bocor.
+- Pengguna nonaktif atau organisasi nonaktif tidak dapat memakai session lama.
+- Akses langsung ke halaman internal tanpa session valid diarahkan ke halaman masuk oleh server.
+- Wali tidak mengikuti alur ini karena tidak memiliki akun login pada MVP.
+
 ## 1. Admin Menyiapkan Data
 Admin login → membuat pengajar → membuat santri → mencatat wali → membuat halaqah → menetapkan pengajar → memasukkan santri → mengaktifkan periode.
 

@@ -38,6 +38,7 @@ Tidak termasuk MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/e
 - Admin dapat melihat audit perubahan role `HEAD` secara read-only, tetapi tidak dapat mengubah role `HEAD`.
 - Kepala dapat melihat detail event periode karena periode memengaruhi setoran, koreksi, laporan, dan kepercayaan data.
 - Cookie session perlu HttpOnly, Secure, SameSite, dan user nonaktif harus ditolak pada login serta pada validasi session berikutnya.
+- Endpoint login publik masih memerlukan rate limiting sebelum pilot/deployment untuk mengurangi risiko brute force; pesan gagal harus tetap generik agar status akun tidak bocor.
 - Data laporan dan catatan pengajar harus menghindari informasi sensitif di luar perkembangan hafalan.
 
 ### 4. Risiko Desain Database
@@ -99,14 +100,16 @@ Keputusan penggunaan:
 - `Dropdown Menu` hanya untuk kumpulan aksi sekunder. Aksi utama tetap berupa tombol yang terlihat.
 - `Tabs` hanya digunakan saat beberapa tampilan benar-benar setara, misalnya ringkasan dan riwayat, bukan untuk menyembunyikan alur utama.
 - `Date Picker` digunakan untuk tanggal/rentang tanggal yang membutuhkan konteks kalender; input tanggal sederhana boleh tetap memakai kontrol native.
-- Primitive pendukung yang otomatis dibutuhkan komponen di atas, seperti Label, Calendar, dan Popover, diperbolehkan sebagai dependency internal.
+- Form adalah pola React Hook Form + Zod pada shadcn terbaru, bukan file komponen mandiri. `Field`, Label, dan Separator diperbolehkan sebagai primitive internal Form.
+- Primitive pendukung lain yang dibutuhkan komponen katalog, seperti Calendar dan Popover untuk Date Picker, diperbolehkan sebagai dependency internal.
+- CLI `shadcn` dijalankan melalui `npx` saat menambah komponen dan tidak disimpan sebagai dependency runtime aplikasi.
 - Penambahan komponen di luar katalog ini harus didorong kebutuhan slice dan dicatat pada dokumen ini.
 
 Peta pemasangan per slice:
 
 | Slice | Komponen baru | Alasan |
 |---|---|---|
-| 0 | Button, Input, Card, Form | Fondasi visual dan formulir halaman masuk pada slice berikutnya. |
+| 0 | Button, Input, Card, fondasi Form | Fondasi visual dan formulir halaman masuk pada slice berikutnya. Field/Label/Separator hanya primitive internal. |
 | 1 | Tidak ada komponen wajib baru | Halaman masuk memakai komponen dasar Slice 0. |
 | 2 | Select, Textarea, Table, Dialog, Alert Dialog, Badge, Dropdown Menu, Date Picker, Sonner | CRUD data operasional, status, tanggal, konfirmasi, aksi sekunder, dan feedback mutasi. |
 | 3 | Tidak ada komponen wajib baru | Form setoran memakai Form, Select, Input, Textarea, Button, dan Sonner yang sudah tersedia. |
@@ -121,10 +124,10 @@ Tujuan: aplikasi bisa berjalan dengan konfigurasi aman dan jalur verifikasi dasa
 Isi:
 - Next.js full-stack, TypeScript strict, lint, typecheck, test runner.
 - Metadata dan fondasi visual dengan nama “Rumah Qur’an Ar-Rasyid”.
-- Inisialisasi minimal `shadcn/ui` bila dipilih, hanya dengan Button, Input, Card, dan Form beserta primitive dependency otomatisnya.
+- Inisialisasi minimal `shadcn/ui` dengan Button, Input, Card, dan fondasi Form beserta primitive internalnya.
 - Token warna, tipografi, focus state, dan ukuran kontrol yang konsisten serta mudah dibaca.
 - Validasi environment server-side.
-- Database schema awal, migration, seed role, seed master surah.
+- Database MySQL schema awal, migration, Prisma v7 driver adapter, seed role, dan seed master surah.
 - Seed akun awal `ADMIN` + `HEAD`.
 - Health endpoint tanpa data sensitif.
 - Helper authorization server-side berbasis organisasi dan role.
@@ -134,8 +137,17 @@ DoD:
 - Lint, typecheck, dan test dasar lulus.
 - Secret tidak terekspos ke client.
 - Database dapat di-migrate dan di-seed ulang untuk lokal/pilot.
-- Button, Input, Card, dan Form dapat dirender tanpa memasang komponen katalog lain lebih awal.
+- Button, Input, Card, dan fondasi Form tersedia serta lulus typecheck tanpa memasang komponen katalog lain lebih awal.
 - Nama produk dan istilah yang tampil tidak menggunakan placeholder atau enum teknis.
+
+Status implementasi per 24 Juli 2026:
+- Slice 0 selesai dan terverifikasi pada MySQL 8.4 lokal melalui OrbStack/Docker Compose.
+- Schema, migration awal, Prisma Client server-only, seed idempotent, validasi environment, health endpoint, dan halaman fondasi telah dibuat.
+- Seed memuat role `ADMIN`, `HEAD`, `TEACHER`, 114 surah, satu organisasi, dan satu akun awal `ADMIN` + `HEAD`.
+- Test fondasi mencakup environment, batas organisasi, pengguna nonaktif, pengelolaan role, perlindungan Kepala terakhir, dan integritas master surah.
+- Lint, typecheck, test, Prisma validate/generate, dan build produksi sudah lulus.
+- Migration `20260724000000_init` telah applied tanpa rollback. Query verifikasi menemukan 1 organisasi, 3 role, 114 surah, dan akun awal aktif dengan role `ADMIN` + `HEAD`.
+- Audit dependency masih melaporkan advisory transitif pada versi Next.js/Prisma saat ini tanpa perbaikan non-breaking; jangan menjalankan `npm audit fix --force`. Tinjau kembali sebelum pilot/deployment.
 
 ### Slice 1 — Login dan Boundary Data
 Tujuan: pengguna aktif bisa login, pengguna nonaktif ditolak, dan semua halaman data terlindungi.
@@ -154,6 +166,18 @@ DoD:
 - Pengguna nonaktif tidak bisa login atau memakai session lama.
 - Direct access ke halaman data tanpa hak ditolak di server.
 - Role `HEAD` terakhir tidak dapat dicabut atau dinonaktifkan.
+
+Status implementasi per 24 Juli 2026:
+- Slice 1 selesai untuk boundary autentikasi yang tersedia saat ini.
+- Login/logout memakai database session tujuh hari. Cookie menyimpan token acak, sedangkan database menyimpan hash HMAC-SHA-256, masa berlaku, dan waktu pencabutan.
+- Cookie memakai `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
+- Halaman `/app` dilindungi server guard; akses tanpa session valid diarahkan ke `/login`.
+- Session langsung ditolak jika dicabut, kedaluwarsa, organisasi/pengguna nonaktif, atau pengguna tidak lagi memiliki role aktif.
+- Login MVP mengharuskan tepat satu organisasi aktif per instalasi agar organisasi tidak dipilih secara ambigu.
+- Permission multi-role, pemisahan pengelolaan role, batas organisasi, dan perlindungan Kepala aktif terakhir sudah tersedia sebagai policy yang dites. Endpoint mutasi role baru dibuat pada Slice 2 dan wajib memakai policy tersebut.
+- UI halaman masuk dan kerangka internal menggunakan komponen Slice 0, Bahasa Indonesia, target sentuh minimal 44 piksel, dan tidak menampilkan enum teknis.
+- Smoke test MySQL memverifikasi login, redirect, atribut cookie, akses halaman internal, logout, pencabutan session, dan penolakan cookie lama.
+- Rate limiting login belum dibuat dan wajib diselesaikan sebelum pilot/deployment publik.
 
 ### Slice 2 — Setup Minimal Halaqah
 Tujuan: Admin dapat menyiapkan data minimum agar satu pengajar bisa mencatat setoran. Kepala dapat melihat data tersebut, atau ikut mengelola jika akunnya juga memiliki role Admin.

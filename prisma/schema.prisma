@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,454 @@ generator client {
 
 datasource db {
   provider = "mysql"
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum RoleCode {
+  ADMIN
+  HEAD
+  TEACHER
+}
+
+enum MasterDataStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum TeacherAssignmentType {
+  PRIMARY
+  ASSISTANT
+  SUBSTITUTE
+}
+
+enum MembershipStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum AcademicPeriodStatus {
+  PLANNED
+  ACTIVE
+  CLOSED
+}
+
+enum SubmissionCategory {
+  SABAQ
+  SABQI
+  MANZIL
+}
+
+enum FluencyPredicate {
+  FLUENT
+  FAIRLY_FLUENT
+  LESS_FLUENT
+}
+
+enum MemorizationRecordStatus {
+  ACTIVE
+  VOID
+}
+
+enum MemorizationAuditAction {
+  CREATE
+  UPDATE
+  VOID
+}
+
+enum OperationalAuditDomain {
+  USER
+  ROLE
+  STUDENT
+  GUARDIAN
+  HALAQAH
+  TEACHER_ASSIGNMENT
+  STUDENT_MEMBERSHIP
+  ACADEMIC_PERIOD
+}
+
+model Organization {
+  id            String                     @id @default(cuid())
+  name          String
+  slug          String                     @unique
+  status        OrganizationStatus         @default(ACTIVE)
+  timezone      String                     @default("Asia/Jakarta")
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+  users         User[]
+  userRoles     UserRole[]
+  students      Student[]
+  guardians     Guardian[]
+  studentLinks  StudentGuardian[]
+  halaqahs      Halaqah[]
+  assignments   HalaqahTeacherAssignment[]
+  memberships   HalaqahMembership[]
+  periods       AcademicPeriod[]
+  records       MemorizationRecord[]
+  recordAudits  MemorizationRecordAudit[]
+  operationLogs OperationalAuditLog[]
+  reports       GeneratedReport[]
+  sessions      UserSession[]
+
+  @@map("organizations")
+}
+
+model Role {
+  id        String     @id @default(cuid())
+  code      RoleCode   @unique
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     UserRole[]
+
+  @@map("roles")
+}
+
+model User {
+  id                       String                     @id @default(cuid())
+  organizationId           String
+  name                     String
+  email                    String
+  phone                    String?
+  passwordHash             String
+  status                   UserStatus                 @default(INVITED)
+  lastLoginAt              DateTime?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  organization             Organization               @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  roles                    UserRole[]                 @relation("UserRoles")
+  assignedRoles            UserRole[]                 @relation("RoleAssignedBy")
+  teacherAssignments       HalaqahTeacherAssignment[] @relation("AssignedTeacher")
+  createdAssignments       HalaqahTeacherAssignment[] @relation("AssignmentCreatedBy")
+  createdMemberships       HalaqahMembership[]        @relation("MembershipCreatedBy")
+  taughtRecords            MemorizationRecord[]       @relation("RecordTeacher")
+  createdRecords           MemorizationRecord[]       @relation("RecordCreatedBy")
+  updatedRecords           MemorizationRecord[]       @relation("RecordUpdatedBy")
+  performedRecordAudits    MemorizationRecordAudit[]  @relation("RecordAuditPerformer")
+  performedOperationAudits OperationalAuditLog[]      @relation("OperationAuditPerformer")
+  generatedReports         GeneratedReport[]          @relation("ReportGenerator")
+  sessions                 UserSession[]
+
+  @@unique([organizationId, email])
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@map("users")
+}
+
+model UserRole {
+  organizationId String
+  userId         String
+  roleId         String
+  assignedById   String?
+  assignedAt     DateTime     @default(now())
+  revokedAt      DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  user           User         @relation("UserRoles", fields: [userId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  role           Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  assignedBy     User?        @relation("RoleAssignedBy", fields: [assignedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@id([organizationId, userId, roleId])
+  @@index([organizationId, roleId, revokedAt])
+  @@index([assignedById, organizationId])
+  @@map("user_roles")
+}
+
+model UserSession {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  tokenHash      String       @unique @db.VarChar(64)
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  user           User         @relation(fields: [userId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@index([organizationId, userId, revokedAt, expiresAt])
+  @@map("user_sessions")
+}
+
+model Student {
+  id             String               @id @default(cuid())
+  organizationId String
+  studentNumber  String
+  fullName       String
+  preferredName  String?
+  gender         Gender?
+  birthDate      DateTime?            @db.Date
+  joinedAt       DateTime             @db.Date
+  status         MasterDataStatus     @default(ACTIVE)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  guardians      StudentGuardian[]
+  memberships    HalaqahMembership[]
+  records        MemorizationRecord[]
+  reports        GeneratedReport[]
+
+  @@unique([organizationId, studentNumber])
+  @@unique([id, organizationId])
+  @@index([organizationId, status, fullName])
+  @@map("students")
+}
+
+model Guardian {
+  id             String            @id @default(cuid())
+  organizationId String
+  fullName       String
+  phone          String
+  email          String?
+  status         MasterDataStatus  @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  students       StudentGuardian[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, fullName])
+  @@map("guardians")
+}
+
+model StudentGuardian {
+  id             String       @id @default(cuid())
+  organizationId String
+  studentId      String
+  guardianId     String
+  relationship   String
+  isPrimary      Boolean      @default(false)
+  validFrom      DateTime     @db.Date
+  validUntil     DateTime?    @db.Date
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  student        Student      @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  guardian       Guardian     @relation(fields: [guardianId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([organizationId, studentId, guardianId, validFrom])
+  @@index([guardianId, organizationId])
+  @@index([organizationId, studentId, isPrimary, validUntil])
+  @@map("student_guardians")
+}
+
+model Halaqah {
+  id             String                     @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?                    @db.Text
+  status         MasterDataStatus           @default(ACTIVE)
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  organization   Organization               @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  assignments    HalaqahTeacherAssignment[]
+  memberships    HalaqahMembership[]
+  records        MemorizationRecord[]
+
+  @@unique([organizationId, name])
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@map("halaqahs")
+}
+
+model HalaqahTeacherAssignment {
+  id             String                @id @default(cuid())
+  organizationId String
+  halaqahId      String
+  teacherUserId  String
+  assignmentType TeacherAssignmentType
+  validFrom      DateTime              @db.Date
+  validUntil     DateTime?             @db.Date
+  createdById    String
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  halaqah        Halaqah               @relation(fields: [halaqahId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  teacher        User                  @relation("AssignedTeacher", fields: [teacherUserId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  createdBy      User                  @relation("AssignmentCreatedBy", fields: [createdById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([organizationId, halaqahId, teacherUserId, assignmentType, validFrom])
+  @@index([teacherUserId, organizationId, validFrom, validUntil])
+  @@index([createdById, organizationId])
+  @@index([organizationId, halaqahId, assignmentType, validUntil])
+  @@map("halaqah_teacher_assignments")
+}
+
+model HalaqahMembership {
+  id             String           @id @default(cuid())
+  organizationId String
+  halaqahId      String
+  studentId      String
+  validFrom      DateTime         @db.Date
+  validUntil     DateTime?        @db.Date
+  status         MembershipStatus @default(ACTIVE)
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  halaqah        Halaqah          @relation(fields: [halaqahId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  student        Student          @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  createdBy      User             @relation("MembershipCreatedBy", fields: [createdById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([organizationId, studentId, validFrom])
+  @@index([organizationId, studentId, status, validUntil])
+  @@index([organizationId, halaqahId, status, validUntil])
+  @@index([createdById, organizationId])
+  @@map("halaqah_memberships")
+}
+
+model AcademicPeriod {
+  id             String               @id @default(cuid())
+  organizationId String
+  name           String
+  startDate      DateTime             @db.Date
+  endDate        DateTime             @db.Date
+  status         AcademicPeriodStatus @default(PLANNED)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  records        MemorizationRecord[]
+  reports        GeneratedReport[]
+
+  @@unique([organizationId, name])
+  @@unique([id, organizationId])
+  @@index([organizationId, status, startDate, endDate])
+  @@map("academic_periods")
+}
+
+model QuranSurah {
+  surahNumber Int                  @id
+  arabicName  String
+  latinName   String
+  verseCount  Int
+  records     MemorizationRecord[]
+
+  @@map("quran_surahs")
+}
+
+model MemorizationRecord {
+  id                         String                    @id @default(cuid())
+  organizationId             String
+  academicPeriodId           String
+  studentId                  String
+  halaqahId                  String
+  teacherUserId              String
+  submissionDate             DateTime                  @db.Date
+  submissionCategory         SubmissionCategory
+  surahNumber                Int
+  startVerse                 Int
+  endVerse                   Int
+  fluencyPredicate           FluencyPredicate
+  teacherNote                String?                   @db.Text
+  nextTarget                 String?                   @db.Text
+  pageNumber                 Int?
+  duplicateOverride          Boolean                   @default(false)
+  duplicateOverrideReason    String?                   @db.Text
+  duplicateReferenceRecordId String?
+  recordStatus               MemorizationRecordStatus  @default(ACTIVE)
+  studentNameSnapshot        String
+  halaqahNameSnapshot        String
+  teacherNameSnapshot        String
+  periodNameSnapshot         String
+  createdById                String
+  updatedById                String
+  createdAt                  DateTime                  @default(now())
+  updatedAt                  DateTime                  @updatedAt
+  organization               Organization              @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  academicPeriod             AcademicPeriod            @relation(fields: [academicPeriodId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  student                    Student                   @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  halaqah                    Halaqah                   @relation(fields: [halaqahId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  teacher                    User                      @relation("RecordTeacher", fields: [teacherUserId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  surah                      QuranSurah                @relation(fields: [surahNumber], references: [surahNumber], onDelete: Restrict)
+  duplicateReference         MemorizationRecord?       @relation("DuplicateReference", fields: [duplicateReferenceRecordId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  duplicateOverrides         MemorizationRecord[]      @relation("DuplicateReference")
+  createdBy                  User                      @relation("RecordCreatedBy", fields: [createdById, organizationId], references: [id, organizationId], onDelete: Restrict)
+  updatedBy                  User                      @relation("RecordUpdatedBy", fields: [updatedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+  audits                     MemorizationRecordAudit[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, studentId, submissionDate], map: "memorization_student_date_idx")
+  @@index([organizationId, halaqahId, submissionDate])
+  @@index([organizationId, teacherUserId, submissionDate])
+  @@index([organizationId, academicPeriodId, recordStatus])
+  @@index([organizationId, studentId, submissionDate, submissionCategory, surahNumber, startVerse, endVerse], map: "memorization_duplicate_lookup_idx")
+  @@index([duplicateReferenceRecordId, organizationId])
+  @@index([createdById, organizationId])
+  @@index([updatedById, organizationId])
+  @@map("memorization_records")
+}
+
+model MemorizationRecordAudit {
+  id                   String                  @id @default(cuid())
+  organizationId       String
+  memorizationRecordId String
+  action               MemorizationAuditAction
+  beforeData           Json?
+  afterData            Json?
+  reason               String?                 @db.Text
+  performedById        String
+  performedAt          DateTime                @default(now())
+  organization         Organization            @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  memorizationRecord   MemorizationRecord      @relation(fields: [memorizationRecordId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  performedBy          User                    @relation("RecordAuditPerformer", fields: [performedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@index([organizationId, memorizationRecordId, performedAt])
+  @@index([performedById, organizationId])
+  @@map("memorization_record_audits")
+}
+
+model OperationalAuditLog {
+  id             String                 @id @default(cuid())
+  organizationId String
+  domain         OperationalAuditDomain
+  entityId       String
+  action         String
+  beforeData     Json?
+  afterData      Json?
+  reason         String?                @db.Text
+  performedById  String
+  performedAt    DateTime               @default(now())
+  organization   Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  performedBy    User                   @relation("OperationAuditPerformer", fields: [performedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@index([organizationId, domain, entityId, performedAt])
+  @@index([performedById, organizationId])
+  @@map("operational_audit_logs")
+}
+
+model GeneratedReport {
+  id               String          @id @default(cuid())
+  organizationId   String
+  studentId        String
+  academicPeriodId String?
+  periodStart      DateTime        @db.Date
+  periodEnd        DateTime        @db.Date
+  reportNumber     String
+  reportSnapshot   Json
+  generatedAt      DateTime        @default(now())
+  generatedById    String
+  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  student          Student         @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  academicPeriod   AcademicPeriod? @relation(fields: [academicPeriodId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  generatedBy      User            @relation("ReportGenerator", fields: [generatedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([organizationId, reportNumber])
+  @@index([organizationId, studentId, generatedAt])
+  @@index([academicPeriodId, organizationId])
+  @@index([generatedById, organizationId])
+  @@map("generated_reports")
 }

@@ -29,7 +29,8 @@ Selalu baca seluruh file di folder `docs/` sebelum mengubah kode.
 - Hindari horizontal scroll pada halaman. Tampilan tabel desktop harus memiliki alternatif daftar yang mudah dipakai di mobile.
 - Jika memakai `shadcn/ui`, instal hanya komponen yang dibutuhkan oleh slice aktif. UI library bukan fokus produk.
 - Katalog komponen awal dibatasi pada Button, Input, Select, Textarea, Card, Table, Dialog, Alert Dialog, Badge, Tabs, Dropdown Menu, Date Picker, Form, dan Sonner.
-- Gunakan Sonner sebagai satu-satunya sistem toast. Primitive pendukung yang dipasang otomatis oleh komponen tersebut diperbolehkan.
+- Form menggunakan React Hook Form + Zod. `Field`, Label, Separator, Calendar, dan Popover boleh digunakan sebagai primitive internal pendukung komponen katalog.
+- Gunakan Sonner sebagai satu-satunya sistem toast. CLI `shadcn` dijalankan melalui `npx` dan tidak disimpan sebagai dependency runtime.
 
 ## Engineering Rules
 - TypeScript strict mode.

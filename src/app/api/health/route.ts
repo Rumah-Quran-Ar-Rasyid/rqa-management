@@ -4,7 +4,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: "ok",
-      service: "rumah-quran",
+      service: "rumah-quran-ar-rasyid",
       timestamp: new Date().toISOString(),
     },
     {
