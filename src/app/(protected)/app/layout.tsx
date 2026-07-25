@@ -10,6 +10,7 @@ import { canAccessStudentDirectory } from "@/modules/students/domain/student-pol
 import { canAccessTeacherAssignments } from "@/modules/assignments/domain/teacher-assignment-policy";
 import { canAccessHalaqahMemberships } from "@/modules/memberships/domain/halaqah-membership-policy";
 import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
+import { canGenerateReports } from "@/modules/reports/domain/report-policy";
 import { AppBrand, AppNavigation } from "./app-navigation";
 
 export default async function ProtectedLayout({
@@ -25,6 +26,7 @@ export default async function ProtectedLayout({
   const canAccessAssignments = canAccessTeacherAssignments(user.roles);
   const canAccessMemberships = canAccessHalaqahMemberships(user.roles);
   const canCreateMemorization = canCreateMemorizationRecord(user.roles);
+  const canAccessReports = canGenerateReports(user.roles);
 
   return (
     <div className="flex h-svh flex-col overflow-hidden bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
@@ -39,6 +41,7 @@ export default async function ProtectedLayout({
           canAccessTeacherAssignments={canAccessAssignments}
           canAccessHalaqahMemberships={canAccessMemberships}
           canCreateMemorizationRecord={canCreateMemorization}
+          canGenerateReports={canAccessReports}
           variant="desktop"
         />
         <div className="mt-auto border-t pt-4">
@@ -81,6 +84,7 @@ export default async function ProtectedLayout({
             canAccessTeacherAssignments={canAccessAssignments}
             canAccessHalaqahMemberships={canAccessMemberships}
             canCreateMemorizationRecord={canCreateMemorization}
+            canGenerateReports={canAccessReports}
             variant="mobile"
           />
         </header>

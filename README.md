@@ -43,6 +43,7 @@ Setiap perubahan requirement, business rule, authorization, data model, atau ren
 - Membership santri hanya dibuat pada santri dan halaqah aktif; perpindahan menutup membership lama sehari sebelum penempatan baru tanpa menghapus riwayat.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+- Snapshot laporan adalah checkpoint penerbitan resmi; periode laporan dan tanggal terbit disimpan terpisah, sedangkan versi lama tetap konsisten ketika ada pembaruan.
 
 ## Prinsip Antarmuka
 
@@ -93,11 +94,11 @@ Setelah `npm run db:seed`, isi data demo lokal dengan:
 npm run db:seed:demo
 ```
 
-Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Pengajar demo, dua halaqah, enam santri, periode aktif bila belum ada, penugasan, membership, dan empat setoran contoh beserta auditnya. Default akun demo adalah `pengajar.demo@rqa.local` dengan password `demo-pengajar-2026`; keduanya dapat diubah melalui `.env`.
+Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Pengajar demo, dua halaqah, enam santri, periode aktif bila belum ada, penugasan, membership, empat setoran contoh beserta auditnya, dan satu snapshot laporan demo untuk Rayyan. Default akun demo adalah `pengajar.demo@rqa.local` dengan password `demo-pengajar-2026`; keduanya dapat diubah melalui `.env`.
 
 Jangan jalankan seed demo pada database pilot atau produksi.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), Slice 3 (input setoran, riwayat berfilter Pengajar, dan ringkasan dashboard Kepala), serta Slice 4 (koreksi, pembatalan, dan audit akademik) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), Slice 3 (input setoran, riwayat berfilter Pengajar, dan ringkasan dashboard Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala), serta Slice 6 (laporan PDF berbasis snapshot) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 

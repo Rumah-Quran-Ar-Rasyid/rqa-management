@@ -76,6 +76,11 @@ enum MemorizationAuditAction {
   VOID
 }
 
+enum GeneratedReportStatus {
+  ISSUED
+  SUPERSEDED
+}
+
 enum OperationalAuditDomain {
   USER
   ROLE
@@ -435,23 +440,30 @@ model OperationalAuditLog {
 }
 
 model GeneratedReport {
-  id               String          @id @default(cuid())
-  organizationId   String
-  studentId        String
-  academicPeriodId String?
-  periodStart      DateTime        @db.Date
-  periodEnd        DateTime        @db.Date
-  reportNumber     String
-  reportSnapshot   Json
-  generatedAt      DateTime        @default(now())
-  generatedById    String
-  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
-  student          Student         @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
-  academicPeriod   AcademicPeriod? @relation(fields: [academicPeriodId, organizationId], references: [id, organizationId], onDelete: Restrict)
-  generatedBy      User            @relation("ReportGenerator", fields: [generatedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+  id                 String                @id @default(cuid())
+  organizationId     String
+  studentId          String
+  academicPeriodId   String?
+  periodStart        DateTime              @db.Date
+  periodEnd          DateTime              @db.Date
+  reportNumber       String
+  version            Int                   @default(1)
+  status             GeneratedReportStatus @default(ISSUED)
+  supersedesReportId String?               @unique
+  reportSnapshot     Json
+  issuedAt           DateTime              @default(now())
+  generatedAt        DateTime              @default(now())
+  generatedById      String
+  organization       Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  student            Student               @relation(fields: [studentId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  academicPeriod     AcademicPeriod?       @relation(fields: [academicPeriodId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  generatedBy        User                  @relation("ReportGenerator", fields: [generatedById, organizationId], references: [id, organizationId], onDelete: Restrict)
+  supersedesReport   GeneratedReport?      @relation("ReportVersions", fields: [supersedesReportId], references: [id], onDelete: Restrict)
+  supersededByReport GeneratedReport?      @relation("ReportVersions")
 
   @@unique([organizationId, reportNumber])
   @@index([organizationId, studentId, generatedAt])
+  @@index([organizationId, studentId, academicPeriodId, periodStart, periodEnd, status], map: "report_scope_status_idx")
   @@index([academicPeriodId, organizationId])
   @@index([generatedById, organizationId])
   @@map("generated_reports")

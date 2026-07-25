@@ -321,6 +321,13 @@ DoD:
 - Jika data dikoreksi, laporan lama tidak diam-diam berubah tanpa generate ulang.
 - PDF dibuat ulang dari snapshot saat diperlukan.
 
+Status implementasi per 25 Juli 2026:
+- Admin dan Kepala dapat memilih santri dan periode pembelajaran atau rentang tanggal, lalu melihat pratinjau setoran aktif sebelum membuat laporan.
+- Generate menyimpan metadata dan `report_snapshot` pada `generated_reports`; endpoint unduh mengautorisasi ulang pengguna dan merender PDF langsung dari snapshot tanpa file permanen.
+- Rentang tanpa setoran aktif ditolak dengan pesan jelas. Seed demo membuat satu laporan contoh idempoten untuk Rayyan.
+- Laporan kini memiliki checkpoint `issuedAt`, versi, status `ISSUED`/`SUPERSEDED`, dan relasi pengganti. Periode laporan berbeda dari tanggal penerbitan; laporan dari periode Ditutup tidak memerlukan reopen.
+- Penerbitan versi pembaruan harus dipilih eksplisit. Unduhan ulang laporan berlaku tidak membuat snapshot baru; versi lama tetap dapat diunduh dari snapshotnya.
+
 ### Slice 7 — Pilot Operasional
 Tujuan: aplikasi siap dipakai terbatas oleh yayasan.
 

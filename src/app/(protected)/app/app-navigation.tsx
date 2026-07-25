@@ -3,6 +3,7 @@
 import {
   BookOpenText,
   CalendarDays,
+  FileText,
   LayoutDashboard,
   NotebookPen,
   School,
@@ -65,6 +66,12 @@ const navigation = [
     icon: NotebookPen,
     requiredAccess: "memorization",
   },
+  {
+    href: "/app/laporan",
+    label: "Laporan",
+    icon: FileText,
+    requiredAccess: "reports",
+  },
 ] as const;
 
 export function AppBrand({ compact = false }: { compact?: boolean }) {
@@ -95,6 +102,7 @@ export function AppNavigation({
   canAccessTeacherAssignments,
   canAccessHalaqahMemberships,
   canCreateMemorizationRecord,
+  canGenerateReports,
   variant,
 }: {
   canAccessUserDirectory: boolean;
@@ -104,6 +112,7 @@ export function AppNavigation({
   canAccessTeacherAssignments: boolean;
   canAccessHalaqahMemberships: boolean;
   canCreateMemorizationRecord: boolean;
+  canGenerateReports: boolean;
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
@@ -141,6 +150,10 @@ export function AppNavigation({
 
           if (item.requiredAccess === "memorization") {
             return canCreateMemorizationRecord;
+          }
+
+          if (item.requiredAccess === "reports") {
+            return canGenerateReports;
           }
 
           return (

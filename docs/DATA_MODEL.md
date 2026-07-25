@@ -171,7 +171,7 @@ Contoh action pengguna/role yang telah digunakan: `USER_CREATED`, `USER_STATUS_C
 Detail audit periode yang dapat dilihat Kepala mencakup status sebelumnya, status baru, alasan perubahan, pengguna yang melakukan, dan waktu perubahan.
 
 ### generated_reports
-`organization_id`, `student_id`, `academic_period_id`, `period_start`, `period_end`, `report_number`, `report_snapshot`, `generated_at`, `generated_by`.
+`organization_id`, `student_id`, `academic_period_id`, `period_start`, `period_end`, `report_number`, `version`, `status`, `supersedes_report_id`, `report_snapshot`, `issued_at`, `generated_at`, `generated_by`.
 
 Aturan:
 - `academic_period_id` boleh kosong jika laporan dibuat dari rentang tanggal khusus.
@@ -179,6 +179,9 @@ Aturan:
 - PDF MVP dibuat dari `report_snapshot`, bukan dari file permanen.
 - Laporan lama tetap konsisten setelah data setoran dikoreksi.
 - Jika data dikoreksi, pengguna membuat laporan baru sehingga versi lama dan baru dapat dibedakan.
+- Snapshot memuat identitas organisasi dan santri, periode/rentang, halaqah dan pengajar terkait, ringkasan kategori/kelancaran, serta riwayat setoran dan catatannya.
+- `issued_at` adalah tanggal/waktu checkpoint resmi dan berbeda dari `period_start`/`period_end`.
+- Status laporan adalah `ISSUED` atau `SUPERSEDED`. Versi pembaruan menunjuk ke laporan sebelumnya melalui `supersedes_report_id`; satu laporan hanya dapat digantikan sekali.
 
 ## Constraint Penting
 - `organizations.slug` unik.

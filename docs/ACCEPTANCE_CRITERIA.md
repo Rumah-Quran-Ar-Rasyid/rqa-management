@@ -134,6 +134,12 @@ Daftar perhatian hanya memuat santri aktif dan hanya memakai record setoran akti
 - Periode tanpa data menampilkan pesan dan tidak otomatis membuat PDF kosong.
 - Metadata dan snapshot laporan tersimpan.
 - PDF dibuat dari snapshot agar laporan lama tidak berubah ketika data sumber dikoreksi.
+- Snapshot adalah checkpoint resmi ketika laporan diterbitkan. Rentang periode laporan dan tanggal penerbitan disimpan sebagai informasi terpisah.
+- Periode `CLOSED` tetap dapat dipakai untuk membaca data, membuat pratinjau, dan menerbitkan laporan; reopen hanya diperlukan untuk mengubah data akademik.
+- Jika laporan berlaku pada scope santri dan periode/rentang yang sama perlu diperbarui, pengguna memilih penerbitan versi pembaruan secara eksplisit. Laporan lama berstatus digantikan dan tetap dapat diunduh.
+- Mengunduh ulang laporan yang masih berlaku tidak membuat versi atau snapshot baru.
+- Hanya Admin dan Kepala dapat membuat pratinjau, membuat laporan, dan mengunduh PDF; seluruh proses memvalidasi organisasi di server.
+- Tombol unduh hanya menerima identifier laporan. Server memuat snapshot tersimpan, merender PDF saat diminta, dan tidak menyimpan file PDF permanen.
 
 ## Periode
 - Admin dapat membuat dan mengelola periode `PLANNED`/`ACTIVE`.

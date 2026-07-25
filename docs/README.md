@@ -23,6 +23,7 @@ Keputusan MVP yang sudah dikunci:
 - Santri dapat dicatat dengan satu kontak wali utama opsional; wali tidak memiliki akun login.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+- Snapshot laporan adalah checkpoint penerbitan resmi; laporan versi pembaruan menggantikan versi lama tanpa mengubah snapshot lama.
 - Nama produk pada tampilan adalah “Rumah Qur’an Ar-Rasyid” dan istilah teknis tidak ditampilkan mentah kepada pengguna.
 - Form input setoran dirancang mobile-first dengan tombol utama yang jelas.
 - Komponen UI ditambahkan secara minimal sesuai kebutuhan slice aktif.
@@ -30,6 +31,6 @@ Keputusan MVP yang sudah dikunci:
 - Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
 - Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri, Slice 3 (form setoran, riwayat berfilter, dan ringkasan Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), serta Slice 5 (dashboard Kepala dengan filter dan detail akademik santri) telah diimplementasikan. Tahap berikutnya adalah laporan PDF.
+- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri, Slice 3 (form setoran, riwayat berfilter, dan ringkasan Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala dengan filter dan detail akademik santri), serta Slice 6 (pratinjau dan PDF laporan berbasis snapshot) telah diimplementasikan. Tahap berikutnya adalah kesiapan pilot operasional.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

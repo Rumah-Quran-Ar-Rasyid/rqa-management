@@ -429,12 +429,107 @@ async function main() {
     }),
   ]);
 
+  const reportNumber = "DEMO-RQA-001";
+  const reportRecords = await prisma.memorizationRecord.findMany({
+    where: {
+      organizationId: organization.id,
+      studentId: students[0].id,
+      academicPeriodId: period.id,
+      recordStatus: "ACTIVE",
+    },
+    select: {
+      id: true,
+      submissionDate: true,
+      submissionCategory: true,
+      fluencyPredicate: true,
+      startVerse: true,
+      endVerse: true,
+      halaqahNameSnapshot: true,
+      teacherNameSnapshot: true,
+      teacherNote: true,
+      nextTarget: true,
+      surah: { select: { latinName: true } },
+    },
+    orderBy: { submissionDate: "asc" },
+  });
+  const reportCategories = { SABAQ: 0, SABQI: 0, MANZIL: 0 };
+  const reportFluencies = { FLUENT: 0, FAIRLY_FLUENT: 0, LESS_FLUENT: 0 };
+  for (const record of reportRecords) {
+    reportCategories[record.submissionCategory] += 1;
+    reportFluencies[record.fluencyPredicate] += 1;
+  }
+  const reportSnapshot = {
+    schemaVersion: 1,
+    reportNumber,
+    reportVersion: 1,
+    organizationName: "Rumah Qur'an Ar-Rasyid",
+    issuedAt: new Date().toISOString(),
+    student: {
+      id: students[0].id,
+      name: students[0].preferredName || students[0].fullName,
+      studentNumber: "DEMO-001",
+    },
+    academicPeriod: { id: period.id, name: period.name },
+    periodStart: `${currentYear}-01-01`,
+    periodEnd: `${currentYear}-12-31`,
+    periodLabel: period.name,
+    halaqahNames: [...new Set(reportRecords.map((record) => record.halaqahNameSnapshot))],
+    teacherNames: [...new Set(reportRecords.map((record) => record.teacherNameSnapshot))],
+    summary: { totalRecords: reportRecords.length, categories: reportCategories, fluencies: reportFluencies },
+    records: reportRecords.map((record) => ({
+      id: record.id,
+      submissionDate: record.submissionDate.toISOString().slice(0, 10),
+      submissionCategory: record.submissionCategory,
+      fluencyPredicate: record.fluencyPredicate,
+      surahName: record.surah.latinName,
+      startVerse: record.startVerse,
+      endVerse: record.endVerse,
+      halaqahName: record.halaqahNameSnapshot,
+      teacherName: record.teacherNameSnapshot,
+      teacherNote: record.teacherNote,
+      nextTarget: record.nextTarget,
+    })),
+  };
+
+  await prisma.generatedReport.upsert({
+    where: {
+      organizationId_reportNumber: {
+        organizationId: organization.id,
+        reportNumber,
+      },
+    },
+    update: {
+      periodStart: databaseDate(`${currentYear}-01-01`),
+      periodEnd: databaseDate(`${currentYear}-12-31`),
+      version: 1,
+      status: "ISSUED",
+      supersedesReportId: null,
+      issuedAt: new Date(),
+      reportSnapshot,
+      generatedById: admin.id,
+    },
+    create: {
+      organizationId: organization.id,
+      studentId: students[0].id,
+      academicPeriodId: period.id,
+      periodStart: databaseDate(`${currentYear}-01-01`),
+      periodEnd: databaseDate(`${currentYear}-12-31`),
+      reportNumber,
+      version: 1,
+      status: "ISSUED",
+      reportSnapshot,
+      issuedAt: new Date(),
+      generatedById: admin.id,
+    },
+  });
+
   console.info("Data demo siap:", {
     teacherEmail: demoEnv.DEMO_TEACHER_EMAIL,
     halaqahs: halaqahs.length,
     students: students.length,
     activePeriod: period.name,
     records: 4,
+    reports: 1,
   });
 }
 

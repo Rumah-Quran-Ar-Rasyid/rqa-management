@@ -106,7 +106,7 @@ Aturan:
 - Setelah perubahan selesai, Kepala menutup kembali periode dengan audit.
 
 ## 9. Generate Laporan
-Admin/Kepala → pilih santri → pilih periode pembelajaran atau rentang tanggal khusus → pratinjau → generate PDF dari snapshot → download atau print.
+Admin/Kepala → pilih santri → pilih periode pembelajaran atau rentang tanggal khusus → pratinjau → terbitkan laporan dari snapshot → download atau print.
 
 Isi laporan:
 - Identitas yayasan, santri, halaqah, pengajar, dan periode.
@@ -120,6 +120,9 @@ Aturan:
 - Secara internal laporan disimpan sebagai `period_start` dan `period_end`.
 - Metadata dan snapshot laporan disimpan agar laporan lama tetap konsisten setelah koreksi data.
 - PDF dibuat ulang dari snapshot saat diperlukan.
+- Hanya Admin dan Kepala dapat membuka pratinjau, membuat laporan, atau mengunduh PDF. Endpoint PDF memeriksa session, role, dan organisasi di server.
+- Jika laporan berlaku sudah ada untuk scope yang sama, pengguna dapat mengunduhnya kembali. Untuk menggantinya setelah koreksi, pengguna mencentang penerbitan versi pembaruan; laporan lama tetap tersedia sebagai versi digantikan.
+- Periode Ditutup tetap dapat dilaporkan tanpa reopen. Reopen hanya dibutuhkan jika data setoran perlu diubah.
 
 ## 10. Pindah Halaqah
 Admin memilih santri, halaqah baru, dan tanggal mulai → sistem menutup membership lama sehari sebelumnya → sistem membuat membership baru dalam transaksi yang sama → histori setoran lama tetap terkait dengan halaqah dan pengajar sebelumnya.

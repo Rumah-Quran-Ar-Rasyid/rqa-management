@@ -87,6 +87,7 @@ Catatan:
 - Hak `CREATE_MEMORIZATION_RECORD` hanya dimiliki role Pengajar. Admin dan Kepala tidak dapat mencatat setoran kecuali aturan MVP berubah secara eksplisit.
 - Hak melihat detail setoran dimiliki seluruh role, tetapi Pengajar hanya dapat membuka record miliknya. Hak koreksi dimiliki Kepala dan Pengajar pemilik record dalam batas 24 jam sejak record dibuat. Hak pembatalan hanya dimiliki Kepala.
 - Hak `VIEW_ACADEMIC_DASHBOARD` hanya dimiliki role Kepala. Dashboard akademik menampilkan agregat organisasi dan aktivitas setoran aktif terbaru.
+- Hak membuat pratinjau, membuat snapshot laporan, dan mengunduh PDF dimiliki Admin dan Kepala. Pengajar tidak dapat mengakses halaman maupun endpoint laporan.
 - Hanya pengajar pembuat setoran yang boleh mengoreksi setoran tersebut dalam batas 24 jam.
 
 ## Aturan Authorization

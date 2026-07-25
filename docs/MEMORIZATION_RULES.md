@@ -94,3 +94,9 @@ Gunakan bahasa santun, tidak membandingkan santri, tidak memuat data sensitif, d
 Dapat dibuat dari preset periode pembelajaran atau rentang tanggal khusus. Secara internal laporan memakai `period_start` dan `period_end`.
 
 PDF dibuat dari snapshot laporan. Jika data dikoreksi, laporan lama tidak berubah otomatis dan laporan baru perlu dibuat ulang.
+
+PDF dirender kembali dari snapshot saat pengguna mengunduh atau mencetaknya. File PDF tidak disimpan permanen pada MVP.
+
+Snapshot adalah checkpoint resmi saat laporan diterbitkan. Periode laporan dapat sudah Ditutup; membuka kembali periode tidak diperlukan untuk membaca data atau menerbitkan laporan, dan hanya diperlukan untuk mengubah data akademik.
+
+Jika terdapat laporan berlaku untuk santri dan periode/rentang yang sama, pengguna dapat mengunduhnya kembali tanpa membuat versi baru. Versi pembaruan harus dipilih secara eksplisit; versi lama menjadi laporan yang digantikan dan snapshotnya tidak berubah.
