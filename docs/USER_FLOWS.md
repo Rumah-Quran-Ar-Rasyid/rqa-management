@@ -54,7 +54,12 @@ Hasil:
 Jika sistem menemukan setoran berpotensi duplikat, pengajar melihat peringatan. Pengajar boleh tetap menyimpan setelah mencentang konfirmasi dan mengisi alasan singkat.
 
 ## 4. Pengajar Melihat Riwayat
-Pengajar login → halaqah → santri → riwayat → filter periode/kategori → detail.
+Pengajar login → Catat Setoran → riwayat setoran miliknya → filter periode/kategori → pindah halaman bila diperlukan → detail pada slice koreksi.
+
+Aturan:
+- Riwayat diurutkan dari setoran terbaru dan filter diterapkan di server.
+- Riwayat hanya memuat setoran yang dibuat oleh Pengajar yang sedang login.
+- Hasil riwayat dibatasi 20 setoran per halaman agar tetap cepat digunakan pada data yang bertambah.
 
 ## 5. Kepala Monitoring
 Kepala login → dashboard → pilih periode/halaqah → lihat aktivitas → lihat santri yang perlu perhatian → buka detail santri.
@@ -64,8 +69,8 @@ Dashboard awal:
 - Setoran hari ini/minggu ini.
 - Jumlah Sabaq, Sabqi, Manzil.
 - Minggu berjalan dihitung dari Senin hingga hari ini berdasarkan timezone organisasi; record setoran dibatalkan tidak dihitung.
-- Santri tanpa setoran selama 7 hari kalender.
-- Santri dengan predikat Kurang Lancar pada setoran terakhir.
+- Santri aktif yang belum pernah memiliki setoran aktif, atau setoran aktif terakhirnya sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.
+- Santri aktif dengan predikat Kurang Lancar pada setoran aktif terakhir.
 - Aktivitas terbaru.
 
 ## 6. Koreksi Setoran

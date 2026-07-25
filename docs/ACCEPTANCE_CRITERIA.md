@@ -88,7 +88,8 @@ Then sistem menolak penyimpanan
 ```
 
 ## Riwayat dan Koreksi
-- Riwayat diurutkan terbaru dan dapat difilter.
+- Riwayat Pengajar hanya memuat setoran yang dibuat oleh Pengajar tersebut, diurutkan terbaru, dan dapat difilter berdasarkan periode serta kategori.
+- Filter riwayat dilakukan di server dan hasilnya dipaginasi 20 setoran per halaman.
 - Pengajar dapat mengoreksi miliknya dalam 24 jam dengan alasan.
 - Setelah 24 jam, perubahan pengajar ditolak.
 - Kepala dapat mengoreksi dengan alasan.
@@ -114,8 +115,10 @@ Potongan awal dashboard Kepala:
 - Ringkasan dan aktivitas terbaru hanya menghitung record setoran berstatus aktif.
 
 Santri perlu perhatian apabila:
-- Tidak memiliki setoran selama 7 hari kalender.
+- Belum pernah memiliki setoran aktif, atau tanggal setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.
 - Mendapat predikat `LESS_FLUENT` pada setoran terakhir.
+
+Daftar perhatian hanya memuat santri aktif dan hanya memakai record setoran aktif.
 
 ## Laporan
 - Kepala/Admin dapat memilih santri dan periode pembelajaran atau rentang tanggal khusus.
@@ -175,6 +178,7 @@ Then sistem menolak permintaan
 - Minimal 4 dari 5 pengguna pilot dapat mencatat tanpa bantuan.
 - Median input maksimal 90 detik.
 - Tidak ada horizontal scroll pada halaman; data tabel tetap dapat dibaca sebagai daftar pada mobile.
+- Pada shell aplikasi internal, header dan sidebar tetap terlihat; hanya area konten utama yang menggulir.
 - Pesan validasi tampil dekat field terkait, jelas, dan data form tidak hilang.
 - Status menyimpan, berhasil, gagal, dan data kosong terlihat jelas.
 

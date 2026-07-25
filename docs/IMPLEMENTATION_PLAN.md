@@ -26,7 +26,7 @@ Tidak termasuk MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/e
 - Koreksi memperbarui record yang sama; status utama hanya `ACTIVE` dan `VOID`.
 - Satu santri hanya boleh memiliki satu membership halaqah aktif pada waktu yang sama.
 - Semua tipe assignment aktif boleh mencatat setoran; hanya pembuat setoran yang boleh mengoreksinya dalam 24 jam.
-- Santri perlu perhatian jika tidak ada setoran selama 7 hari kalender atau setoran terakhir `LESS_FLUENT`.
+- Santri perlu perhatian jika belum pernah memiliki setoran aktif, atau setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi, atau predikat setoran aktif terakhir `LESS_FLUENT`.
 
 ### 3. Risiko Authorization dan Keamanan Data
 - Semua query data harus selalu difilter `organization_id`; risiko terbesar adalah kebocoran data antarorganisasi atau antarhalaqah melalui direct URL/API.
@@ -104,6 +104,7 @@ Keputusan penggunaan:
 - Primitive pendukung lain yang dibutuhkan komponen katalog, seperti Calendar dan Popover untuk Date Picker, diperbolehkan sebagai dependency internal.
 - CLI `shadcn` dijalankan melalui `npx` saat menambah komponen dan tidak disimpan sebagai dependency runtime aplikasi.
 - Penambahan komponen di luar katalog ini harus didorong kebutuhan slice dan dicatat pada dokumen ini.
+- Shell aplikasi internal memakai header dan sidebar yang tetap terlihat; hanya area konten utama yang menggulir. Pada layar kecil, header navigasi juga tidak ikut menggulir bersama konten.
 
 Peta pemasangan per slice:
 
@@ -252,7 +253,8 @@ Status implementasi per 25 Juli 2026:
 - Setoran duplikat pada hari yang sama memerlukan konfirmasi dan alasan. Record serta audit akademik `CREATE` disimpan dalam satu transaksi serializable.
 - Riwayat terbaru milik Pengajar ditampilkan pada halaman yang sama dalam tabel desktop dan kartu mobile.
 - Ringkasan Kepala awal selesai pada Beranda: setoran hari ini/minggu ini, jumlah santri/halaqah aktif, kategori setoran mingguan, dan aktivitas terbaru. Semua agregat dibatasi organisasi serta record setoran aktif; minggu berjalan dimulai Senin menurut timezone organisasi.
-- Filter riwayat dan daftar santri perlu perhatian masih belum dibuat.
+- Daftar santri perlu perhatian selesai: hanya memuat santri aktif, memakai setoran aktif terakhir, menandai ambang tujuh hari secara inklusif, dan menampilkan alasan perhatian.
+- Filter riwayat Pengajar selesai: periode dan kategori diproses di server, hasil tetap dibatasi organisasi dan pembuat setoran, serta dipaginasi 20 hasil per halaman.
 - Seed demo lokal tersedia secara terpisah melalui `npm run db:seed:demo`; script tersebut idempotent dan tidak boleh dipakai pada database pilot atau produksi.
 
 ### Slice 4 — Koreksi, Void, dan Audit

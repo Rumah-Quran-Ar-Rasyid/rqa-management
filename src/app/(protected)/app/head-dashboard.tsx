@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  CircleAlert,
+  CircleCheck,
   BookOpenCheck,
   CalendarDays,
   GraduationCap,
@@ -26,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type {
+  AttentionStudent,
   HeadDashboardActivity,
   HeadDashboardData,
 } from "@/modules/dashboard/application/head-dashboard-service";
@@ -34,6 +37,11 @@ const CATEGORY_LABELS = {
   SABAQ: "Sabaq",
   SABQI: "Sabqi",
   MANZIL: "Manzil",
+} as const;
+
+const ATTENTION_REASON_LABELS = {
+  NO_RECENT_RECORD: "Belum ada setoran 7 hari",
+  LESS_FLUENT: "Setoran terakhir Kurang Lancar",
 } as const;
 
 function formatDate(value: string) {
@@ -144,7 +152,116 @@ export function HeadDashboard({
           <RecentActivities activities={data.recentActivities} />
         </section>
       </section>
+
+      <section className="mt-7" aria-labelledby="attention-students-heading">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 id="attention-students-heading" className="text-lg font-semibold">
+              Santri Perlu Perhatian
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Santri aktif yang belum memiliki setoran 7 hari atau setoran terakhirnya
+              Kurang Lancar.
+            </p>
+          </div>
+          {data.attentionStudents.length > 0 ? (
+            <Badge variant="destructive" className="w-fit">
+              {data.attentionStudents.length} perlu perhatian
+            </Badge>
+          ) : null}
+        </div>
+        <AttentionStudents students={data.attentionStudents} />
+      </section>
     </>
+  );
+}
+
+function AttentionStudents({
+  students,
+}: {
+  students: AttentionStudent[];
+}) {
+  if (students.length === 0) {
+    return (
+      <div className="flex min-h-44 flex-col items-center justify-center rounded-[8px] border border-dashed bg-card px-4 text-center">
+        <CircleCheck className="mb-3 size-5 text-primary" aria-hidden="true" />
+        <p className="font-medium">Belum ada santri yang perlu perhatian</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Pantauan setoran aktif akan diperbarui otomatis di sini.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="hidden md:block">
+        <Card className="border py-0 shadow-sm">
+          <CardContent className="px-0">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="pl-4">Santri</TableHead>
+                  <TableHead>Setoran terakhir</TableHead>
+                  <TableHead className="pr-4">Alasan</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {students.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell className="pl-4 font-medium">{student.name}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {student.lastSubmissionDate
+                        ? formatDate(student.lastSubmissionDate)
+                        : "Belum pernah tercatat"}
+                    </TableCell>
+                    <TableCell className="pr-4">
+                      <AttentionReasonBadges reasons={student.reasons} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-3 md:hidden">
+        {students.map((student) => (
+          <Card key={student.id} size="sm" className="border shadow-sm">
+            <CardHeader>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="min-w-0 truncate">{student.name}</CardTitle>
+                <CircleAlert className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
+              </div>
+              <CardDescription>
+                {student.lastSubmissionDate
+                  ? `Setoran terakhir ${formatDate(student.lastSubmissionDate)}`
+                  : "Belum pernah memiliki setoran"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AttentionReasonBadges reasons={student.reasons} />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function AttentionReasonBadges({
+  reasons,
+}: {
+  reasons: AttentionStudent["reasons"];
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {reasons.map((reason) => (
+        <Badge key={reason} variant={reason === "LESS_FLUENT" ? "destructive" : "outline"}>
+          {ATTENTION_REASON_LABELS[reason]}
+        </Badge>
+      ))}
+    </div>
   );
 }
 

@@ -97,7 +97,7 @@ Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Peng
 
 Jangan jalankan seed demo pada database pilot atau produksi.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), serta input setoran Pengajar dan ringkasan dashboard Kepala awal pada Slice 3 telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), serta input setoran dan riwayat berfilter Pengajar, serta ringkasan dashboard Kepala termasuk daftar santri perlu perhatian pada Slice 3 telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 

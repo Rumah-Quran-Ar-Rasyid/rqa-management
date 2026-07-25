@@ -4,11 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   BookOpenCheck,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   CircleAlert,
   CircleCheck,
   Clock3,
   NotebookPen,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -43,8 +46,10 @@ import {
 import { createMemorizationRecordAction } from "@/modules/memorization/application/actions";
 import type {
   MemorizationEntryContext,
+  MemorizationHistoryPeriodOption,
   RecentMemorizationRecord,
 } from "@/modules/memorization/application/memorization-service";
+import type { MemorizationHistoryFilters } from "@/modules/memorization/domain/memorization-history-filter";
 import {
   createMemorizationRecordSchema,
   type CreateMemorizationRecordFormInput,
@@ -69,7 +74,12 @@ function formatDate(value: string) {
 export function MemorizationEntry({
   activePeriod,
   halaqahs,
-  recentRecords,
+  historyFilters,
+  historyPage,
+  historyPageCount,
+  historyPeriods,
+  historyRecordCount,
+  historyRecords,
   submissionDate,
   surahs,
 }: MemorizationEntryContext) {
@@ -410,25 +420,101 @@ export function MemorizationEntry({
 
       <section className="mt-8">
         <div className="mb-4">
-          <h2 className="text-lg font-semibold">Setoran Terbaru</h2>
+          <h2 className="text-lg font-semibold">Riwayat Setoran</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Riwayat setoran yang Anda catat terakhir kali.
+            Setoran yang Anda catat, diurutkan dari yang terbaru.
           </p>
         </div>
-        <RecentRecords records={recentRecords} />
+        <HistoryFilters filters={historyFilters} periods={historyPeriods} />
+        <RecentRecords
+          records={historyRecords}
+          hasActiveFilters={Boolean(
+            historyFilters.academicPeriodId || historyFilters.submissionCategory,
+          )}
+        />
+        <HistoryPagination
+          filters={historyFilters}
+          page={historyPage}
+          pageCount={historyPageCount}
+          recordCount={historyRecordCount}
+        />
       </section>
     </>
   );
 }
 
-function RecentRecords({ records }: { records: RecentMemorizationRecord[] }) {
+function HistoryFilters({
+  filters,
+  periods,
+}: {
+  filters: MemorizationHistoryFilters;
+  periods: MemorizationHistoryPeriodOption[];
+}) {
+  return (
+    <form
+      action="/app/setoran"
+      className="mb-4 grid gap-3 border-b pb-5 sm:grid-cols-2 lg:grid-cols-[minmax(0,16rem)_minmax(0,14rem)_auto] lg:items-end"
+    >
+      <Field>
+        <FieldLabel htmlFor="history-period">Periode</FieldLabel>
+        <Select
+          id="history-period"
+          name="academicPeriodId"
+          defaultValue={filters.academicPeriodId ?? ""}
+        >
+          <option value="">Semua periode</option>
+          {periods.map((period) => (
+            <option key={period.id} value={period.id}>
+              {period.label}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="history-category">Kategori</FieldLabel>
+        <Select
+          id="history-category"
+          name="submissionCategory"
+          defaultValue={filters.submissionCategory ?? ""}
+        >
+          <option value="">Semua kategori</option>
+          <option value="SABAQ">Sabaq</option>
+          <option value="SABQI">Sabqi</option>
+          <option value="MANZIL">Manzil</option>
+        </Select>
+      </Field>
+      <div className="flex gap-2">
+        <Button type="submit" className="min-w-28 flex-1 sm:flex-none">
+          Terapkan
+        </Button>
+        {filters.academicPeriodId || filters.submissionCategory ? (
+          <Button asChild type="button" variant="outline" className="flex-1 sm:flex-none">
+            <Link href="/app/setoran">Reset</Link>
+          </Button>
+        ) : null}
+      </div>
+    </form>
+  );
+}
+
+function RecentRecords({
+  hasActiveFilters,
+  records,
+}: {
+  hasActiveFilters: boolean;
+  records: RecentMemorizationRecord[];
+}) {
   if (records.length === 0) {
     return (
       <div className="flex min-h-36 flex-col items-center justify-center rounded-[8px] border border-dashed bg-card px-4 text-center">
         <Clock3 className="mb-3 size-5 text-muted-foreground" aria-hidden="true" />
-        <p className="font-medium">Belum ada setoran</p>
+        <p className="font-medium">
+          {hasActiveFilters ? "Tidak ada setoran yang sesuai" : "Belum ada setoran"}
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Setoran yang disimpan akan muncul di sini.
+          {hasActiveFilters
+            ? "Ubah atau reset filter untuk melihat riwayat lainnya."
+            : "Setoran yang disimpan akan muncul di sini."}
         </p>
       </div>
     );
@@ -498,6 +584,73 @@ function RecentRecords({ records }: { records: RecentMemorizationRecord[] }) {
       </div>
     </>
   );
+}
+
+function HistoryPagination({
+  filters,
+  page,
+  pageCount,
+  recordCount,
+}: {
+  filters: MemorizationHistoryFilters;
+  page: number;
+  pageCount: number;
+  recordCount: number;
+}) {
+  if (recordCount === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <p className="text-sm text-muted-foreground">
+        {recordCount} setoran{pageCount > 1 ? ` · Halaman ${page} dari ${pageCount}` : ""}
+      </p>
+      {pageCount > 1 ? (
+        <div className="flex gap-2">
+          {page > 1 ? (
+            <Button asChild variant="outline" size="icon" title="Halaman sebelumnya">
+              <Link
+                href={historyHref(filters, page - 1)}
+                aria-label="Halaman sebelumnya"
+              >
+                <ChevronLeft aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null}
+          {page < pageCount ? (
+            <Button asChild variant="outline" size="icon" title="Halaman berikutnya">
+              <Link
+                href={historyHref(filters, page + 1)}
+                aria-label="Halaman berikutnya"
+              >
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function historyHref(filters: MemorizationHistoryFilters, page: number) {
+  const searchParams = new URLSearchParams();
+
+  if (filters.academicPeriodId) {
+    searchParams.set("academicPeriodId", filters.academicPeriodId);
+  }
+
+  if (filters.submissionCategory) {
+    searchParams.set("submissionCategory", filters.submissionCategory);
+  }
+
+  if (page > 1) {
+    searchParams.set("page", String(page));
+  }
+
+  const query = searchParams.toString();
+  return query ? `/app/setoran?${query}` : "/app/setoran";
 }
 
 function EmptyState({

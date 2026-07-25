@@ -68,8 +68,10 @@ Status record: `ACTIVE`, `VOID`.
 
 ## Perlu Perhatian
 Santri masuk daftar perlu perhatian jika:
-- Tidak memiliki setoran selama 7 hari kalender.
+- Belum pernah memiliki setoran aktif, atau tanggal setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.
 - Predikat pada setoran terakhir adalah `LESS_FLUENT`.
+
+Record berstatus `VOID` tidak dipakai untuk menentukan setoran terakhir maupun daftar perlu perhatian.
 
 ## Periode Pembelajaran
 Setiap organisasi hanya memiliki satu periode `ACTIVE` pada satu waktu.

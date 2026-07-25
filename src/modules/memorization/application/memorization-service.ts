@@ -7,6 +7,7 @@ import type {
 import { db } from "@/lib/db";
 import type { AuthenticatedUser } from "@/modules/auth/application/session";
 import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
+import type { MemorizationHistoryFilters } from "@/modules/memorization/domain/memorization-history-filter";
 import {
   createMemorizationRecordSchema,
   type CreateMemorizationRecordInput,
@@ -41,12 +42,24 @@ export type RecentMemorizationRecord = {
   fluencyPredicate: FluencyPredicate;
 };
 
+export type MemorizationHistoryPeriodOption = {
+  id: string;
+  label: string;
+};
+
+const HISTORY_PAGE_SIZE = 20;
+
 export type MemorizationEntryContext = {
   submissionDate: string;
   activePeriod: { name: string } | null;
   halaqahs: MemorizationHalaqahOption[];
   surahs: QuranSurahOption[];
-  recentRecords: RecentMemorizationRecord[];
+  historyPeriods: MemorizationHistoryPeriodOption[];
+  historyFilters: MemorizationHistoryFilters;
+  historyPage: number;
+  historyPageCount: number;
+  historyRecordCount: number;
+  historyRecords: RecentMemorizationRecord[];
 };
 
 type MemorizationErrorCode =
@@ -109,6 +122,9 @@ function displayStudentName({
 
 export async function getMemorizationEntryContext(
   actor: AuthenticatedUser,
+  requestedHistoryFilters: MemorizationHistoryFilters & { page: number } = {
+    page: 1,
+  },
 ): Promise<MemorizationEntryContext> {
   if (!canCreateMemorizationRecord(actor.roles)) {
     throw new MemorizationError(
@@ -126,7 +142,7 @@ export async function getMemorizationEntryContext(
   );
   const submissionDateDatabase = databaseDate(submissionDate);
 
-  const [activePeriod, assignments, surahs, records] = await Promise.all([
+  const [activePeriod, assignments, surahs, historyPeriods] = await Promise.all([
     db.academicPeriod.findFirst({
       where: {
         organizationId: actor.organizationId,
@@ -153,26 +169,57 @@ export async function getMemorizationEntryContext(
       },
       orderBy: { surahNumber: "asc" },
     }),
-    db.memorizationRecord.findMany({
-      where: {
-        organizationId: actor.organizationId,
-        teacherUserId: actor.id,
-      },
-      select: {
-        id: true,
-        studentNameSnapshot: true,
-        halaqahNameSnapshot: true,
-        submissionDate: true,
-        submissionCategory: true,
-        startVerse: true,
-        endVerse: true,
-        fluencyPredicate: true,
-        surah: { select: { latinName: true } },
-      },
-      orderBy: [{ submissionDate: "desc" }, { createdAt: "desc" }],
-      take: 10,
+    db.academicPeriod.findMany({
+      where: { organizationId: actor.organizationId },
+      select: { id: true, name: true },
+      orderBy: [{ startDate: "desc" }, { name: "asc" }],
     }),
   ]);
+
+  const validPeriodIds = new Set(historyPeriods.map((period) => period.id));
+  const historyFilters: MemorizationHistoryFilters = {
+    academicPeriodId: validPeriodIds.has(
+      requestedHistoryFilters.academicPeriodId ?? "",
+    )
+      ? requestedHistoryFilters.academicPeriodId
+      : undefined,
+    submissionCategory: requestedHistoryFilters.submissionCategory,
+  };
+  const historyWhere = {
+    organizationId: actor.organizationId,
+    teacherUserId: actor.id,
+    ...(historyFilters.academicPeriodId
+      ? { academicPeriodId: historyFilters.academicPeriodId }
+      : {}),
+    ...(historyFilters.submissionCategory
+      ? { submissionCategory: historyFilters.submissionCategory }
+      : {}),
+  };
+  const historyRecordCount = await db.memorizationRecord.count({
+    where: historyWhere,
+  });
+  const historyPageCount = Math.max(
+    1,
+    Math.ceil(historyRecordCount / HISTORY_PAGE_SIZE),
+  );
+  const historyPage = Math.min(requestedHistoryFilters.page, historyPageCount);
+  const historyRecords = await db.memorizationRecord.findMany({
+    where: historyWhere,
+    select: {
+      id: true,
+      studentNameSnapshot: true,
+      halaqahNameSnapshot: true,
+      submissionDate: true,
+      submissionCategory: true,
+      startVerse: true,
+      endVerse: true,
+      fluencyPredicate: true,
+      surah: { select: { latinName: true } },
+    },
+    orderBy: [{ submissionDate: "desc" }, { createdAt: "desc" }],
+    skip: (historyPage - 1) * HISTORY_PAGE_SIZE,
+    take: HISTORY_PAGE_SIZE,
+  });
 
   const assignedHalaqahs = new Map<string, { id: string; name: string }>();
   for (const assignment of assignments) {
@@ -233,7 +280,15 @@ export async function getMemorizationEntryContext(
       label: `${surah.surahNumber}. ${surah.latinName}`,
       verseCount: surah.verseCount,
     })),
-    recentRecords: records.map((record) => ({
+    historyPeriods: historyPeriods.map((period) => ({
+      id: period.id,
+      label: period.name,
+    })),
+    historyFilters,
+    historyPage,
+    historyPageCount,
+    historyRecordCount,
+    historyRecords: historyRecords.map((record) => ({
       id: record.id,
       studentName: record.studentNameSnapshot,
       halaqahName: record.halaqahNameSnapshot,

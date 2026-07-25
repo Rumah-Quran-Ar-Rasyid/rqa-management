@@ -27,8 +27,8 @@ export default async function ProtectedLayout({
   const canCreateMemorization = canCreateMemorizationRecord(user.roles);
 
   return (
-    <div className="min-h-svh bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-      <aside className="hidden border-r bg-card lg:flex lg:min-h-svh lg:flex-col lg:p-4">
+    <div className="h-svh overflow-hidden bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+      <aside className="hidden border-r bg-card lg:flex lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:p-4">
         <AppBrand />
         <div className="my-7 h-px bg-border" />
         <AppNavigation
@@ -57,8 +57,8 @@ export default async function ProtectedLayout({
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-col">
-        <header className="border-b bg-card lg:hidden">
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <header className="shrink-0 border-b bg-card lg:hidden">
           <div className="flex min-h-16 items-center justify-between gap-3 px-4">
             <AppBrand />
             <form action={logoutAction}>
@@ -84,10 +84,12 @@ export default async function ProtectedLayout({
             variant="mobile"
           />
         </header>
-        <div className="hidden h-16 items-center border-b bg-card px-8 lg:flex">
+        <div className="hidden h-16 shrink-0 items-center border-b bg-card px-8 lg:flex">
           <p className="text-sm text-muted-foreground">Rumah Qur’an Ar-Rasyid</p>
         </div>
-        {children}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {children}
+        </div>
       </div>
     </div>
   );

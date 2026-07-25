@@ -1,9 +1,13 @@
 import "server-only";
 
-import type { SubmissionCategory } from "@/generated/prisma/enums";
+import type { FluencyPredicate, SubmissionCategory } from "@/generated/prisma/enums";
 import { db } from "@/lib/db";
 import type { AuthenticatedUser } from "@/modules/auth/application/session";
 import { canAccessHeadDashboard } from "@/modules/dashboard/domain/head-dashboard-policy";
+import {
+  attentionReasons,
+  type AttentionReason,
+} from "@/modules/dashboard/domain/attention-policy";
 
 export type HeadDashboardActivity = {
   id: string;
@@ -17,6 +21,13 @@ export type HeadDashboardActivity = {
   endVerse: number;
 };
 
+export type AttentionStudent = {
+  id: string;
+  name: string;
+  lastSubmissionDate: string | null;
+  reasons: AttentionReason[];
+};
+
 export type HeadDashboardData = {
   today: string;
   activeStudentCount: number;
@@ -25,6 +36,7 @@ export type HeadDashboardData = {
   weekRecordCount: number;
   categoryCounts: Record<SubmissionCategory, number>;
   recentActivities: HeadDashboardActivity[];
+  attentionStudents: AttentionStudent[];
 };
 
 export class HeadDashboardError extends Error {
@@ -91,6 +103,8 @@ export async function getHeadDashboard(
     weekRecordCount,
     categoryGroups,
     recentRecords,
+    activeStudents,
+    activeStudentRecords,
   ] = await Promise.all([
     db.student.count({
       where: { organizationId: actor.organizationId, status: "ACTIVE" },
@@ -131,6 +145,23 @@ export async function getHeadDashboard(
       orderBy: [{ submissionDate: "desc" }, { createdAt: "desc" }],
       take: 8,
     }),
+    db.student.findMany({
+      where: { organizationId: actor.organizationId, status: "ACTIVE" },
+      select: { id: true, fullName: true, preferredName: true },
+      orderBy: { fullName: "asc" },
+    }),
+    db.memorizationRecord.findMany({
+      where: {
+        ...activeRecordFilter,
+        submissionDate: { lte: todayDate },
+      },
+      select: {
+        studentId: true,
+        submissionDate: true,
+        fluencyPredicate: true,
+      },
+      orderBy: [{ submissionDate: "desc" }, { createdAt: "desc" }],
+    }),
   ]);
 
   const categoryCounts: Record<SubmissionCategory, number> = {
@@ -142,6 +173,42 @@ export async function getHeadDashboard(
     categoryCounts[group.submissionCategory] = group._count._all;
   }
 
+  const latestRecordByStudent = new Map<
+    string,
+    { submissionDate: Date; fluencyPredicate: FluencyPredicate }
+  >();
+  for (const record of activeStudentRecords) {
+    if (!latestRecordByStudent.has(record.studentId)) {
+      latestRecordByStudent.set(record.studentId, record);
+    }
+  }
+
+  const attentionStudents = activeStudents
+    .map((student) => {
+      const lastRecord = latestRecordByStudent.get(student.id);
+      const lastSubmissionDate = lastRecord
+        ? dateInputValue(lastRecord.submissionDate)
+        : null;
+      const reasons = attentionReasons({
+        today,
+        lastSubmissionDate,
+        lastFluencyPredicate: lastRecord?.fluencyPredicate ?? null,
+      });
+
+      return {
+        id: student.id,
+        name: student.preferredName || student.fullName,
+        lastSubmissionDate,
+        reasons,
+      } satisfies AttentionStudent;
+    })
+    .filter((student) => student.reasons.length > 0)
+    .sort((first, second) => {
+      if (first.lastSubmissionDate === null) return -1;
+      if (second.lastSubmissionDate === null) return 1;
+      return first.lastSubmissionDate.localeCompare(second.lastSubmissionDate);
+    });
+
   return {
     today,
     activeStudentCount,
@@ -149,6 +216,7 @@ export async function getHeadDashboard(
     todayRecordCount,
     weekRecordCount,
     categoryCounts,
+    attentionStudents,
     recentActivities: recentRecords.map((record) => ({
       id: record.id,
       studentName: record.studentNameSnapshot,
