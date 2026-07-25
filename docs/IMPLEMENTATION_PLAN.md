@@ -250,7 +250,9 @@ Status implementasi per 25 Juli 2026:
 - Potongan input setoran Pengajar selesai: halaman `/app/setoran` bersifat mobile-first, hanya dapat diakses Pengajar, dan hanya menampilkan halaqah yang ditugaskan serta santri dengan membership aktif.
 - Server memvalidasi periode aktif, assignment, membership, status santri/halaqah, organisasi, master surah, serta rentang ayat sebelum menyimpan. Tanggal setoran ditetapkan server berdasarkan timezone organisasi.
 - Setoran duplikat pada hari yang sama memerlukan konfirmasi dan alasan. Record serta audit akademik `CREATE` disimpan dalam satu transaksi serializable.
-- Riwayat terbaru milik Pengajar ditampilkan pada halaman yang sama dalam tabel desktop dan kartu mobile. Ringkasan dashboard Kepala serta filter riwayat masih belum dibuat.
+- Riwayat terbaru milik Pengajar ditampilkan pada halaman yang sama dalam tabel desktop dan kartu mobile.
+- Ringkasan Kepala awal selesai pada Beranda: setoran hari ini/minggu ini, jumlah santri/halaqah aktif, kategori setoran mingguan, dan aktivitas terbaru. Semua agregat dibatasi organisasi serta record setoran aktif; minggu berjalan dimulai Senin menurut timezone organisasi.
+- Filter riwayat dan daftar santri perlu perhatian masih belum dibuat.
 - Seed demo lokal tersedia secara terpisah melalui `npm run db:seed:demo`; script tersebut idempotent dan tidak boleh dipakai pada database pilot atau produksi.
 
 ### Slice 4 — Koreksi, Void, dan Audit

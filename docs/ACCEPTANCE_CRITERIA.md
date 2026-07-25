@@ -108,6 +108,11 @@ Then sistem menolak penyimpanan
 ## Dashboard
 Menampilkan santri/halaqah aktif, setoran hari/minggu, jumlah per kategori, santri perlu perhatian, dan aktivitas terbaru dengan angka yang sesuai data.
 
+Potongan awal dashboard Kepala:
+- Hanya Kepala yang dapat melihat ringkasan akademik organisasi.
+- Setoran hari ini memakai tanggal organisasi; setoran minggu ini dihitung sejak Senin sampai hari ini menurut timezone organisasi.
+- Ringkasan dan aktivitas terbaru hanya menghitung record setoran berstatus aktif.
+
 Santri perlu perhatian apabila:
 - Tidak memiliki setoran selama 7 hari kalender.
 - Mendapat predikat `LESS_FLUENT` pada setoran terakhir.

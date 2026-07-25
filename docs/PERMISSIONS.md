@@ -33,6 +33,7 @@ Permission teknis harus memisahkan hak melihat audit dari hak melakukan aksi. Co
 - `VIEW_HALAQAH_MEMBERSHIP`
 - `MANAGE_HALAQAH_MEMBERSHIP`
 - `CREATE_MEMORIZATION_RECORD`
+- `VIEW_ACADEMIC_DASHBOARD`
 
 ## Matriks Hak Akses
 | Aktivitas | Admin | Kepala | Pengajar |
@@ -81,6 +82,7 @@ Catatan:
 - Selama periode `CLOSED`, input setoran dan koreksi ditolak untuk semua role. Kepala harus reopen periode terlebih dahulu dengan alasan.
 - Semua tipe assignment pengajar aktif (`PRIMARY`, `ASSISTANT`, `SUBSTITUTE`) boleh mencatat setoran pada halaqah terkait.
 - Hak `CREATE_MEMORIZATION_RECORD` hanya dimiliki role Pengajar. Admin dan Kepala tidak dapat mencatat setoran kecuali aturan MVP berubah secara eksplisit.
+- Hak `VIEW_ACADEMIC_DASHBOARD` hanya dimiliki role Kepala. Dashboard akademik menampilkan agregat organisasi dan aktivitas setoran aktif terbaru.
 - Hanya pengajar pembuat setoran yang boleh mengoreksi setoran tersebut dalam batas 24 jam.
 
 ## Aturan Authorization

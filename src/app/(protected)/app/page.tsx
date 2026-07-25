@@ -14,6 +14,9 @@ import type { RoleCode } from "@/generated/prisma/enums";
 import { requireUser } from "@/modules/auth/application/session";
 import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
 import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
+import { getHeadDashboard } from "@/modules/dashboard/application/head-dashboard-service";
+import { canAccessHeadDashboard } from "@/modules/dashboard/domain/head-dashboard-policy";
+import { HeadDashboard } from "./head-dashboard";
 
 export const metadata: Metadata = {
   title: "Beranda",
@@ -29,6 +32,16 @@ export default async function AppPage() {
   const user = await requireUser();
   const canManageUsers = canAccessUserDirectory(user.roles);
   const canCreateMemorization = canCreateMemorizationRecord(user.roles);
+
+  if (canAccessHeadDashboard(user.roles)) {
+    const data = await getHeadDashboard(user);
+
+    return (
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-8 lg:px-8">
+        <HeadDashboard data={data} name={user.name} />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-8 lg:px-8">

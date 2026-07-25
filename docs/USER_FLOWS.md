@@ -63,6 +63,7 @@ Dashboard awal:
 - Santri dan halaqah aktif.
 - Setoran hari ini/minggu ini.
 - Jumlah Sabaq, Sabqi, Manzil.
+- Minggu berjalan dihitung dari Senin hingga hari ini berdasarkan timezone organisasi; record setoran dibatalkan tidak dihitung.
 - Santri tanpa setoran selama 7 hari kalender.
 - Santri dengan predikat Kurang Lancar pada setoran terakhir.
 - Aktivitas terbaru.
