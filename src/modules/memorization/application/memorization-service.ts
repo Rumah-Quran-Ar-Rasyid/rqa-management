@@ -2,15 +2,27 @@ import "server-only";
 
 import type {
   FluencyPredicate,
+  MemorizationAuditAction,
+  MemorizationRecordStatus,
   SubmissionCategory,
 } from "@/generated/prisma/enums";
 import { db } from "@/lib/db";
 import type { AuthenticatedUser } from "@/modules/auth/application/session";
+import { hasPermission, PERMISSIONS } from "@/modules/auth/domain/authorization";
+import {
+  canAccessMemorizationRecord,
+  canCorrectMemorizationRecord,
+  canVoidMemorizationRecord,
+} from "@/modules/memorization/domain/memorization-correction-policy";
 import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
 import type { MemorizationHistoryFilters } from "@/modules/memorization/domain/memorization-history-filter";
 import {
+  correctMemorizationRecordSchema,
   createMemorizationRecordSchema,
+  voidMemorizationRecordSchema,
+  type CorrectMemorizationRecordInput,
   type CreateMemorizationRecordInput,
+  type VoidMemorizationRecordInput,
 } from "@/modules/memorization/domain/memorization-schemas";
 
 export type MemorizationStudentOption = {
@@ -47,6 +59,42 @@ export type MemorizationHistoryPeriodOption = {
   label: string;
 };
 
+export type MemorizationRecordAuditItem = {
+  id: string;
+  action: MemorizationAuditAction;
+  details: string[];
+  performedAt: string;
+  performedByName: string;
+  reason: string | null;
+};
+
+export type MemorizationRecordDetail = {
+  id: string;
+  academicPeriodName: string;
+  academicPeriodStatus: "ACTIVE" | "CLOSED" | "PLANNED";
+  canCorrect: boolean;
+  canViewAudit: boolean;
+  canVoid: boolean;
+  canViewAuditDetails: boolean;
+  createdAt: string;
+  fluencyPredicate: FluencyPredicate;
+  halaqahName: string;
+  nextTarget: string | null;
+  pageNumber: number | null;
+  recordStatus: MemorizationRecordStatus;
+  startVerse: number;
+  endVerse: number;
+  studentName: string;
+  submissionCategory: SubmissionCategory;
+  submissionDate: string;
+  surahName: string;
+  surahNumber: number;
+  surahs: QuranSurahOption[];
+  teacherName: string;
+  teacherNote: string | null;
+  audits: MemorizationRecordAuditItem[];
+};
+
 const HISTORY_PAGE_SIZE = 20;
 
 export type MemorizationEntryContext = {
@@ -67,6 +115,10 @@ type MemorizationErrorCode =
   | "DUPLICATE_OVERRIDE_REQUIRED"
   | "FORBIDDEN"
   | "HALAQAH_INVALID"
+  | "RECORD_INACTIVE"
+  | "RECORD_NOT_FOUND"
+  | "RECORD_UPDATE_FORBIDDEN"
+  | "RECORD_VOID_FORBIDDEN"
   | "STUDENT_INVALID"
   | "STUDENT_NOT_MEMBER"
   | "SURAH_NOT_FOUND"
@@ -118,6 +170,158 @@ function displayStudentName({
   preferredName: string | null;
 }) {
   return preferredName || fullName;
+}
+
+function academicAuditData({
+  endVerse,
+  fluencyPredicate,
+  nextTarget,
+  pageNumber,
+  recordStatus,
+  startVerse,
+  submissionCategory,
+  surahNumber,
+  teacherNote,
+}: {
+  endVerse: number;
+  fluencyPredicate: FluencyPredicate;
+  nextTarget: string | null;
+  pageNumber: number | null;
+  recordStatus: MemorizationRecordStatus;
+  startVerse: number;
+  submissionCategory: SubmissionCategory;
+  surahNumber: number;
+  teacherNote: string | null;
+}) {
+  return {
+    submissionCategory,
+    surahNumber,
+    startVerse,
+    endVerse,
+    fluencyPredicate,
+    teacherNote,
+    nextTarget,
+    pageNumber,
+    recordStatus,
+  };
+}
+
+function auditObject(value: unknown): Record<string, unknown> {
+  if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+
+  return {};
+}
+
+function auditString(value: unknown) {
+  return typeof value === "string" ? value : null;
+}
+
+function auditNumber(value: unknown) {
+  return typeof value === "number" ? value : null;
+}
+
+const categoryLabels: Record<SubmissionCategory, string> = {
+  SABAQ: "Sabaq",
+  SABQI: "Sabqi",
+  MANZIL: "Manzil",
+};
+
+const fluencyLabels: Record<FluencyPredicate, string> = {
+  FLUENT: "Lancar",
+  FAIRLY_FLUENT: "Cukup Lancar",
+  LESS_FLUENT: "Kurang Lancar",
+};
+
+function isSubmissionCategory(value: string | null): value is SubmissionCategory {
+  return value !== null && value in categoryLabels;
+}
+
+function isFluencyPredicate(value: string | null): value is FluencyPredicate {
+  return value !== null && value in fluencyLabels;
+}
+
+function describeAcademicAuditChange({
+  action,
+  afterData,
+  beforeData,
+}: {
+  action: MemorizationAuditAction;
+  afterData: unknown;
+  beforeData: unknown;
+}) {
+  if (action === "CREATE") {
+    return ["Setoran dicatat."];
+  }
+
+  if (action === "VOID") {
+    return ["Status diubah menjadi Dibatalkan."];
+  }
+
+  const before = auditObject(beforeData);
+  const after = auditObject(afterData);
+  const details: string[] = [];
+  const beforeCategory = auditString(before.submissionCategory);
+  const afterCategory = auditString(after.submissionCategory);
+  const beforeSurah = auditNumber(before.surahNumber);
+  const afterSurah = auditNumber(after.surahNumber);
+  const beforeStartVerse = auditNumber(before.startVerse);
+  const afterStartVerse = auditNumber(after.startVerse);
+  const beforeEndVerse = auditNumber(before.endVerse);
+  const afterEndVerse = auditNumber(after.endVerse);
+  const beforeFluency = auditString(before.fluencyPredicate);
+  const afterFluency = auditString(after.fluencyPredicate);
+
+  if (
+    isSubmissionCategory(beforeCategory) &&
+    isSubmissionCategory(afterCategory) &&
+    beforeCategory !== afterCategory
+  ) {
+    details.push(
+      `Kategori: ${categoryLabels[beforeCategory]} menjadi ${categoryLabels[afterCategory]}.`,
+    );
+  }
+
+  if (beforeSurah !== null && afterSurah !== null && beforeSurah !== afterSurah) {
+    details.push(`Surah: nomor ${beforeSurah} menjadi nomor ${afterSurah}.`);
+  }
+
+  if (
+    beforeStartVerse !== null &&
+    afterStartVerse !== null &&
+    beforeEndVerse !== null &&
+    afterEndVerse !== null &&
+    (beforeStartVerse !== afterStartVerse || beforeEndVerse !== afterEndVerse)
+  ) {
+    details.push(
+      `Ayat: ${beforeStartVerse}-${beforeEndVerse} menjadi ${afterStartVerse}-${afterEndVerse}.`,
+    );
+  }
+
+  if (
+    isFluencyPredicate(beforeFluency) &&
+    isFluencyPredicate(afterFluency) &&
+    beforeFluency !== afterFluency
+  ) {
+    details.push(
+      `Kelancaran: ${fluencyLabels[beforeFluency]} menjadi ${fluencyLabels[afterFluency]}.`,
+    );
+  }
+
+  if (before.teacherNote !== after.teacherNote) {
+    details.push("Catatan Pengajar diperbarui.");
+  }
+
+  if (before.nextTarget !== after.nextTarget) {
+    details.push("Target berikutnya diperbarui.");
+  }
+
+  if (before.pageNumber !== after.pageNumber) {
+    details.push("Nomor halaman diperbarui.");
+  }
+
+  return details.length > 0 ? details : ["Data setoran diperbarui."];
 }
 
 export async function getMemorizationEntryContext(
@@ -503,6 +707,376 @@ export async function createMemorizationRecord(
               : null,
             duplicateReferenceRecordId: duplicate?.id ?? null,
           },
+          performedById: actor.id,
+        },
+      });
+    },
+    { isolationLevel: "Serializable" },
+  );
+}
+
+export async function getMemorizationRecordDetail(
+  actor: AuthenticatedUser,
+  recordId: string,
+): Promise<MemorizationRecordDetail> {
+  const [record, surahs] = await Promise.all([
+    db.memorizationRecord.findUnique({
+    where: {
+      id_organizationId: {
+        id: recordId,
+        organizationId: actor.organizationId,
+      },
+    },
+    select: {
+      id: true,
+      submissionDate: true,
+      submissionCategory: true,
+      startVerse: true,
+      endVerse: true,
+      fluencyPredicate: true,
+      teacherNote: true,
+      nextTarget: true,
+      pageNumber: true,
+      recordStatus: true,
+      studentNameSnapshot: true,
+      halaqahNameSnapshot: true,
+      teacherNameSnapshot: true,
+      teacherUserId: true,
+      createdAt: true,
+      surah: { select: { surahNumber: true, latinName: true } },
+      academicPeriod: { select: { name: true, status: true } },
+      audits: {
+        select: {
+          id: true,
+          action: true,
+          beforeData: true,
+          afterData: true,
+          reason: true,
+          performedAt: true,
+          performedBy: { select: { name: true } },
+        },
+        orderBy: { performedAt: "desc" },
+      },
+    },
+    }),
+    db.quranSurah.findMany({
+      select: {
+        surahNumber: true,
+        latinName: true,
+        verseCount: true,
+      },
+      orderBy: { surahNumber: "asc" },
+    }),
+  ]);
+
+  if (!record) {
+    throw new MemorizationError("RECORD_NOT_FOUND", "Setoran tidak ditemukan.");
+  }
+
+  if (
+    !canAccessMemorizationRecord({
+      actorId: actor.id,
+      actorRoles: actor.roles,
+      teacherUserId: record.teacherUserId,
+    })
+  ) {
+    throw new MemorizationError(
+      "FORBIDDEN",
+      "Anda tidak memiliki hak untuk melihat setoran ini.",
+    );
+  }
+
+  const canViewAuditDetails = hasPermission(
+    actor.roles,
+    PERMISSIONS.VIEW_ACADEMIC_AUDIT,
+  );
+  const canViewAudit =
+    canViewAuditDetails ||
+    (actor.roles.includes("TEACHER") && actor.id === record.teacherUserId);
+  const now = new Date();
+
+  return {
+    id: record.id,
+    academicPeriodName: record.academicPeriod.name,
+    academicPeriodStatus: record.academicPeriod.status,
+    canCorrect: canCorrectMemorizationRecord({
+      actorId: actor.id,
+      actorRoles: actor.roles,
+      teacherUserId: record.teacherUserId,
+      createdAt: record.createdAt,
+      academicPeriodStatus: record.academicPeriod.status,
+      recordStatus: record.recordStatus,
+      now,
+    }),
+    canVoid: canVoidMemorizationRecord({
+      actorRoles: actor.roles,
+      academicPeriodStatus: record.academicPeriod.status,
+      recordStatus: record.recordStatus,
+    }),
+    canViewAudit,
+    canViewAuditDetails,
+    createdAt: record.createdAt.toISOString(),
+    fluencyPredicate: record.fluencyPredicate,
+    halaqahName: record.halaqahNameSnapshot,
+    nextTarget: record.nextTarget,
+    pageNumber: record.pageNumber,
+    recordStatus: record.recordStatus,
+    startVerse: record.startVerse,
+    endVerse: record.endVerse,
+    studentName: record.studentNameSnapshot,
+    submissionCategory: record.submissionCategory,
+    submissionDate: dateInputValue(record.submissionDate),
+    surahName: record.surah.latinName,
+    surahNumber: record.surah.surahNumber,
+    surahs: surahs.map((surah) => ({
+      number: surah.surahNumber,
+      label: `${surah.surahNumber}. ${surah.latinName}`,
+      verseCount: surah.verseCount,
+    })),
+    teacherName: record.teacherNameSnapshot,
+    teacherNote: record.teacherNote,
+    audits: canViewAudit
+      ? record.audits.map((audit) => ({
+          id: audit.id,
+          action: audit.action,
+          details: canViewAuditDetails
+            ? describeAcademicAuditChange(audit)
+            : [],
+          performedAt: audit.performedAt.toISOString(),
+          performedByName: audit.performedBy.name,
+          reason: audit.reason,
+        }))
+      : [],
+  };
+}
+
+export async function correctMemorizationRecord(
+  actor: AuthenticatedUser,
+  input: CorrectMemorizationRecordInput,
+) {
+  const values = correctMemorizationRecordSchema.parse(input);
+
+  await db.$transaction(
+    async (transaction) => {
+      const [record, surah] = await Promise.all([
+        transaction.memorizationRecord.findUnique({
+          where: {
+            id_organizationId: {
+              id: values.recordId,
+              organizationId: actor.organizationId,
+            },
+          },
+          select: {
+            id: true,
+            teacherUserId: true,
+            createdAt: true,
+            recordStatus: true,
+            submissionCategory: true,
+            surahNumber: true,
+            startVerse: true,
+            endVerse: true,
+            fluencyPredicate: true,
+            teacherNote: true,
+            nextTarget: true,
+            pageNumber: true,
+            academicPeriod: { select: { status: true } },
+          },
+        }),
+        transaction.quranSurah.findUnique({
+          where: { surahNumber: values.surahNumber },
+          select: { verseCount: true },
+        }),
+      ]);
+
+      if (!record) {
+        throw new MemorizationError(
+          "RECORD_NOT_FOUND",
+          "Setoran tidak ditemukan.",
+        );
+      }
+
+      if (record.recordStatus !== "ACTIVE") {
+        throw new MemorizationError(
+          "RECORD_INACTIVE",
+          "Setoran yang sudah dibatalkan tidak dapat dikoreksi.",
+        );
+      }
+
+      if (record.academicPeriod.status !== "ACTIVE") {
+        throw new MemorizationError(
+          "RECORD_UPDATE_FORBIDDEN",
+          "Periode setoran sudah ditutup. Buka kembali periode sebelum melakukan koreksi.",
+        );
+      }
+
+      if (
+        !canCorrectMemorizationRecord({
+          actorId: actor.id,
+          actorRoles: actor.roles,
+          teacherUserId: record.teacherUserId,
+          createdAt: record.createdAt,
+          academicPeriodStatus: record.academicPeriod.status,
+          recordStatus: record.recordStatus,
+          now: new Date(),
+        })
+      ) {
+        throw new MemorizationError(
+          "RECORD_UPDATE_FORBIDDEN",
+          "Anda hanya dapat mengoreksi setoran milik sendiri dalam 24 jam, kecuali sebagai Kepala.",
+        );
+      }
+
+      if (!surah) {
+        throw new MemorizationError("SURAH_NOT_FOUND", "Surah tidak ditemukan.");
+      }
+
+      if (values.endVerse > surah.verseCount) {
+        throw new MemorizationError(
+          "VERSE_RANGE_INVALID",
+          `Surah ini hanya memiliki ${surah.verseCount} ayat.`,
+        );
+      }
+
+      const beforeData = academicAuditData(record);
+      const afterData = academicAuditData({
+        ...record,
+        submissionCategory: values.submissionCategory,
+        surahNumber: values.surahNumber,
+        startVerse: values.startVerse,
+        endVerse: values.endVerse,
+        fluencyPredicate: values.fluencyPredicate,
+        teacherNote: values.teacherNote ?? null,
+        nextTarget: values.nextTarget ?? null,
+        pageNumber: values.pageNumber ?? null,
+      });
+
+      await transaction.memorizationRecord.update({
+        where: {
+          id_organizationId: {
+            id: record.id,
+            organizationId: actor.organizationId,
+          },
+        },
+        data: {
+          submissionCategory: values.submissionCategory,
+          surahNumber: values.surahNumber,
+          startVerse: values.startVerse,
+          endVerse: values.endVerse,
+          fluencyPredicate: values.fluencyPredicate,
+          teacherNote: values.teacherNote ?? null,
+          nextTarget: values.nextTarget ?? null,
+          pageNumber: values.pageNumber ?? null,
+          updatedById: actor.id,
+        },
+      });
+
+      await transaction.memorizationRecordAudit.create({
+        data: {
+          organizationId: actor.organizationId,
+          memorizationRecordId: record.id,
+          action: "UPDATE",
+          beforeData,
+          afterData,
+          reason: values.reason,
+          performedById: actor.id,
+        },
+      });
+    },
+    { isolationLevel: "Serializable" },
+  );
+}
+
+export async function voidMemorizationRecord(
+  actor: AuthenticatedUser,
+  input: VoidMemorizationRecordInput,
+) {
+  const values = voidMemorizationRecordSchema.parse(input);
+
+  await db.$transaction(
+    async (transaction) => {
+      const record = await transaction.memorizationRecord.findUnique({
+        where: {
+          id_organizationId: {
+            id: values.recordId,
+            organizationId: actor.organizationId,
+          },
+        },
+        select: {
+          id: true,
+          recordStatus: true,
+          submissionCategory: true,
+          surahNumber: true,
+          startVerse: true,
+          endVerse: true,
+          fluencyPredicate: true,
+          teacherNote: true,
+          nextTarget: true,
+          pageNumber: true,
+          academicPeriod: { select: { status: true } },
+        },
+      });
+
+      if (!record) {
+        throw new MemorizationError(
+          "RECORD_NOT_FOUND",
+          "Setoran tidak ditemukan.",
+        );
+      }
+
+      if (record.recordStatus !== "ACTIVE") {
+        throw new MemorizationError(
+          "RECORD_INACTIVE",
+          "Setoran tersebut sudah dibatalkan.",
+        );
+      }
+
+      if (record.academicPeriod.status !== "ACTIVE") {
+        throw new MemorizationError(
+          "RECORD_VOID_FORBIDDEN",
+          "Periode setoran sudah ditutup. Buka kembali periode sebelum membatalkan setoran.",
+        );
+      }
+
+      if (
+        !canVoidMemorizationRecord({
+          actorRoles: actor.roles,
+          academicPeriodStatus: record.academicPeriod.status,
+          recordStatus: record.recordStatus,
+        })
+      ) {
+        throw new MemorizationError(
+          "RECORD_VOID_FORBIDDEN",
+          "Hanya Kepala yang dapat membatalkan setoran.",
+        );
+      }
+
+      const beforeData = academicAuditData(record);
+      const afterData = academicAuditData({
+        ...record,
+        recordStatus: "VOID",
+      });
+
+      await transaction.memorizationRecord.update({
+        where: {
+          id_organizationId: {
+            id: record.id,
+            organizationId: actor.organizationId,
+          },
+        },
+        data: {
+          recordStatus: "VOID",
+          updatedById: actor.id,
+        },
+      });
+
+      await transaction.memorizationRecordAudit.create({
+        data: {
+          organizationId: actor.organizationId,
+          memorizationRecordId: record.id,
+          action: "VOID",
+          beforeData,
+          afterData,
+          reason: values.reason,
           performedById: actor.id,
         },
       });

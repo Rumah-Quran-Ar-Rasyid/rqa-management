@@ -54,7 +54,7 @@ Hasil:
 Jika sistem menemukan setoran berpotensi duplikat, pengajar melihat peringatan. Pengajar boleh tetap menyimpan setelah mencentang konfirmasi dan mengisi alasan singkat.
 
 ## 4. Pengajar Melihat Riwayat
-Pengajar login → Catat Setoran → riwayat setoran miliknya → filter periode/kategori → pindah halaman bila diperlukan → detail pada slice koreksi.
+Pengajar login → Catat Setoran → riwayat setoran miliknya → filter periode/kategori → pindah halaman bila diperlukan → buka detail setoran → koreksi bila masih dalam batas waktu.
 
 Aturan:
 - Riwayat diurutkan dari setoran terbaru dan filter diterapkan di server.
@@ -74,20 +74,21 @@ Dashboard awal:
 - Aktivitas terbaru.
 
 ## 6. Koreksi Setoran
-Pengajar/kepala membuka setoran → Koreksi → ubah data → isi alasan → simpan → sistem menyimpan audit sebelum/sesudah.
+Pengajar membuka riwayat miliknya atau Kepala membuka aktivitas terbaru → buka detail setoran → Koreksi → ubah data akademik → isi alasan → simpan → sistem menyimpan audit sebelum/sesudah.
 
 Aturan:
-- Pengajar hanya dapat mengoreksi setoran miliknya dalam 24 jam berdasarkan timezone organisasi.
+- Pengajar hanya dapat mengoreksi setoran miliknya dalam 24 jam sejak record dibuat.
 - Kepala dapat mengoreksi dengan alasan.
 - Periode `CLOSED` menolak koreksi untuk semua role.
 - Koreksi memperbarui record yang sama dan menyimpan audit akademik.
 
 ## 7. Void Setoran
-Kepala membuka setoran → Void → isi alasan → konfirmasi → status setoran menjadi `VOID` → sistem menyimpan audit akademik.
+Kepala membuka detail setoran → Batalkan Setoran → isi alasan → konfirmasi → status setoran menjadi `VOID` → sistem menyimpan audit akademik.
 
 Aturan:
 - Admin tidak melakukan void setoran kecuali juga memiliki role `HEAD`.
 - Pengajar tidak dapat melakukan void setoran.
+- Periode `CLOSED` menolak pembatalan sampai Kepala membuka kembali periode.
 - Tidak ada hard delete.
 
 ## 8. Reopen Periode

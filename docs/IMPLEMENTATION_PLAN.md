@@ -15,17 +15,17 @@ Tidak termasuk MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/e
 - Laporan dapat memakai periode pembelajaran atau rentang tanggal khusus, tetapi internalnya selalu `period_start` dan `period_end`.
 - PDF MVP dibuat dari `report_snapshot`, bukan file permanen.
 - Export seluruh data tidak masuk MVP kecuali backup/restore operasional.
-- Periode `CLOSED` tidak menerima input atau koreksi; Kepala harus reopen periode dengan alasan.
+- Periode `CLOSED` tidak menerima input, koreksi, atau void; Kepala harus reopen periode dengan alasan.
 - Void setoran masuk MVP terbatas untuk Kepala dengan alasan.
 
 ### 2. Business Rule yang Sudah Dikunci dan Sisa Ambigu
 - Definisi Sabaq, Sabqi, dan Manzil belum menentukan apakah kategori boleh mencatat rentang yang sama di hari yang sama, lintas hari, atau harus mengikuti progres tertentu.
 - Satu record setoran hanya mencakup satu surah; sesi lintas surah dicatat sebagai beberapa record.
 - Duplikasi dapat di-override oleh pengajar dengan konfirmasi dan alasan wajib.
-- Batas koreksi 24 jam memakai timezone organisasi.
+- Batas koreksi Pengajar adalah 24 jam sejak record dibuat; timezone organisasi digunakan untuk tanggal yang tampil kepada pengguna.
 - Koreksi memperbarui record yang sama; status utama hanya `ACTIVE` dan `VOID`.
 - Satu santri hanya boleh memiliki satu membership halaqah aktif pada waktu yang sama.
-- Semua tipe assignment aktif boleh mencatat setoran; hanya pembuat setoran yang boleh mengoreksinya dalam 24 jam.
+- Semua tipe assignment aktif boleh mencatat setoran; hanya pembuat setoran yang boleh mengoreksinya dalam 24 jam sejak record dibuat.
 - Santri perlu perhatian jika belum pernah memiliki setoran aktif, atau setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi, atau predikat setoran aktif terakhir `LESS_FLUENT`.
 
 ### 3. Risiko Authorization dan Keamanan Data
@@ -262,11 +262,11 @@ Tujuan: perubahan setoran dapat dipertanggungjawabkan tanpa hard delete.
 
 Isi:
 - Koreksi record dengan alasan wajib dan audit before/after.
-- Pengajar hanya dapat mengoreksi setoran miliknya dalam 24 jam berdasarkan timezone organisasi.
+- Pengajar hanya dapat mengoreksi setoran miliknya dalam 24 jam sejak record dibuat.
 - Kepala dapat mengoreksi dengan alasan setelah 24 jam.
 - Void setoran dengan alasan wajib untuk Kepala.
 - Status record hanya `ACTIVE` dan `VOID`; koreksi adalah audit action `UPDATE`.
-- Periode `CLOSED` menolak input dan koreksi; Kepala dapat reopen periode dengan alasan melalui audit operasional.
+- Periode `CLOSED` menolak input, koreksi, dan void; Kepala dapat reopen periode dengan alasan melalui audit operasional.
 
 DoD:
 - Audit menyimpan actor, waktu, action, reason, before_data, dan after_data.
@@ -275,6 +275,11 @@ DoD:
 - Tidak ada hard delete untuk data setoran.
 - Admin dapat melakukan koreksi/void hanya jika akun juga memiliki role `HEAD`.
 - Detail event periode `PERIOD_CLOSED` dan `PERIOD_REOPENED` dapat dilihat Kepala.
+
+Status implementasi per 25 Juli 2026:
+- Slice 4 selesai: detail setoran membatasi data berdasarkan organisasi dan kepemilikan Pengajar; Kepala dapat membuka detail dari aktivitas dashboard.
+- Koreksi dan void selalu memeriksa status record/periode pada server dan menyimpan mutasi beserta audit akademik dalam transaksi serializable.
+- Kepala melihat detail perubahan audit; Pengajar hanya melihat riwayat audit terbatas untuk record miliknya; Admin tidak menerima detail audit akademik.
 
 ### Slice 5 — Dashboard Kepala yang Berguna
 Tujuan: Kepala dapat memonitor aktivitas dan santri yang butuh perhatian tanpa rekap manual.

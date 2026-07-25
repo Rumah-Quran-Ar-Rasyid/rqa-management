@@ -10,8 +10,10 @@ import {
   School,
   UsersRound,
 } from "lucide-react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -293,7 +295,8 @@ function RecentActivities({
                   <TableHead className="pl-4">Santri</TableHead>
                   <TableHead>Setoran</TableHead>
                   <TableHead>Pengajar</TableHead>
-                  <TableHead className="pr-4">Tanggal</TableHead>
+                  <TableHead>Tanggal</TableHead>
+                  <TableHead className="pr-4 text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -309,8 +312,13 @@ function RecentActivities({
                       {CATEGORY_LABELS[activity.submissionCategory]} · {activity.surahName} {activity.startVerse}-{activity.endVerse}
                     </TableCell>
                     <TableCell>{activity.teacherName}</TableCell>
-                    <TableCell className="pr-4 text-muted-foreground">
+                    <TableCell className="text-muted-foreground">
                       {formatDate(activity.submissionDate)}
+                    </TableCell>
+                    <TableCell className="pr-4 text-right">
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/app/riwayat-setoran/${activity.id}`}>Lihat</Link>
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -338,6 +346,9 @@ function RecentActivities({
               <p className="text-muted-foreground">
                 {activity.teacherName} · {formatDate(activity.submissionDate)}
               </p>
+              <Button asChild variant="outline" className="mt-3 w-full">
+                <Link href={`/app/riwayat-setoran/${activity.id}`}>Lihat Detail</Link>
+              </Button>
             </CardContent>
           </Card>
         ))}

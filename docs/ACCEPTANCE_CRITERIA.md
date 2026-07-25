@@ -90,7 +90,7 @@ Then sistem menolak penyimpanan
 ## Riwayat dan Koreksi
 - Riwayat Pengajar hanya memuat setoran yang dibuat oleh Pengajar tersebut, diurutkan terbaru, dan dapat difilter berdasarkan periode serta kategori.
 - Filter riwayat dilakukan di server dan hasilnya dipaginasi 20 setoran per halaman.
-- Pengajar dapat mengoreksi miliknya dalam 24 jam dengan alasan.
+- Pengajar dapat mengoreksi miliknya dalam 24 jam sejak record dibuat dengan alasan.
 - Setelah 24 jam, perubahan pengajar ditolak.
 - Kepala dapat mengoreksi dengan alasan.
 - Admin dapat mengoreksi hanya jika akun juga memiliki role `HEAD`.
@@ -104,6 +104,7 @@ Then sistem menolak penyimpanan
 - Pengajar tidak dapat melakukan void.
 - Void mengubah status record menjadi `VOID`.
 - Void masuk audit akademik.
+- Void pada periode `CLOSED` ditolak untuk semua role sampai periode dibuka kembali oleh Kepala.
 - Data setoran tidak di-hard delete.
 
 ## Dashboard

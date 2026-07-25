@@ -51,7 +51,7 @@ Aturan:
 - Tidak perlu approval Kepala pada MVP.
 
 ## Koreksi
-- Pengajar dapat mengoreksi setoran miliknya maksimal 24 jam.
+- Pengajar dapat mengoreksi setoran miliknya maksimal 24 jam sejak record dibuat.
 - Setelah itu hanya Kepala berwenang.
 - Alasan wajib.
 - Data sebelum/sesudah disimpan.
@@ -63,6 +63,7 @@ Aturan:
 - Void mengubah status record menjadi `VOID` dan dicatat sebagai audit action `VOID`.
 - Admin dapat melakukan void hanya jika akun juga memiliki role `HEAD`.
 - Pengajar tidak dapat melakukan void.
+- Record pada periode `CLOSED` tidak dapat dibatalkan. Kepala harus membuka kembali periode terlebih dahulu dengan alasan.
 
 Status record: `ACTIVE`, `VOID`.
 
@@ -76,7 +77,7 @@ Record berstatus `VOID` tidak dipakai untuk menentukan setoran terakhir maupun d
 ## Periode Pembelajaran
 Setiap organisasi hanya memiliki satu periode `ACTIVE` pada satu waktu.
 
-Periode yang sudah `CLOSED` tidak dapat menerima setoran baru atau koreksi.
+Periode yang sudah `CLOSED` tidak dapat menerima setoran baru, koreksi, atau pembatalan setoran.
 
 Hanya pengguna dengan role `HEAD` yang dapat membuka kembali periode `CLOSED`.
 

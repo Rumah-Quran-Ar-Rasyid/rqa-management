@@ -143,13 +143,19 @@ Aturan:
 - Setoran baru hanya dibuat oleh Pengajar yang memiliki assignment dan membership santri yang masih berlaku pada tanggal setoran, serta berada dalam periode aktif.
 - Tanggal setoran ditentukan server berdasarkan timezone organisasi agar validasi periode dan duplikasi konsisten.
 - Pembuatan setoran selalu membuat audit akademik action `CREATE` dalam transaksi yang sama.
-- Koreksi memperbarui record yang sama dan menyimpan before/after di audit akademik.
+- Koreksi memperbarui record yang sama dan menyimpan before/after beserta alasan di audit akademik.
+- Void mengubah `record_status` menjadi `VOID`, menyimpan before/after beserta alasan di audit akademik, dan tidak menghapus record.
 - Snapshot nama santri, halaqah, pengajar, dan periode disimpan ketika setoran dibuat agar histori tetap dapat dibaca setelah data master berubah.
 
 ### memorization_record_audits
 `organization_id`, `memorization_record_id`, `action`, `before_data`, `after_data`, `reason`, `performed_by`, `performed_at`.
 
 Action: `CREATE`, `UPDATE`, `VOID`.
+
+Aturan akses audit akademik:
+- Kepala melihat detail perubahan before/after.
+- Pengajar hanya melihat riwayat terbatas untuk record miliknya.
+- Admin tidak melihat audit akademik sensitif.
 
 ### operational_audit_logs
 `organization_id`, `domain`, `entity_id`, `action`, `before_data`, `after_data`, `reason`, `performed_by`, `performed_at`.

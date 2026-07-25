@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { createMemorizationRecordSchema } from "./memorization-schemas";
+import {
+  correctMemorizationRecordSchema,
+  createMemorizationRecordSchema,
+  voidMemorizationRecordSchema,
+} from "./memorization-schemas";
 
 const values = {
   halaqahId: "halaqah-1",
@@ -42,5 +46,47 @@ describe("memorization record schema", () => {
 
     expect(result.teacherNote).toBeUndefined();
     expect(result.pageNumber).toBeUndefined();
+  });
+});
+
+describe("memorization correction schemas", () => {
+  it("mewajibkan alasan pada koreksi dan pembatalan", () => {
+    expect(
+      correctMemorizationRecordSchema.safeParse({
+        recordId: "record-1",
+        submissionCategory: "SABAQ",
+        surahNumber: 1,
+        startVerse: 1,
+        endVerse: 7,
+        fluencyPredicate: "FLUENT",
+        teacherNote: "",
+        nextTarget: "",
+        pageNumber: "",
+        reason: "",
+      }).success,
+    ).toBe(false);
+    expect(
+      voidMemorizationRecordSchema.safeParse({
+        recordId: "record-1",
+        reason: "",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("menolak rentang ayat koreksi yang terbalik", () => {
+    const result = correctMemorizationRecordSchema.safeParse({
+      recordId: "record-1",
+      submissionCategory: "SABAQ",
+      surahNumber: 1,
+      startVerse: 7,
+      endVerse: 1,
+      fluencyPredicate: "FLUENT",
+      teacherNote: "",
+      nextTarget: "",
+      pageNumber: "",
+      reason: "Perbaikan catatan.",
+    });
+
+    expect(result.success).toBe(false);
   });
 });
