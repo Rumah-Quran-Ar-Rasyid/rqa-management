@@ -15,6 +15,10 @@ import { requireUser } from "@/modules/auth/application/session";
 import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
 import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
 import { getHeadDashboard } from "@/modules/dashboard/application/head-dashboard-service";
+import {
+  parseHeadDashboardFilters,
+  type HeadDashboardSearchParams,
+} from "@/modules/dashboard/domain/head-dashboard-filter";
 import { canAccessHeadDashboard } from "@/modules/dashboard/domain/head-dashboard-policy";
 import { HeadDashboard } from "./head-dashboard";
 
@@ -28,13 +32,18 @@ const ROLE_LABELS: Record<RoleCode, string> = {
   TEACHER: "Pengajar",
 };
 
-export default async function AppPage() {
+export default async function AppPage({
+  searchParams,
+}: {
+  searchParams: Promise<HeadDashboardSearchParams>;
+}) {
   const user = await requireUser();
   const canManageUsers = canAccessUserDirectory(user.roles);
   const canCreateMemorization = canCreateMemorizationRecord(user.roles);
 
   if (canAccessHeadDashboard(user.roles)) {
-    const data = await getHeadDashboard(user);
+    const filters = parseHeadDashboardFilters(await searchParams);
+    const data = await getHeadDashboard(user, filters);
 
     return (
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-8 lg:px-8">

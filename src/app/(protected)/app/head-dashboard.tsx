@@ -7,6 +7,8 @@ import {
   CalendarDays,
   GraduationCap,
   Layers3,
+  ListFilter,
+  RotateCcw,
   School,
   UsersRound,
 } from "lucide-react";
@@ -21,6 +23,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -100,6 +108,58 @@ export function HeadDashboard({
           </p>
         </div>
       </div>
+
+      <Card className="mb-6 border shadow-sm">
+        <CardContent>
+          <form
+            action="/app"
+            className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto] sm:items-end"
+          >
+            <FieldGroup className="contents">
+              <Field>
+                <FieldLabel htmlFor="dashboard-period">Periode</FieldLabel>
+                <Select
+                  id="dashboard-period"
+                  name="academicPeriodId"
+                  defaultValue={data.filters.academicPeriodId ?? ""}
+                >
+                  <option value="">Semua periode</option>
+                  {data.periodOptions.map((period) => (
+                    <option key={period.id} value={period.id}>
+                      {period.label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="dashboard-halaqah">Halaqah</FieldLabel>
+                <Select
+                  id="dashboard-halaqah"
+                  name="halaqahId"
+                  defaultValue={data.filters.halaqahId ?? ""}
+                >
+                  <option value="">Semua halaqah</option>
+                  {data.halaqahOptions.map((halaqah) => (
+                    <option key={halaqah.id} value={halaqah.id}>
+                      {halaqah.label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            </FieldGroup>
+            <Button type="submit" className="w-full sm:w-auto">
+              <ListFilter aria-hidden="true" />
+              Terapkan
+            </Button>
+            <Button asChild type="button" variant="outline" className="w-full sm:w-auto">
+              <Link href="/app">
+                <RotateCcw aria-hidden="true" />
+                Reset
+              </Link>
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Ringkasan setoran">
         {summaryCards.map((summary) => {
@@ -211,7 +271,14 @@ function AttentionStudents({
               <TableBody>
                 {students.map((student) => (
                   <TableRow key={student.id}>
-                    <TableCell className="pl-4 font-medium">{student.name}</TableCell>
+                    <TableCell className="pl-4 font-medium">
+                      <Link
+                        href={`/app/santri/${student.id}`}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {student.name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {student.lastSubmissionDate
                         ? formatDate(student.lastSubmissionDate)
@@ -232,7 +299,11 @@ function AttentionStudents({
           <Card key={student.id} size="sm" className="border shadow-sm">
             <CardHeader>
               <div className="flex items-start justify-between gap-3">
-                <CardTitle className="min-w-0 truncate">{student.name}</CardTitle>
+                <CardTitle className="min-w-0 truncate">
+                  <Link href={`/app/santri/${student.id}`} className="hover:text-primary">
+                    {student.name}
+                  </Link>
+                </CardTitle>
                 <CircleAlert className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
               </div>
               <CardDescription>
@@ -243,6 +314,9 @@ function AttentionStudents({
             </CardHeader>
             <CardContent>
               <AttentionReasonBadges reasons={student.reasons} />
+              <Button asChild variant="outline" className="mt-3 w-full">
+                <Link href={`/app/santri/${student.id}`}>Lihat Detail Santri</Link>
+              </Button>
             </CardContent>
           </Card>
         ))}

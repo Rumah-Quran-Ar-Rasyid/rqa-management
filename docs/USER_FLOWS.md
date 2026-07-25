@@ -68,10 +68,14 @@ Dashboard awal:
 - Santri dan halaqah aktif.
 - Setoran hari ini/minggu ini.
 - Jumlah Sabaq, Sabqi, Manzil.
+- Filter periode dan halaqah diterapkan untuk ringkasan setoran, jumlah kategori, dan aktivitas terbaru.
+- Filter yang tidak valid atau bukan milik organisasi pengguna diabaikan oleh server.
+- Daftar santri perlu perhatian tetap memakai kondisi aktif organisasi saat ini, bukan dibatasi periode historis.
 - Minggu berjalan dihitung dari Senin hingga hari ini berdasarkan timezone organisasi; record setoran dibatalkan tidak dihitung.
 - Santri aktif yang belum pernah memiliki setoran aktif, atau setoran aktif terakhirnya sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.
 - Santri aktif dengan predikat Kurang Lancar pada setoran aktif terakhir.
 - Aktivitas terbaru.
+- Saat membuka detail santri, Kepala melihat halaqah saat ini, ringkasan setoran aktif hingga hari ini, status perhatian, dan maksimal 10 setoran aktif terbaru. Kontak wali tidak ditampilkan pada halaman monitoring akademik.
 
 ## 6. Koreksi Setoran
 Pengajar membuka riwayat miliknya atau Kepala membuka aktivitas terbaru → buka detail setoran → Koreksi → ubah data akademik → isi alasan → simpan → sistem menyimpan audit sebelum/sesudah.

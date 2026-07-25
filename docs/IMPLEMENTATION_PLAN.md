@@ -298,6 +298,13 @@ DoD:
 - Pengajar tidak bisa membuka dashboard keseluruhan.
 - Kepala dapat membuka detail santri dari dashboard.
 
+Status implementasi per 25 Juli 2026:
+- Potongan filter dashboard selesai: Kepala dapat memilih periode dan halaqah dari Beranda, filter diproses server-side, dan query filter divalidasi terhadap organisasi.
+- Filter memengaruhi jumlah setoran hari ini/minggu ini, jumlah Sabaq/Sabqi/Manzil, dan aktivitas terbaru.
+- Jumlah santri/halaqah aktif serta daftar santri perlu perhatian tetap memakai kondisi aktif organisasi saat ini agar pemilihan periode historis tidak mengubah definisi perhatian.
+- Kepala dapat membuka detail setoran dari aktivitas terbaru dan detail akademik santri aktif dari daftar perhatian.
+- Detail santri hanya tersedia untuk Kepala, divalidasi terhadap organisasi dan status Aktif di server, serta tidak memuat kontak wali. Halaman menampilkan ringkasan setoran aktif, halaqah saat ini, status perhatian, dan maksimal 10 setoran aktif terbaru.
+
 ### Slice 6 — Laporan PDF/Cetak
 Tujuan: Kepala/Admin dapat membuat laporan santri dari data yang sudah ada.
 

@@ -114,6 +114,11 @@ Potongan awal dashboard Kepala:
 - Hanya Kepala yang dapat melihat ringkasan akademik organisasi.
 - Setoran hari ini memakai tanggal organisasi; setoran minggu ini dihitung sejak Senin sampai hari ini menurut timezone organisasi.
 - Ringkasan dan aktivitas terbaru hanya menghitung record setoran berstatus aktif.
+- Filter periode dan halaqah diproses di server, divalidasi terhadap organisasi, dan memengaruhi jumlah setoran, jumlah kategori, serta aktivitas terbaru.
+- Jika query filter tidak valid atau tidak berada dalam organisasi yang sama, dashboard mengabaikan filter tersebut.
+- Jumlah santri/halaqah aktif dan daftar santri perlu perhatian tetap memakai snapshot kondisi aktif organisasi saat ini agar filter periode historis tidak menimbulkan kesimpulan yang menyesatkan.
+- Kepala dapat membuka detail akademik santri aktif dari daftar perhatian. Detail hanya memuat ringkasan setoran aktif, halaqah saat ini, status perhatian, dan maksimal 10 setoran aktif terbaru; kontak wali tidak ditampilkan.
+- Detail santri divalidasi di server terhadap role Kepala, organisasi, dan status santri Aktif. URL santri dari organisasi lain atau santri nonaktif tidak mengungkapkan data.
 
 Santri perlu perhatian apabila:
 - Belum pernah memiliki setoran aktif, atau tanggal setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.

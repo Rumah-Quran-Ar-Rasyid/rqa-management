@@ -27,7 +27,7 @@ export default async function ProtectedLayout({
   const canCreateMemorization = canCreateMemorizationRecord(user.roles);
 
   return (
-    <div className="h-svh overflow-hidden bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <div className="flex h-svh flex-col overflow-hidden bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="hidden border-r bg-card lg:flex lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:p-4">
         <AppBrand />
         <div className="my-7 h-px bg-border" />
@@ -57,7 +57,7 @@ export default async function ProtectedLayout({
         </div>
       </aside>
 
-      <div className="flex min-h-0 min-w-0 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="shrink-0 border-b bg-card lg:hidden">
           <div className="flex min-h-16 items-center justify-between gap-3 px-4">
             <AppBrand />
