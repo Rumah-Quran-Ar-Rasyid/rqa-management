@@ -11,6 +11,8 @@ MVP fokus pada:
 
 Di luar scope MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payment gateway, aplikasi native, AI, audio recording, microservices, dan Kubernetes.
 
+Kandidat setelah MVP stabil dan pilot selesai dicatat di [docs/PRODUCT.md](./docs/PRODUCT.md) dan [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md). Kandidat tersebut mencakup rapor pencapaian akademik yang lebih lengkap, absensi, dan evaluasi integrasi administrasi infaq; semuanya tetap di luar scope MVP sampai keputusan bisnis baru disetujui.
+
 ## Dokumentasi
 
 Sebelum mengubah kode, baca:
@@ -25,6 +27,7 @@ Dokumentasi utama:
 - [docs/USER_FLOWS.md](./docs/USER_FLOWS.md): alur utama pengguna.
 - [docs/ACCEPTANCE_CRITERIA.md](./docs/ACCEPTANCE_CRITERIA.md): kriteria MVP dianggap selesai.
 - [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md): rencana vertical slice.
+- [docs/OPERATIONS.md](./docs/OPERATIONS.md): backup, restore aman, dan checklist pilot.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
 

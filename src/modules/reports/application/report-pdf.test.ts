@@ -42,5 +42,8 @@ describe("report PDF", () => {
 
     expect(pdf.subarray(0, 8).toString("latin1")).toBe("%PDF-1.4");
     expect(pdf.toString("latin1")).toContain("RQA-TEST-001");
+    expect(pdf.toString("latin1")).toContain("LAPORAN PERKEMBANGAN HAFALAN");
+    expect(pdf.toString("latin1")).toContain("Halaman 1 dari 1");
+    expect(pdf.toString("latin1")).toContain("Helvetica-Bold");
   });
 });

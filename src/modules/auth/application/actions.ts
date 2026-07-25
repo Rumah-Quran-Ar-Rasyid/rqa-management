@@ -4,6 +4,11 @@ import { compare } from "bcryptjs";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
+import {
+  clearFailedLogins,
+  isLoginRateLimited,
+  recordFailedLogin,
+} from "./login-rate-limit-service";
 import { createUserSession, revokeCurrentSession } from "./session";
 import { loginSchema } from "../domain/login-schema";
 
@@ -33,6 +38,12 @@ export async function loginAction(
     };
   }
 
+  if (await isLoginRateLimited(parsed.data.email)) {
+    return {
+      message: "Terlalu banyak percobaan masuk. Silakan coba lagi 15 menit lagi.",
+    };
+  }
+
   const organizations = await db.organization.findMany({
     where: { status: "ACTIVE" },
     select: { id: true },
@@ -40,6 +51,7 @@ export async function loginAction(
   });
 
   if (organizations.length !== 1) {
+    await recordFailedLogin(parsed.data.email);
     return {
       message: "Email atau kata sandi tidak sesuai.",
     };
@@ -77,11 +89,13 @@ export async function loginAction(
     user.status !== "ACTIVE" ||
     user.roles.length === 0
   ) {
+    await recordFailedLogin(parsed.data.email);
     return {
       message: "Email atau kata sandi tidak sesuai.",
     };
   }
 
+  await clearFailedLogins(parsed.data.email);
   await createUserSession(user.id, user.organizationId);
   redirect("/app");
 }

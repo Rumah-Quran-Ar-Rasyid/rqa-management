@@ -193,6 +193,17 @@ model UserSession {
   @@map("user_sessions")
 }
 
+model LoginThrottle {
+  emailHash       String    @id @db.VarChar(64)
+  failureCount    Int       @default(0)
+  windowStartedAt DateTime
+  lockedUntil     DateTime?
+  updatedAt       DateTime  @updatedAt
+
+  @@index([updatedAt])
+  @@map("login_throttles")
+}
+
 model Student {
   id             String               @id @default(cuid())
   organizationId String

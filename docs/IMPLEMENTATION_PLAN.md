@@ -38,7 +38,7 @@ Tidak termasuk MVP: login wali, portal wali, absensi, infaq internal, WhatsApp/e
 - Admin dapat melihat audit perubahan role `HEAD` secara read-only, tetapi tidak dapat mengubah role `HEAD`.
 - Kepala dapat melihat detail event periode karena periode memengaruhi setoran, koreksi, laporan, dan kepercayaan data.
 - Cookie session perlu HttpOnly, Secure, SameSite, dan user nonaktif harus ditolak pada login serta pada validasi session berikutnya.
-- Endpoint login publik masih memerlukan rate limiting sebelum pilot/deployment untuk mengurangi risiko brute force; pesan gagal harus tetap generik agar status akun tidak bocor.
+- Endpoint login publik memakai rate limiting per email yang di-HMAC untuk mengurangi risiko brute force; pesan gagal tetap tidak mengungkapkan status akun. Perlindungan berbasis IP/WAF tetap menjadi konfigurasi deployment yang direkomendasikan.
 - Data laporan dan catatan pengajar harus menghindari informasi sensitif di luar perkembangan hafalan.
 
 ### 4. Risiko Desain Database
@@ -178,7 +178,7 @@ Status implementasi per 25 Juli 2026:
 - Permission multi-role, pemisahan pengelolaan role, batas organisasi, dan perlindungan Kepala aktif terakhir sudah tersedia sebagai policy yang dites. Endpoint mutasi role baru dibuat pada Slice 2 dan wajib memakai policy tersebut.
 - UI halaman masuk dan kerangka internal menggunakan komponen Slice 0, Bahasa Indonesia, target sentuh minimal 44 piksel, dan tidak menampilkan enum teknis.
 - Smoke test MySQL memverifikasi login, redirect, atribut cookie, akses halaman internal, logout, pencabutan session, dan penolakan cookie lama.
-- Rate limiting login belum dibuat dan wajib diselesaikan sebelum pilot/deployment publik.
+- Login dibatasi lima kegagalan per email dalam 15 menit; kegagalan kelima mengunci percobaan selama 15 menit. Kunci dan reset dihitung server-side dengan email yang di-HMAC, lalu dilindungi test policy.
 
 ### Slice 2 — Setup Minimal Halaqah
 Tujuan: Admin dapat menyiapkan data minimum agar satu pengajar bisa mencatat setoran. Kepala dapat melihat data tersebut, atau ikut mengelola jika akunnya juga memiliki role Admin.
@@ -345,6 +345,26 @@ DoD:
 - Tidak ada bug blocker.
 - Backup/restore pernah diuji.
 - Kepala dapat melihat dashboard dan membuat laporan PDF.
+
+Status implementasi per 26 Juli 2026:
+- Pembatasan login selesai: lima kegagalan pada email yang sama dalam 15 menit mengunci percobaan selama 15 menit. Kunci disimpan dengan hash HMAC email, tidak menyimpan email mentah percobaan gagal, dan dihapus setelah login berhasil.
+- Migrasi `20260726010000_add_login_throttles` telah diterapkan pada MySQL lokal. Test policy mencakup penguncian, reset jendela waktu, dan berakhirnya waktu kunci.
+- Backup dan restore diuji pada 26 Juli 2026: dump MySQL dibuat melalui `npm run db:backup`, lalu dipulihkan ke database pemeriksaan baru melalui `npm run db:restore -- ... --confirm-restore`. Database aplikasi tidak disentuh; hasil pemeriksaan memuat 1 organisasi, 2 pengguna, 8 setoran, dan 1 laporan.
+- Panduan pelaksanaan pilot, skenario uji per role, target mobile, dan format log temuan tersedia di `PILOT_GUIDE.md`.
+- Sisa Slice 7 adalah pelaksanaan kesiapan operasional: uji pilot mobile dengan Pengajar, data pilot yang disetujui yayasan, serta konfigurasi deployment dan perlindungan berbasis IP/WAF bila aplikasi dibuka ke internet.
+
+### Backlog Pasca-MVP — Rapor Pencapaian dan Administrasi
+Status: belum dijadwalkan. Mulai hanya setelah Slice 7 selesai, hasil pilot stabil, dan keputusan bisnis di bawah disetujui. Backlog ini tidak memperluas MVP yang sedang berjalan.
+
+Urutan yang direkomendasikan:
+1. Discovery rapor akademik: putuskan apakah kelas berbeda dari halaqah, sumber data Tilawati/Tahsin, catatan periode, kalender hari efektif, rumus target hafalan, dan ambang predikat. Validasi pula penyebut Sabqi/Manzil, bukan mengasumsikan 31 hari untuk semua periode.
+2. Vertical slice rapor akademik lanjutan: simpan data sumber yang disetujui, hitung persentase di server, tampilkan pada pratinjau, dan bekukan hasilnya dalam snapshot laporan versi baru.
+3. Discovery absensi: definisi hadir/izin/sakit/alpa, pelaku input, kalender, serta formula persentase. Absensi memerlukan domain dan audit tersendiri sebelum masuk laporan.
+4. Discovery administrasi infaq: tetapkan integrasi baca dengan aplikasi eksternal atau modul keuangan internal. Modul internal membutuhkan authorization keuangan, audit mutasi, rekonsiliasi, dan kebijakan data sebelum development.
+
+Kandidat informasi rapor pasca-MVP:
+- NIS, nama santri, kelas, Tilawati/Tahsin bulanan, target hafalan, Sabqi, Manzil, catatan wali kelas/Pengajar, dan persentase kehadiran.
+- Informasi administrasi hanya setelah scope keuangan disetujui: SPP dan potongan, Kencleng Subuh, Infaq Program, tanggal input, dan metode pembayaran.
 
 ## Keputusan yang Sudah Dikunci
 - Admin mengelola data operasional; Kepala mengelola otorisasi akademik.

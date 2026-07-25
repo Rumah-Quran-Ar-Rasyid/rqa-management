@@ -37,6 +37,23 @@ Belum memiliki akun. Menerima laporan PDF/hard copy secara manual.
 ## Out of Scope
 Login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payment gateway, aplikasi native, AI, audio, gamifikasi, dan multi-cabang kompleks.
 
+## Kandidat Iterasi Pasca-MVP
+Bagian ini adalah backlog setelah MVP stabil, pilot terbatas selesai, dan yayasan menyetujui scope baru. Bagian ini bukan komitmen implementasi MVP dan tidak mengubah keputusan bahwa wali belum memiliki akun login maupun infaq memakai aplikasi eksternal.
+
+### Laporan Pencapaian Akademik Lanjutan
+- Identitas laporan: NIS, nama santri, dan kelas. Istilah serta relasi kelas perlu diputuskan terpisah dari halaqah.
+- Pencapaian Tilawati/Tahsin per bulan.
+- Persentase target hafalan, Sabqi, dan Manzil beserta predikatnya.
+- Catatan wali kelas/Pengajar pada periode laporan.
+
+Sebelum dikerjakan, yayasan perlu menyetujui definisi target, sumber data Tilawati/Tahsin, kalender hari efektif, rumus dan ambang predikat, serta apakah penyebut Sabqi/Manzil selalu 31 hari atau mengikuti hari efektif/periode. Nilai akhir harus disimpan dalam snapshot laporan agar versi lama tidak berubah.
+
+### Absensi
+Persentase kehadiran menjadi kandidat modul terpisah. Implementasinya membutuhkan data kehadiran, kalender hari efektif, aturan izin/sakit/alpa, otorisasi input, dan snapshot laporan; karena itu tetap di luar MVP saat ini.
+
+### Administrasi Infaq
+Rincian SPP, potongan dhuafa/yatim, Kencleng Subuh, Infaq Program, tanggal input, dan metode infaq adalah kandidat keputusan bisnis terpisah. Prioritas awalnya adalah menentukan apakah aplikasi hanya menampilkan data dari sistem infaq eksternal atau benar-benar mengelola transaksi internal. Modul transaksi internal, termasuk metode TF/QRIS/CASH, tidak boleh dimulai tanpa scope, audit, privasi, rekonsiliasi, dan otorisasi keuangan yang disetujui.
+
 ## Indikator Keberhasilan
 - Minimal 90% setoran pilot tercatat.
 - Median input satu setoran maksimal 90 detik.

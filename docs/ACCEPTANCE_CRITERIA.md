@@ -8,6 +8,7 @@
 - Logout mencabut session di database sehingga cookie lama tidak dapat digunakan kembali.
 - Session lama pengguna atau organisasi yang dinonaktifkan langsung ditolak.
 - Cookie session memakai `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
+- Login dibatasi maksimal lima kegagalan untuk email yang sama dalam 15 menit. Percobaan berikutnya ditolak selama 15 menit dengan pesan yang tidak mengungkapkan status akun.
 
 ## Pengguna dan Role
 - Seed pertama membuat satu akun awal dengan role `ADMIN` + `HEAD`.

@@ -7,8 +7,12 @@
 - `DATA_MODEL.md`: struktur data awal.
 - `ACCEPTANCE_CRITERIA.md`: syarat MVP dianggap selesai.
 - `IMPLEMENTATION_PLAN.md`: urutan development.
+- `OPERATIONS.md`: backup, restore aman, dan checklist pilot.
+- `PILOT_GUIDE.md`: persiapan, skenario uji per peran, dan log temuan pilot.
 
 Prinsip utama: MVP fokus pada pencatatan hafalan internal dan laporan PDF/cetak. Wali belum login dan infaq tetap memakai aplikasi eksternal.
+
+Kandidat iterasi setelah MVP stabil dan pilot selesai dicatat pada `PRODUCT.md` serta `IMPLEMENTATION_PLAN.md`: rapor pencapaian akademik lanjutan, absensi, dan evaluasi administrasi infaq. Kandidat tersebut belum menjadi scope MVP.
 
 Untuk pengembangan lokal, `npm run db:seed:demo` mengisi akun Pengajar demo, data operasional, dan setoran contoh secara idempotent setelah seed dasar dijalankan. Data demo tidak boleh dijalankan pada database pilot atau produksi; detailnya ada di `README.md` root.
 

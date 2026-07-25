@@ -51,6 +51,14 @@ Aturan:
 - Sesi hanya valid jika belum dicabut, belum kedaluwarsa, organisasi aktif, pengguna aktif, dan pengguna masih memiliki minimal satu role aktif.
 - Foreign key pengguna memakai pasangan `user_id` + `organization_id` agar sesi lintas organisasi ditolak database.
 
+### login_throttles
+`email_hash`, `failure_count`, `window_started_at`, `locked_until`, `updated_at`.
+
+Aturan:
+- `email_hash` adalah HMAC-SHA-256 dari email login yang sudah dinormalisasi; email mentah percobaan gagal tidak disimpan pada tabel ini.
+- Maksimal lima percobaan gagal dalam jendela 15 menit. Kegagalan kelima mengunci percobaan email tersebut selama 15 menit.
+- Login berhasil menghapus throttle yang terkait. Data throttle kedaluwarsa dibersihkan secara opportunistic setelah 24 jam.
+
 ### students
 `id`, `organization_id`, `student_number`, `full_name`, `preferred_name`, `gender`, `birth_date`, `joined_at`, `status`, timestamps.
 

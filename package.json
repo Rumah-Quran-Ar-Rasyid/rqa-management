@@ -16,7 +16,9 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "db:seed:demo": "tsx prisma/seed-demo.ts"
+    "db:seed:demo": "tsx prisma/seed-demo.ts",
+    "db:backup": "bash scripts/backup-mysql.sh",
+    "db:restore": "bash scripts/restore-mysql.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
