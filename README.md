@@ -37,6 +37,9 @@ Setiap perubahan requirement, business rule, authorization, data model, atau ren
 - Sistem wajib menjaga minimal satu pengguna aktif dengan role Kepala.
 - Wali hanya kontak dan tidak memiliki akun login.
 - Setiap organisasi hanya memiliki satu periode pembelajaran aktif pada satu waktu.
+- Halaqah dikelola Admin dengan status Aktif, Nonaktif, atau Diarsipkan; tidak ada hard delete.
+- Santri dapat dicatat dengan satu kontak wali utama opsional; wali tidak memiliki akun login.
+- Penugasan Pengajar hanya dibuat pada halaqah aktif untuk akun Pengajar aktif; penugasan Pengganti memiliki tanggal selesai dan tidak ada hard delete.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
 
@@ -81,7 +84,7 @@ Setelah seed, akun awal dapat masuk menggunakan nilai `SEED_ADMIN_EMAIL` dan `SE
 
 Menjalankan `npm run db:seed` ulang akan menyelaraskan nama, status, dan password akun awal dengan nilai seed saat ini tanpa menghapus data operasional. Session aktif akun awal akan dicabut agar password baru langsung berlaku.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2A (pengelolaan pengguna/role), dan slice periode pada 2B telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2B (pengguna/role, periode, serta halaqah), dan potongan santri/wali utama pada 2C telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 

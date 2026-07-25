@@ -12,11 +12,16 @@ Aturan:
 - Wali tidak mengikuti alur ini karena tidak memiliki akun login pada MVP.
 
 ## 1. Admin Menyiapkan Data
-Admin login → membuka Pengguna → membuat akun Pengajar dengan kata sandi awal → membuat santri → mencatat wali → membuat halaqah → menetapkan pengajar → memasukkan santri → mengaktifkan periode.
+Admin login → membuka Pengguna → membuat akun Pengajar dengan kata sandi awal → membuat santri dan, bila tersedia, mencatat wali utama → membuat halaqah → menetapkan pengajar → memasukkan santri → mengaktifkan periode.
 
 Aturan:
 - Satu pengajar dapat mengampu beberapa halaqah.
+- Penugasan hanya memakai Pengajar aktif dan halaqah aktif. Pengajar Pengganti wajib memiliki tanggal selesai; Pengajar Utama tidak boleh bertumpang tindih pada halaqah yang sama.
+- Penugasan yang selesai ditutup dengan tanggal selesai, bukan dihapus.
 - Admin hanya dapat mengaktifkan periode jika tidak ada periode aktif lain pada organisasi.
+- Admin dapat menonaktifkan atau mengarsipkan halaqah tanpa menghapus riwayatnya. Halaqah yang sudah diarsipkan tidak dapat diaktifkan kembali pada MVP.
+- Admin dapat menonaktifkan atau mengarsipkan santri tanpa menghapus riwayatnya. Santri yang sudah diarsipkan tidak dapat diaktifkan kembali pada MVP.
+- Wali hanya disimpan sebagai kontak dan tidak memiliki akun login.
 - Satu halaqah dapat memiliki pengajar utama dan pendamping.
 - Satu wali dapat memiliki beberapa anak.
 - Santri dapat pindah halaqah tanpa kehilangan histori.

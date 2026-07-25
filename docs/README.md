@@ -17,6 +17,8 @@ Keputusan MVP yang sudah dikunci:
 - Role Kepala hanya dapat dikelola oleh pengguna aktif yang sudah memiliki role Kepala, dan sistem wajib menjaga minimal satu Kepala aktif.
 - Wali hanya kontak dan tidak memiliki akun login.
 - Setiap organisasi hanya memiliki satu periode pembelajaran aktif pada satu waktu.
+- Halaqah dikelola Admin dengan status Aktif, Nonaktif, atau Diarsipkan; tidak ada hard delete.
+- Santri dapat dicatat dengan satu kontak wali utama opsional; wali tidak memiliki akun login.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
 - Nama produk pada tampilan adalah “Rumah Qur’an Ar-Rasyid” dan istilah teknis tidak ditampilkan mentah kepada pengguna.
@@ -26,6 +28,6 @@ Keputusan MVP yang sudah dikunci:
 - Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
 - Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0, Slice 1, Slice 2A (pengguna/role), dan slice periode pada 2B telah diimplementasikan. Tahap berikutnya adalah halaqah, lalu santri/wali/assignment/membership sesuai `IMPLEMENTATION_PLAN.md`.
+- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), serta potongan 2C untuk santri/wali utama dan penugasan Pengajar telah diimplementasikan. Tahap berikutnya adalah membership santri sesuai `IMPLEMENTATION_PLAN.md`.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

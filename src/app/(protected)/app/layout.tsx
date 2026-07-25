@@ -5,6 +5,9 @@ import { logoutAction } from "@/modules/auth/application/actions";
 import { requireUser } from "@/modules/auth/application/session";
 import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
 import { canAccessAcademicPeriods } from "@/modules/periods/domain/academic-period-policy";
+import { canAccessHalaqahDirectory } from "@/modules/halaqahs/domain/halaqah-policy";
+import { canAccessStudentDirectory } from "@/modules/students/domain/student-policy";
+import { canAccessTeacherAssignments } from "@/modules/assignments/domain/teacher-assignment-policy";
 import { AppBrand, AppNavigation } from "./app-navigation";
 
 export default async function ProtectedLayout({
@@ -15,6 +18,9 @@ export default async function ProtectedLayout({
   const user = await requireUser();
   const canAccessUsers = canAccessUserDirectory(user.roles);
   const canAccessPeriods = canAccessAcademicPeriods(user.roles);
+  const canAccessHalaqahs = canAccessHalaqahDirectory(user.roles);
+  const canAccessStudents = canAccessStudentDirectory(user.roles);
+  const canAccessAssignments = canAccessTeacherAssignments(user.roles);
 
   return (
     <div className="min-h-svh bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
@@ -24,6 +30,9 @@ export default async function ProtectedLayout({
         <AppNavigation
           canAccessUserDirectory={canAccessUsers}
           canAccessAcademicPeriods={canAccessPeriods}
+          canAccessHalaqahs={canAccessHalaqahs}
+          canAccessStudents={canAccessStudents}
+          canAccessTeacherAssignments={canAccessAssignments}
           variant="desktop"
         />
         <div className="mt-auto border-t pt-4">
@@ -61,6 +70,9 @@ export default async function ProtectedLayout({
           <AppNavigation
             canAccessUserDirectory={canAccessUsers}
             canAccessAcademicPeriods={canAccessPeriods}
+            canAccessHalaqahs={canAccessHalaqahs}
+            canAccessStudents={canAccessStudents}
+            canAccessTeacherAssignments={canAccessAssignments}
             variant="mobile"
           />
         </header>

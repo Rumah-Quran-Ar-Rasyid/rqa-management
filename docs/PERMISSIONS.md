@@ -24,6 +24,12 @@ Permission teknis harus memisahkan hak melihat audit dari hak melakukan aksi. Co
 - `MANAGE_ACADEMIC_PERIOD`
 - `CLOSE_ACADEMIC_PERIOD`
 - `REOPEN_ACADEMIC_PERIOD`
+- `VIEW_HALAQAH`
+- `MANAGE_HALAQAH`
+- `VIEW_STUDENT`
+- `MANAGE_STUDENT`
+- `VIEW_TEACHER_ASSIGNMENT`
+- `MANAGE_TEACHER_ASSIGNMENT`
 
 ## Matriks Hak Akses
 | Aktivitas | Admin | Kepala | Pengajar |
@@ -39,7 +45,8 @@ Permission teknis harus memisahkan hak melihat audit dari hak melakukan aksi. Co
 | Kelola periode PLANNED/ACTIVE | Ya | Lihat | Tidak |
 | Tutup periode | Tidak | Ya dengan alasan | Tidak |
 | Reopen periode CLOSED | Tidak | Ya dengan alasan | Tidak |
-| Assignment pengajar/santri | Ya | Lihat | Tidak |
+| Assignment pengajar | Ya | Lihat | Tidak |
+| Membership santri | Ya | Lihat | Tidak |
 | Lihat seluruh halaqah | Ya | Ya | Tidak |
 | Lihat halaqah yang diampu | Ya | Ya | Ya |
 | Input setoran | Tidak | Tidak | Halaqahnya |
@@ -62,6 +69,11 @@ Catatan:
 - Role hanya dapat diberikan kepada pengguna aktif. Jika role aktif terakhir dicabut dari pengguna, session aktif pengguna tersebut dicabut.
 - Seed pertama membuat satu akun awal `ADMIN` + `HEAD`. Setelah itu, pengelolaan role `HEAD` dilakukan oleh pengguna yang sudah memiliki role `HEAD`.
 - Admin dapat membuat periode `PLANNED` dan mengaktifkannya jika belum ada periode aktif. Kepala dapat menutup periode aktif atau membuka kembali periode ditutup dengan alasan.
+- Admin dapat membuat, mengubah, mengaktifkan, menonaktifkan, atau mengarsipkan halaqah. Kepala hanya melihat daftar halaqah pada tahap ini.
+- Halaqah yang diarsipkan tidak dapat diubah atau diaktifkan kembali pada MVP.
+- Admin dapat membuat, mengubah, mengaktifkan, menonaktifkan, atau mengarsipkan santri. Kepala hanya melihat daftar santri dan kontak wali utama pada tahap ini.
+- Wali adalah kontak tanpa akun login, password, session, atau role.
+- Admin dapat membuat penugasan Pengajar pada halaqah aktif dan mengakhiri penugasan yang masih berjalan. Kepala hanya melihat penugasan, kecuali juga memiliki role Admin.
 - Selama periode `CLOSED`, input setoran dan koreksi ditolak untuk semua role. Kepala harus reopen periode terlebih dahulu dengan alasan.
 - Semua tipe assignment pengajar aktif (`PRIMARY`, `ASSISTANT`, `SUBSTITUTE`) boleh mencatat setoran pada halaqah terkait.
 - Hanya pengajar pembuat setoran yang boleh mengoreksi setoran tersebut dalam batas 24 jam.

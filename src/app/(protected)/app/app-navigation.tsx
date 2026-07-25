@@ -4,6 +4,9 @@ import {
   BookOpenText,
   CalendarDays,
   LayoutDashboard,
+  School,
+  UserRoundCheck,
+  UserRound,
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +33,24 @@ const navigation = [
     icon: CalendarDays,
     requiredAccess: "periods",
   },
+  {
+    href: "/app/halaqah",
+    label: "Halaqah",
+    icon: School,
+    requiredAccess: "halaqahs",
+  },
+  {
+    href: "/app/santri",
+    label: "Santri",
+    icon: UserRound,
+    requiredAccess: "students",
+  },
+  {
+    href: "/app/penugasan",
+    label: "Penugasan",
+    icon: UserRoundCheck,
+    requiredAccess: "assignments",
+  },
 ] as const;
 
 export function AppBrand({ compact = false }: { compact?: boolean }) {
@@ -55,10 +76,16 @@ export function AppBrand({ compact = false }: { compact?: boolean }) {
 export function AppNavigation({
   canAccessUserDirectory,
   canAccessAcademicPeriods,
+  canAccessHalaqahs,
+  canAccessStudents,
+  canAccessTeacherAssignments,
   variant,
 }: {
   canAccessUserDirectory: boolean;
   canAccessAcademicPeriods: boolean;
+  canAccessHalaqahs: boolean;
+  canAccessStudents: boolean;
+  canAccessTeacherAssignments: boolean;
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
@@ -78,8 +105,21 @@ export function AppNavigation({
             return canAccessUserDirectory;
           }
 
+          if (item.requiredAccess === "periods") {
+            return canAccessAcademicPeriods;
+          }
+
+          if (item.requiredAccess === "halaqahs") {
+            return canAccessHalaqahs;
+          }
+
+          if (item.requiredAccess === "students") {
+            return canAccessStudents;
+          }
+
           return (
-            item.requiredAccess !== "periods" || canAccessAcademicPeriods
+            item.requiredAccess !== "assignments" ||
+            canAccessTeacherAssignments
           );
         })
         .map((item) => {

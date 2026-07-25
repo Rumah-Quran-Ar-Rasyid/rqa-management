@@ -37,11 +37,20 @@ Then sistem menolak permintaan
 
 ## Santri dan Halaqah
 - Admin dapat membuat santri dengan nomor unik.
+- Santri memakai status Aktif, Nonaktif, atau Diarsipkan dan tidak di-hard delete.
+- Form santri dapat mencatat satu wali utama opsional sebagai kontak; wali tidak dapat login.
+- Kontak wali yang mulai diisi wajib memiliki nama, hubungan dengan santri, dan nomor telepon.
 - Admin dapat membuat halaqah, menetapkan pengajar, dan memasukkan santri.
+- Nama halaqah unik per organisasi. Halaqah memakai status Aktif, Nonaktif, atau Diarsipkan dan tidak di-hard delete.
+- Halaqah yang sudah diarsipkan tidak dapat diubah atau diaktifkan kembali pada MVP.
 - Pengajar hanya melihat halaqah yang diampu.
 - Akses langsung ke halaqah lain ditolak di server.
 - Satu santri tidak dapat memiliki dua membership halaqah aktif pada waktu yang sama.
 - Satu halaqah tidak dapat memiliki dua pengajar `PRIMARY` aktif pada waktu yang sama.
+- Admin hanya dapat menetapkan akun Pengajar aktif pada halaqah aktif dalam organisasinya.
+- Kepala dapat melihat penugasan Pengajar, tetapi tidak dapat mengubahnya tanpa role Admin.
+- Penugasan Pengajar Pengganti wajib memiliki tanggal selesai.
+- Penugasan tidak dihapus; Admin mengakhirinya dengan tanggal selesai yang tidak boleh mendahului tanggal mulai.
 
 ## Setoran
 Given pengajar login dan mengampu halaqah santri, ketika kategori, satu surah, rentang ayat, dan kelancaran valid disimpan, maka setoran muncul pada riwayat dan dashboard kepala.

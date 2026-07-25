@@ -140,7 +140,7 @@ DoD:
 - Button, Input, Card, dan fondasi Form tersedia serta lulus typecheck tanpa memasang komponen katalog lain lebih awal.
 - Nama produk dan istilah yang tampil tidak menggunakan placeholder atau enum teknis.
 
-Status implementasi per 24 Juli 2026:
+Status implementasi per 25 Juli 2026:
 - Slice 0 selesai dan terverifikasi pada MySQL 8.4 lokal melalui OrbStack/Docker Compose.
 - Schema, migration awal, Prisma Client server-only, seed idempotent, validasi environment, health endpoint, dan halaman fondasi telah dibuat.
 - Seed memuat role `ADMIN`, `HEAD`, `TEACHER`, 114 surah, satu organisasi, dan satu akun awal `ADMIN` + `HEAD`.
@@ -167,7 +167,7 @@ DoD:
 - Direct access ke halaman data tanpa hak ditolak di server.
 - Role `HEAD` terakhir tidak dapat dicabut atau dinonaktifkan.
 
-Status implementasi per 24 Juli 2026:
+Status implementasi per 25 Juli 2026:
 - Slice 1 selesai untuk boundary autentikasi yang tersedia saat ini.
 - Login/logout memakai database session tujuh hari. Cookie menyimpan token acak, sedangkan database menyimpan hash HMAC-SHA-256, masa berlaku, dan waktu pencabutan.
 - Cookie memakai `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
@@ -201,7 +201,7 @@ DoD:
 - Satu santri tidak memiliki dua membership halaqah aktif pada waktu yang sama.
 - Satu halaqah tidak memiliki dua pengajar `PRIMARY` aktif pada waktu yang sama.
 
-Status implementasi per 24 Juli 2026:
+Status implementasi per 25 Juli 2026:
 - Slice 2A selesai: daftar pengguna responsif, pembuatan akun Pengajar, perubahan status aktif/nonaktif, pengelolaan role, audit operasional, dan toast hasil aksi telah tersedia.
 - Admin dapat membuat akun aktif dengan role Pengajar awal. Kepala dapat mengelola role Admin dan Kepala; Admin tidak dapat mengelola role tersebut kecuali akunnya juga memiliki role Kepala.
 - Perubahan status, pemberian/pencabutan role, audit, dan pencabutan session saat diperlukan berjalan dalam transaksi serializable serta selalu difilter organisasi.
@@ -211,7 +211,17 @@ Status implementasi per 24 Juli 2026:
 - Slice periode pada 2B selesai: Admin dapat membuat periode `PLANNED` dan mengaktifkannya; Kepala dapat menutup atau membuka kembali periode dengan alasan. Semua transisi diaudit dan detailnya dapat dilihat pada riwayat periode.
 - Satu organisasi hanya dapat memiliki satu periode aktif. Aktivasi dan reopen diperiksa di dalam transaksi serializable agar periode aktif tidak ambigu.
 - Periode memakai tabel pada desktop, daftar kartu pada mobile, dialog form, konfirmasi untuk transisi sensitif, dan banner saat periode hasil reopen masih aktif.
-- Halaqah pada 2B serta santri, wali, assignment, dan membership pada 2C masih belum dibuat.
+- Slice halaqah pada 2B selesai: Admin dapat membuat, mengubah, mengaktifkan, menonaktifkan, dan mengarsipkan halaqah; Kepala hanya membaca daftar. Semua mutasi dicatat sebagai audit operasional dan selalu difilter organisasi.
+- Halaqah memakai status Aktif, Nonaktif, atau Diarsipkan. Arsip menggantikan hard delete dan bersifat final pada MVP.
+- Tampilan halaqah memakai tabel desktop, kartu mobile, pencarian lokal, form dialog, menu aksi ringkas, serta konfirmasi sebelum arsip.
+- Potongan santri/wali utama pada 2C selesai: Admin dapat membuat dan mengubah santri, mencatat satu wali utama opsional, mengubah status, atau mengarsipkan tanpa hard delete. Kepala hanya membaca daftar.
+- Nomor santri unik per organisasi. Kontak wali yang mulai diisi wajib menyertakan nama, hubungan, dan nomor telepon; wali tetap tanpa login, password, session, atau role.
+- Pembuatan santri beserta wali utama dan relasinya berjalan dalam transaksi serializable, seluruh mutasi masuk audit operasional, dan semua query difilter organisasi.
+- Tampilan santri memakai tabel desktop, kartu mobile, pencarian lokal, form satu kolom pada mobile, menu aksi ringkas, serta konfirmasi sebelum arsip.
+- Potongan penugasan Pengajar pada 2C selesai: Admin dapat menetapkan Pengajar aktif ke halaqah aktif, melihat histori penugasan, dan mengakhiri penugasan yang masih berjalan dengan tanggal selesai. Kepala hanya melihat daftar kecuali akunnya juga memiliki role Admin.
+- Pengajar Utama divalidasi tidak bertumpang tindih pada halaqah yang sama dalam transaksi serializable. Pengajar Pengganti wajib memiliki tanggal selesai. Semua mutasi penugasan masuk audit operasional dan seluruh query difilter organisasi.
+- Tampilan penugasan memakai tabel desktop, kartu mobile, form dialog satu kolom, serta dialog konfirmasi untuk mengakhiri penugasan.
+- Membership santri, wali tambahan, dan relasi satu wali dengan beberapa santri masih belum dibuat.
 
 ### Slice 3 — Setoran End-to-End
 Tujuan: satu pengajar dapat mencatat Sabaq/Sabqi/Manzil dari HP dan Kepala langsung melihat hasilnya.

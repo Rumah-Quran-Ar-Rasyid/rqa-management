@@ -54,14 +54,36 @@ Aturan:
 ### students
 `id`, `organization_id`, `student_number`, `full_name`, `preferred_name`, `gender`, `birth_date`, `joined_at`, `status`, timestamps.
 
+Status: `ACTIVE`, `INACTIVE`, `ARCHIVED`.
+
+Aturan:
+- Nomor santri unik per organisasi.
+- Admin dapat membuat dan mengubah identitas santri, serta mengaktifkan, menonaktifkan, atau mengarsipkan santri.
+- Arsip menggantikan penghapusan. Santri `ARCHIVED` tidak dapat diubah atau diaktifkan kembali pada MVP.
+- Setiap pembuatan, perubahan detail, dan perubahan status masuk audit operasional.
+
 ### guardians
 `id`, `organization_id`, `full_name`, `phone`, `email`, `status`, timestamps. Tidak memiliki akun login pada MVP.
+
+Pada potongan awal, form santri dapat mencatat satu wali utama opsional. Wali tambahan, perubahan wali utama, dan penggunaan satu wali untuk beberapa santri akan dilengkapi pada potongan relasi berikutnya.
 
 ### student_guardians
 `student_id`, `guardian_id`, `relationship`, `is_primary`, `valid_from`, `valid_until`.
 
+Aturan awal:
+- Jika wali utama dicatat bersama santri, sistem membuat `guardian` dan `student_guardian` aktif dalam transaksi yang sama.
+- Wali utama yang sudah tercatat dapat diperbarui bersama data santri; mengosongkan form wali tidak menghapus relasi yang sudah ada.
+
 ### halaqahs
 `id`, `organization_id`, `name`, `description`, `status`, timestamps.
+
+Status: `ACTIVE`, `INACTIVE`, `ARCHIVED`.
+
+Aturan:
+- Nama halaqah unik per organisasi, termasuk yang sudah diarsipkan.
+- Admin membuat halaqah baru dengan status `ACTIVE`, dapat mengubah nama/keterangan, serta mengaktifkan atau menonaktifkan halaqah.
+- Arsip menggantikan penghapusan. Halaqah `ARCHIVED` tidak dapat diubah atau diaktifkan kembali pada MVP.
+- Setiap pembuatan, perubahan detail, dan perubahan status masuk audit operasional.
 
 ### halaqah_teacher_assignments
 `halaqah_id`, `teacher_user_id`, `assignment_type`, `valid_from`, `valid_until`.
@@ -72,7 +94,10 @@ Aturan:
 - Satu pengajar boleh aktif pada beberapa halaqah.
 - Satu halaqah memiliki maksimal satu `PRIMARY` aktif pada waktu yang sama.
 - Satu halaqah boleh memiliki beberapa `ASSISTANT`.
-- `SUBSTITUTE` digunakan untuk rentang waktu tertentu.
+- Penugasan hanya dapat dibuat untuk halaqah aktif dan akun Pengajar aktif pada organisasi yang sama.
+- `SUBSTITUTE` wajib memiliki `valid_until`; rentang tanggal bersifat inklusif.
+- Penugasan yang belum berakhir ditutup dengan mengisi `valid_until`, bukan dihapus.
+- Validasi tumpang tindih `PRIMARY` dilakukan dalam transaksi serializable.
 - Semua tipe assignment aktif boleh mencatat setoran pada halaqah terkait.
 
 ### halaqah_memberships
