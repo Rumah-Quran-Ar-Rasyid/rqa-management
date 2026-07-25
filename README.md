@@ -85,7 +85,19 @@ Setelah seed, akun awal dapat masuk menggunakan nilai `SEED_ADMIN_EMAIL` dan `SE
 
 Menjalankan `npm run db:seed` ulang akan menyelaraskan nama, status, dan password akun awal dengan nilai seed saat ini tanpa menghapus data operasional. Session aktif akun awal akan dicabut agar password baru langsung berlaku.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2B (pengguna/role, periode, serta halaqah), dan potongan santri/wali utama pada 2C telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+## Data Demo Lokal
+
+Setelah `npm run db:seed`, isi data demo lokal dengan:
+
+```bash
+npm run db:seed:demo
+```
+
+Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Pengajar demo, dua halaqah, enam santri, periode aktif bila belum ada, penugasan, membership, dan empat setoran contoh beserta auditnya. Default akun demo adalah `pengajar.demo@rqa.local` dengan password `demo-pengajar-2026`; keduanya dapat diubah melalui `.env`.
+
+Jangan jalankan seed demo pada database pilot atau produksi.
+
+Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), serta input setoran Pengajar awal pada Slice 3 telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
 
 ## Quality Gate
 

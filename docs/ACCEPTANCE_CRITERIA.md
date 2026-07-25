@@ -65,9 +65,12 @@ Given pengajar login dan mengampu halaqah santri, ketika kategori, satu surah, r
 - Satu setoran hanya mendukung satu surah.
 - Jika pengajar perlu mencatat dua surah, pengajar membuat dua record setoran terpisah.
 - Pengajar tidak dapat mencatat santri halaqah lain.
+- Admin dan Kepala tanpa role Pengajar tidak dapat membuka atau mengirim setoran baru.
+- Pengajar hanya dapat memilih halaqah yang assignment-nya masih berlaku serta santri dengan membership aktif pada tanggal setoran.
 - Identitas pembuat dan waktu tersimpan.
 - Setoran pada periode `CLOSED` ditolak untuk semua role.
 - Setoran berpotensi duplikat hanya dapat disimpan jika pengguna mengonfirmasi dan mengisi alasan override.
+- Pembuatan setoran membuat audit akademik `CREATE` dalam transaksi yang sama.
 
 Contoh:
 

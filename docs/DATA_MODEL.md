@@ -140,6 +140,9 @@ Aturan:
 - Kombinasi duplikasi: `student_id`, `submission_date`, `submission_category`, `surah_number`, `start_verse`, `end_verse`.
 - `duplicate_override = false` berarti `duplicate_override_reason` dan `duplicate_reference_record_id` kosong.
 - `duplicate_override = true` berarti alasan wajib; reference record disimpan jika tersedia.
+- Setoran baru hanya dibuat oleh Pengajar yang memiliki assignment dan membership santri yang masih berlaku pada tanggal setoran, serta berada dalam periode aktif.
+- Tanggal setoran ditentukan server berdasarkan timezone organisasi agar validasi periode dan duplikasi konsisten.
+- Pembuatan setoran selalu membuat audit akademik action `CREATE` dalam transaksi yang sama.
 - Koreksi memperbarui record yang sama dan menyimpan before/after di audit akademik.
 - Snapshot nama santri, halaqah, pengajar, dan periode disimpan ketika setoran dibuat agar histori tetap dapat dibaca setelah data master berubah.
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, CircleCheck, ShieldCheck, UsersRound } from "lucide-react";
+import { ArrowRight, CircleCheck, NotebookPen, ShieldCheck, UsersRound } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 import type { RoleCode } from "@/generated/prisma/enums";
 import { requireUser } from "@/modules/auth/application/session";
 import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
+import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
 
 export const metadata: Metadata = {
   title: "Beranda",
@@ -27,6 +28,7 @@ const ROLE_LABELS: Record<RoleCode, string> = {
 export default async function AppPage() {
   const user = await requireUser();
   const canManageUsers = canAccessUserDirectory(user.roles);
+  const canCreateMemorization = canCreateMemorizationRecord(user.roles);
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 sm:px-6 sm:py-8 lg:px-8">
@@ -38,7 +40,14 @@ export default async function AppPage() {
             Akun Anda siap digunakan.
           </p>
         </div>
-        {canManageUsers ? (
+        {canCreateMemorization ? (
+          <Button asChild>
+            <Link href="/app/setoran">
+              <NotebookPen aria-hidden="true" />
+              Catat Setoran
+            </Link>
+          </Button>
+        ) : canManageUsers ? (
           <Button asChild>
             <Link href="/app/pengguna">
               <UsersRound aria-hidden="true" />

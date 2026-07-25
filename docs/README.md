@@ -10,6 +10,8 @@
 
 Prinsip utama: MVP fokus pada pencatatan hafalan internal dan laporan PDF/cetak. Wali belum login dan infaq tetap memakai aplikasi eksternal.
 
+Untuk pengembangan lokal, `npm run db:seed:demo` mengisi akun Pengajar demo, data operasional, dan setoran contoh secara idempotent setelah seed dasar dijalankan. Data demo tidak boleh dijalankan pada database pilot atau produksi; detailnya ada di `README.md` root.
+
 Keputusan MVP yang sudah dikunci:
 - Admin mengelola data operasional, bukan penilaian hafalan.
 - Kepala memegang otorisasi akademik seperti koreksi/void setoran dan reopen periode.
@@ -28,6 +30,6 @@ Keputusan MVP yang sudah dikunci:
 - Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
 - Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), serta potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri telah diimplementasikan. Tahap berikutnya adalah slice setoran end-to-end sesuai `IMPLEMENTATION_PLAN.md`.
+- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri, serta form setoran Pengajar awal pada Slice 3 telah diimplementasikan. Tahap berikutnya adalah ringkasan Kepala dan penyempurnaan riwayat sesuai `IMPLEMENTATION_PLAN.md`.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

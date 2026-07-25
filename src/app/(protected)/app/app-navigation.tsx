@@ -4,6 +4,7 @@ import {
   BookOpenText,
   CalendarDays,
   LayoutDashboard,
+  NotebookPen,
   School,
   UserRoundCheck,
   UserRoundPlus,
@@ -58,6 +59,12 @@ const navigation = [
     icon: UserRoundPlus,
     requiredAccess: "memberships",
   },
+  {
+    href: "/app/setoran",
+    label: "Catat Setoran",
+    icon: NotebookPen,
+    requiredAccess: "memorization",
+  },
 ] as const;
 
 export function AppBrand({ compact = false }: { compact?: boolean }) {
@@ -87,6 +94,7 @@ export function AppNavigation({
   canAccessStudents,
   canAccessTeacherAssignments,
   canAccessHalaqahMemberships,
+  canCreateMemorizationRecord,
   variant,
 }: {
   canAccessUserDirectory: boolean;
@@ -95,6 +103,7 @@ export function AppNavigation({
   canAccessStudents: boolean;
   canAccessTeacherAssignments: boolean;
   canAccessHalaqahMemberships: boolean;
+  canCreateMemorizationRecord: boolean;
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
@@ -128,6 +137,10 @@ export function AppNavigation({
 
           if (item.requiredAccess === "assignments") {
             return canAccessTeacherAssignments;
+          }
+
+          if (item.requiredAccess === "memorization") {
+            return canCreateMemorizationRecord;
           }
 
           return (
