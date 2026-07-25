@@ -18,6 +18,7 @@ Aturan:
 - Satu pengajar dapat mengampu beberapa halaqah.
 - Penugasan hanya memakai Pengajar aktif dan halaqah aktif. Pengajar Pengganti wajib memiliki tanggal selesai; Pengajar Utama tidak boleh bertumpang tindih pada halaqah yang sama.
 - Penugasan yang selesai ditutup dengan tanggal selesai, bukan dihapus.
+- Saat santri pindah halaqah, Admin memilih halaqah baru dan tanggal mulai. Sistem menutup membership aktif sebelumnya sehari sebelumnya dan menyimpan riwayat kedua halaqah.
 - Admin hanya dapat mengaktifkan periode jika tidak ada periode aktif lain pada organisasi.
 - Admin dapat menonaktifkan atau mengarsipkan halaqah tanpa menghapus riwayatnya. Halaqah yang sudah diarsipkan tidak dapat diaktifkan kembali pada MVP.
 - Admin dapat menonaktifkan atau mengarsipkan santri tanpa menghapus riwayatnya. Santri yang sudah diarsipkan tidak dapat diaktifkan kembali pada MVP.
@@ -110,4 +111,4 @@ Aturan:
 - PDF dibuat ulang dari snapshot saat diperlukan.
 
 ## 10. Pindah Halaqah
-Admin menutup membership lama → membuat membership baru → histori setoran lama tetap terkait dengan halaqah dan pengajar sebelumnya.
+Admin memilih santri, halaqah baru, dan tanggal mulai → sistem menutup membership lama sehari sebelumnya → sistem membuat membership baru dalam transaksi yang sama → histori setoran lama tetap terkait dengan halaqah dan pengajar sebelumnya.

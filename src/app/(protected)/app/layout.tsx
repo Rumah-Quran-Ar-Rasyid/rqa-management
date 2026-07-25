@@ -8,6 +8,7 @@ import { canAccessAcademicPeriods } from "@/modules/periods/domain/academic-peri
 import { canAccessHalaqahDirectory } from "@/modules/halaqahs/domain/halaqah-policy";
 import { canAccessStudentDirectory } from "@/modules/students/domain/student-policy";
 import { canAccessTeacherAssignments } from "@/modules/assignments/domain/teacher-assignment-policy";
+import { canAccessHalaqahMemberships } from "@/modules/memberships/domain/halaqah-membership-policy";
 import { AppBrand, AppNavigation } from "./app-navigation";
 
 export default async function ProtectedLayout({
@@ -21,6 +22,7 @@ export default async function ProtectedLayout({
   const canAccessHalaqahs = canAccessHalaqahDirectory(user.roles);
   const canAccessStudents = canAccessStudentDirectory(user.roles);
   const canAccessAssignments = canAccessTeacherAssignments(user.roles);
+  const canAccessMemberships = canAccessHalaqahMemberships(user.roles);
 
   return (
     <div className="min-h-svh bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
@@ -33,6 +35,7 @@ export default async function ProtectedLayout({
           canAccessHalaqahs={canAccessHalaqahs}
           canAccessStudents={canAccessStudents}
           canAccessTeacherAssignments={canAccessAssignments}
+          canAccessHalaqahMemberships={canAccessMemberships}
           variant="desktop"
         />
         <div className="mt-auto border-t pt-4">
@@ -73,6 +76,7 @@ export default async function ProtectedLayout({
             canAccessHalaqahs={canAccessHalaqahs}
             canAccessStudents={canAccessStudents}
             canAccessTeacherAssignments={canAccessAssignments}
+            canAccessHalaqahMemberships={canAccessMemberships}
             variant="mobile"
           />
         </header>

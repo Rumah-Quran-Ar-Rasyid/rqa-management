@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   School,
   UserRoundCheck,
+  UserRoundPlus,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -51,6 +52,12 @@ const navigation = [
     icon: UserRoundCheck,
     requiredAccess: "assignments",
   },
+  {
+    href: "/app/keanggotaan",
+    label: "Keanggotaan",
+    icon: UserRoundPlus,
+    requiredAccess: "memberships",
+  },
 ] as const;
 
 export function AppBrand({ compact = false }: { compact?: boolean }) {
@@ -79,6 +86,7 @@ export function AppNavigation({
   canAccessHalaqahs,
   canAccessStudents,
   canAccessTeacherAssignments,
+  canAccessHalaqahMemberships,
   variant,
 }: {
   canAccessUserDirectory: boolean;
@@ -86,6 +94,7 @@ export function AppNavigation({
   canAccessHalaqahs: boolean;
   canAccessStudents: boolean;
   canAccessTeacherAssignments: boolean;
+  canAccessHalaqahMemberships: boolean;
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
@@ -117,9 +126,13 @@ export function AppNavigation({
             return canAccessStudents;
           }
 
+          if (item.requiredAccess === "assignments") {
+            return canAccessTeacherAssignments;
+          }
+
           return (
-            item.requiredAccess !== "assignments" ||
-            canAccessTeacherAssignments
+            item.requiredAccess !== "memberships" ||
+            canAccessHalaqahMemberships
           );
         })
         .map((item) => {

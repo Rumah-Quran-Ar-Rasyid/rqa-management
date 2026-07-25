@@ -51,6 +51,10 @@ Then sistem menolak permintaan
 - Kepala dapat melihat penugasan Pengajar, tetapi tidak dapat mengubahnya tanpa role Admin.
 - Penugasan Pengajar Pengganti wajib memiliki tanggal selesai.
 - Penugasan tidak dihapus; Admin mengakhirinya dengan tanggal selesai yang tidak boleh mendahului tanggal mulai.
+- Admin hanya dapat menempatkan santri aktif pada halaqah aktif dalam organisasinya.
+- Kepala dapat melihat keanggotaan halaqah, tetapi tidak dapat mengubahnya tanpa role Admin.
+- Memindahkan santri menutup membership aktif lama sehari sebelum tanggal mulai baru dan membuat membership baru dalam satu transaksi.
+- Tanggal pindah harus setelah tanggal mulai membership lama; riwayat membership yang bertumpang tindih ditolak.
 
 ## Setoran
 Given pengajar login dan mengampu halaqah santri, ketika kategori, satu surah, rentang ayat, dan kelancaran valid disimpan, maka setoran muncul pada riwayat dan dashboard kepala.

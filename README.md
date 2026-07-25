@@ -40,6 +40,7 @@ Setiap perubahan requirement, business rule, authorization, data model, atau ren
 - Halaqah dikelola Admin dengan status Aktif, Nonaktif, atau Diarsipkan; tidak ada hard delete.
 - Santri dapat dicatat dengan satu kontak wali utama opsional; wali tidak memiliki akun login.
 - Penugasan Pengajar hanya dibuat pada halaqah aktif untuk akun Pengajar aktif; penugasan Pengganti memiliki tanggal selesai dan tidak ada hard delete.
+- Membership santri hanya dibuat pada santri dan halaqah aktif; perpindahan menutup membership lama sehari sebelum penempatan baru tanpa menghapus riwayat.
 - Satu record setoran hanya mencakup satu surah.
 - PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
 

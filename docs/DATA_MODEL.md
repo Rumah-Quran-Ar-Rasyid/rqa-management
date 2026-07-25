@@ -105,7 +105,10 @@ Aturan:
 
 Aturan:
 - Satu santri hanya boleh memiliki satu membership halaqah aktif pada waktu yang sama.
-- Pindah halaqah dilakukan dengan menutup membership lama dan membuat membership baru.
+- Membership hanya dapat dibuat untuk santri aktif dan halaqah aktif dalam organisasi yang sama.
+- Rentang tanggal bersifat inklusif. Pindah halaqah dilakukan dalam satu transaksi dengan menutup membership lama sehari sebelum `valid_from` baru, lalu membuat membership baru berstatus aktif.
+- Tanggal pindah wajib setelah tanggal mulai membership lama; sistem menolak riwayat yang bertumpang tindih.
+- Membership tidak dihapus. Membership lama memakai status `CLOSED` dan menyimpan `valid_until`.
 - Histori setoran tetap menyimpan halaqah dan pengajar saat setoran dibuat.
 
 ### academic_periods

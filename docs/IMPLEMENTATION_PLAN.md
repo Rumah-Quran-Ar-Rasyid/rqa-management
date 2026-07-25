@@ -221,7 +221,10 @@ Status implementasi per 25 Juli 2026:
 - Potongan penugasan Pengajar pada 2C selesai: Admin dapat menetapkan Pengajar aktif ke halaqah aktif, melihat histori penugasan, dan mengakhiri penugasan yang masih berjalan dengan tanggal selesai. Kepala hanya melihat daftar kecuali akunnya juga memiliki role Admin.
 - Pengajar Utama divalidasi tidak bertumpang tindih pada halaqah yang sama dalam transaksi serializable. Pengajar Pengganti wajib memiliki tanggal selesai. Semua mutasi penugasan masuk audit operasional dan seluruh query difilter organisasi.
 - Tampilan penugasan memakai tabel desktop, kartu mobile, form dialog satu kolom, serta dialog konfirmasi untuk mengakhiri penugasan.
-- Membership santri, wali tambahan, dan relasi satu wali dengan beberapa santri masih belum dibuat.
+- Potongan membership santri pada 2C selesai: Admin dapat menempatkan santri aktif pada halaqah aktif dan memindahkannya melalui satu form; Kepala hanya melihat daftar kecuali akunnya juga memiliki role Admin.
+- Perpindahan menutup membership aktif lama sehari sebelum tanggal mulai baru lalu membuat membership baru dalam transaksi serializable. Riwayat yang bertumpang tindih ditolak, setiap mutasi masuk audit operasional, dan seluruh query difilter organisasi.
+- Tampilan membership memakai tabel desktop, kartu mobile, dan form dialog satu kolom yang menampilkan halaqah aktif santri sebelum dipindah.
+- Wali tambahan dan relasi satu wali dengan beberapa santri masih belum dibuat; keduanya bukan dependency untuk slice setoran awal.
 
 ### Slice 3 — Setoran End-to-End
 Tujuan: satu pengajar dapat mencatat Sabaq/Sabqi/Manzil dari HP dan Kepala langsung melihat hasilnya.
