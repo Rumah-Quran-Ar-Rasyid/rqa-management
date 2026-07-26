@@ -1,6 +1,6 @@
 import "server-only";
 
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "@/generated/prisma/client";
 import { env } from "@/lib/env";
@@ -10,7 +10,12 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const adapter = new PrismaMariaDb(env.DATABASE_URL);
+  const adapter = new PrismaPg({
+    connectionString: env.DATABASE_URL,
+    max: 1,
+    connectionTimeoutMillis: 10_000,
+    idleTimeoutMillis: 10_000,
+  });
 
   return new PrismaClient({
     adapter,

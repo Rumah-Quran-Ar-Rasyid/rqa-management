@@ -1,73 +1,105 @@
 # Operasional Pilot
 
+## Arsitektur Deployment
+Pilot memakai Netlify Free untuk aplikasi Next.js dan Supabase PostgreSQL Free untuk database. Domain awal memakai alamat `*.netlify.app` dengan HTTPS otomatis. Supabase hanya dipakai sebagai PostgreSQL terkelola; autentikasi, session cookie, role, authorization, dan audit tetap berada di aplikasi.
+
+Pisahkan koneksi database:
+
+- `DATABASE_URL`: URL Supabase transaction pooler untuk runtime Netlify. Gunakan port pooler yang diberikan Supabase dan parameter `sslmode=require`, `pgbouncer=true`, serta `connection_limit=1`.
+- `DIRECT_URL`: direct connection Supabase untuk migrasi, seed, backup, restore, dan preflight dari mesin terpercaya. Jangan menjalankan migrasi dari request aplikasi.
+- `AUTH_SECRET`: secret acak minimal 32 karakter.
+- `APP_URL`: URL production Netlify, misalnya `https://rumah-quran-ar-rasyid.netlify.app`.
+
+Tidak ada variable di atas yang boleh memakai prefix `NEXT_PUBLIC_`. Jangan mengaktifkan Supabase Auth, membuat tabel session terpisah, atau memindahkan authorization ke client.
+
+## Membuat Supabase Project
+
+1. Buat project Supabase pada region terdekat dengan mayoritas pengguna.
+2. Dari Connect, salin transaction pooler ke `DATABASE_URL` dan direct connection ke `DIRECT_URL`.
+3. Jika direct IPv6 tidak dapat dijangkau dari jaringan lokal, jalankan tooling melalui environment CI yang mendukungnya atau gunakan session pooler khusus tooling. Pastikan URL tooling tidak memakai transaction mode untuk `pg_dump` atau migrasi.
+4. Simpan semua secret di password manager yayasan dan Netlify environment variables.
+5. Terapkan migrasi dan seed dari mesin terpercaya:
+
+```bash
+npm run db:migrate:deploy
+npm run db:seed
+```
+
+Baseline PostgreSQL ditujukan untuk database Supabase baru. Repository tidak memindahkan row dari instalasi MySQL lama secara otomatis. Jika suatu instalasi MySQL sudah memuat data nyata, hentikan proses, backup sumber, dan lakukan migrasi data terpisah dengan rekonsiliasi jumlah record serta audit sebelum mengalihkan aplikasi. Database lokal sebelum perubahan hanya berisi data pengembangan; jangan menganggap schema migration sebagai data migration lintas engine.
+
+## Membuat Netlify Site
+
+1. Hubungkan repository Git ke Netlify dan pilih branch pilot.
+2. Netlify membaca `netlify.toml`; build command adalah `npm run build`.
+3. Isi `DATABASE_URL`, `AUTH_SECRET`, dan `APP_URL` pada production context. `DIRECT_URL` tidak diperlukan oleh runtime dan sebaiknya tidak disimpan di Netlify kecuali ada job operasional yang memang membutuhkannya.
+4. Deploy, lalu periksa `/api/health`, login, setoran, dashboard, dan unduhan PDF pada URL `netlify.app`.
+5. Matikan deploy preview untuk data nyata atau beri preview database terpisah. Jangan menghubungkan preview branch ke database pilot.
+
+Release database dilakukan sebelum deploy aplikasi yang membutuhkannya. Rollback aplikasi dilakukan dari Netlify Deploys ke revision sebelumnya. Migrasi database tidak di-rollback otomatis; buat backup sebelum migrasi dan lakukan perbaikan maju bila memungkinkan.
+
 ## Kontrak Kesiapan
-Revision hanya boleh dipromosikan ke pilot setelah perintah berikut lulus dari root proyek:
+
+Revision hanya boleh dipromosikan setelah perintah berikut lulus terhadap database target:
 
 ```bash
 npm run pilot:check
 ```
 
-Perintah tersebut menjalankan lint, typecheck, seluruh test, build produksi, status migrasi, pemeriksaan data minimum pilot, serta smoke test HTTP dan viewport 360 piksel. Pemeriksaan data minimum memastikan tepat satu organisasi aktif, minimal satu Kepala aktif, satu Admin aktif, dua Pengajar aktif, satu periode aktif yang mencakup tanggal organisasi, 1-2 halaqah aktif, 10-20 santri aktif, dan assignment serta membership yang berlaku. Pemeriksaan ini tidak menggantikan uji pengguna nyata.
+Perintah menjalankan lint, typecheck, test, build produksi, status migrasi melalui `DIRECT_URL`, pemeriksaan data minimum, serta smoke HTTP dan viewport 360 piksel. Data minimum adalah tepat satu organisasi aktif, minimal satu Kepala aktif, satu Admin aktif, dua Pengajar aktif, satu periode aktif, 1–2 halaqah, 10–20 santri, assignment, membership, dan 114 surah.
 
 ## Menyiapkan Data Pilot
-1. Jalankan seed dasar dengan `npm run db:seed` untuk role, master surah, organisasi, dan akun awal Kepala/Admin.
-2. Salin `prisma/pilot-data.example.json` ke lokasi aman di luar repository, lalu isi hanya data yang telah disetujui yayasan.
-3. Simpan kata sandi awal pada environment variable yang dirujuk oleh field `passwordEnv`; jangan menulis kata sandi ke JSON.
-4. Jalankan dry-run, periksa ringkasan, lalu terapkan:
+
+1. Jalankan seed dasar untuk role, master surah, organisasi, dan akun awal.
+2. Salin `prisma/pilot-data.example.json` ke lokasi aman di luar repository.
+3. Simpan password awal pada environment variable yang dirujuk `passwordEnv`; jangan tulis password ke JSON.
+4. Jalankan dry-run lalu apply:
 
 ```bash
 npm run db:seed:pilot -- --file /lokasi/aman/pilot-data.json
 npm run db:seed:pilot -- --file /lokasi/aman/pilot-data.json --apply
 ```
 
-Seed pilot idempotent berdasarkan email, nama halaqah, dan nomor santri. Seed tidak menghapus data, menolak database yang sudah memiliki setoran/laporan, dan hanya ditujukan untuk persiapan awal sebelum pemakaian. Setelah setoran pertama tercatat, perubahan data dilakukan dari aplikasi dan bukan dengan menjalankan seed ulang.
+Seed pilot memakai `DIRECT_URL`, idempotent berdasarkan email/nama halaqah/nomor santri, tidak menghapus data, dan menolak apply setelah ada setoran atau laporan.
 
-## Deployment Satu Aplikasi
-Deployment referensi menggunakan satu container Next.js dan satu MySQL yang dikelola terpisah atau tersedia pada host. Build image:
+## Backup PostgreSQL
 
-```bash
-docker build -t rqa-management:<revision> .
-```
-
-Saat menjalankan container, isi `DATABASE_URL`, `AUTH_SECRET` minimal 32 karakter, `APP_URL` HTTPS publik, `HOSTNAME=0.0.0.0`, dan `PORT=3000`. Terapkan `npm run db:migrate:deploy` sebagai langkah release sebelum mengganti container aplikasi. Jalankan satu replica pada MVP; tidak ada worker, microservice, atau penyimpanan PDF permanen.
-
-Reverse proxy wajib:
-- Mengakhiri TLS/HTTPS dan meneruskan header host/protokol yang benar.
-- Membatasi akses dengan allowlist IP/VPN atau WAF selama pilot jika aplikasi dibuka ke internet.
-- Meneruskan hanya port aplikasi; MySQL tidak diekspos ke internet.
-- Memeriksa `GET /api/health` untuk liveness tanpa menganggap endpoint tersebut sebagai readiness database.
-- Menyimpan log akses tanpa mencatat cookie, password, atau isi laporan.
-
-Rollback aplikasi dilakukan dengan menjalankan kembali image revision sebelumnya. Migrasi database tidak di-rollback otomatis; buat backup sebelum migrasi dan gunakan prosedur restore yang disetujui bila pemulihan data benar-benar diperlukan.
-
-## Backup MySQL
-Jalankan dari root proyek pada mesin yang menjalankan Docker/OrbStack:
+Prasyarat lokal adalah PostgreSQL client dengan major version sama atau lebih baru dari server. Bila client tidak terpasang, script memakai image `postgres:17-alpine` melalui Docker. Jalankan:
 
 ```bash
-bash scripts/backup-mysql.sh
+npm run db:backup
 ```
 
-Backup tersimpan terkompresi pada `backups/` atau direktori dari `BACKUP_DIR`. Jalankan minimal harian dan salin hasilnya ke penyimpanan di luar mesin aplikasi. Jangan commit backup ke Git.
-
-Otomasi backup harus menjalankan `npm run db:backup`, memeriksa exit code dan ukuran file, mengenkripsi/menyalin hasil ke penyimpanan di luar host, serta memberi notifikasi bila gagal. Retensi dan akses penyimpanan ditetapkan yayasan. Jangan mengandalkan Docker volume sebagai backup.
+Script menggunakan `DIRECT_URL`, `pg_dump --format=custom`, memvalidasi hasil dengan `pg_restore --list`, dan membuat checksum SHA-256 di `backups/`. Simpan salinan terenkripsi di luar Supabase/mesin operator. Free tier tidak boleh dianggap sebagai satu-satunya backup.
 
 ## Uji Restore
-Restore sengaja hanya diizinkan ke database baru agar tidak menimpa data pilot atau produksi.
+
+Restore hanya menerima `--target-url` database atau project pemeriksaan kosong yang berbeda dari `DIRECT_URL` sumber:
 
 ```bash
-bash scripts/restore-mysql.sh backups/rqa-YYYYMMDD-HHMMSS.sql.gz \
-  --database rqa_restore_check \
+npm run db:restore -- backups/rqa-YYYYMMDD-HHMMSS.dump \
+  --target-url "$RESTORE_DATABASE_URL" \
   --confirm-restore
+
+npm run db:verify-restore -- --target-url "$RESTORE_DATABASE_URL"
 ```
 
-Setelah restore, periksa jumlah organisasi, pengguna, santri, setoran, dan laporan pada database pemeriksaan. Catat tanggal, nama file backup, pelaksana, serta hasil pemeriksaan pada log operasional yayasan. Penggantian database aplikasi produksi dilakukan hanya melalui prosedur deployment yang disetujui, bukan skrip ini.
-
-Gunakan `npm run db:verify-restore -- --database rqa_restore_check` untuk memeriksa tabel penting dan konsistensi dasar pada database hasil restore. Perintah verifikasi bersifat baca-saja, tetapi memakai `MYSQL_ROOT_PASSWORD` karena user aplikasi sengaja tidak diberi akses ke database pemeriksaan.
+Script menolak URL target yang sama, memverifikasi checksum, dan memakai `pg_restore --clean --if-exists` hanya pada database pemeriksaan yang diberikan eksplisit. Jangan gunakan URL database pilot sebagai target restore.
 
 ## Checklist Pilot
-- Jalankan `npm run pilot:check` pada revision dan database yang akan dipilotkan.
-- Terapkan migrasi dengan `npm run db:migrate:deploy`.
-- Buat backup sebelum migrasi atau perubahan data pilot.
-- Uji login Admin/Kepala/Pengajar, input setoran di ponsel, koreksi/void, dashboard, dan PDF.
-- Uji restore ke database pemeriksaan sebelum pilot dan secara berkala selama pilot.
-- Catat revision image, hasil preflight, backup terakhir, uji restore terakhir, dan keputusan go/no-go.
+
+- Backup sebelum migrasi atau perubahan data penting.
+- Jalankan migrasi, seed pilot, lalu `npm run pilot:check`.
+- Pastikan Netlify production memakai URL pooler dan tidak memiliki `DIRECT_URL` tanpa kebutuhan.
+- Uji login setiap role, input dari ponsel, koreksi/void, dashboard, dan PDF.
+- Uji restore berkala ke project/database pemeriksaan.
+- Catat revision, URL deployment, hasil preflight, backup, restore, dan keputusan go/no-go.
+
+## Checklist Release Netlify
+
+- `npm run release:check` lulus dengan `DIRECT_URL` database target.
+- Backup custom PostgreSQL dan checksum tersimpan di luar mesin operator.
+- Migrasi diterapkan sebelum deploy aplikasi yang membutuhkannya.
+- Netlify production hanya memiliki `DATABASE_URL`, `AUTH_SECRET`, dan `APP_URL`; tidak ada password seed atau `DIRECT_URL` tanpa alasan operasional.
+- Deploy preview tidak terhubung ke database pilot.
+- Setelah deploy: health, redirect tanpa session, login tiga role, setoran, dashboard, dan PDF lulus.
+- Bila aplikasi bermasalah, rollback deploy Netlify. Jangan rollback migration dengan menghapus tabel; gunakan perbaikan maju atau prosedur restore yang disetujui.

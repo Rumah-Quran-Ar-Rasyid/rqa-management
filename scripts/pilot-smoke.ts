@@ -162,7 +162,7 @@ function availablePort() {
 }
 
 async function main() {
- server = spawn(process.execPath, [".next/standalone/server.js"], {
+ server = spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "start"], {
    env: {
      ...process.env,
      APP_URL: appUrl,

@@ -20,6 +20,7 @@
 # production
 /build
 /backups
+/postgres-data
 /pilot-data*.json
 !/prisma/pilot-data.example.json
 

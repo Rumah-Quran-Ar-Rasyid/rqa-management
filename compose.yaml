@@ -1,23 +1,22 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: rqa-mysql
+  postgres:
+    image: postgres:17-alpine
+    container_name: rqa-postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: rqa_app
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      POSTGRES_DB: rqa
+      POSTGRES_USER: rqa_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TZ: Asia/Jakarta
     ports:
-      - "127.0.0.1:3306:3306"
+      - "127.0.0.1:5432:5432"
     volumes:
-      - rqa_mysql_data:/var/lib/mysql
+      - rqa_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD-SHELL", "pg_isready -U rqa_app -d rqa"]
       interval: 5s
       timeout: 5s
       retries: 20
 
 volumes:
-  rqa_mysql_data:
+  rqa_postgres_data:

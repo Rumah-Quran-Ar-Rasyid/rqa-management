@@ -1,11 +1,11 @@
 import "dotenv/config";
 
-import { z } from "zod";
-
-import { createDatabaseClient } from "./operational-utils";
+import { createDatabaseClient, databaseUrlSchema } from "./operational-utils";
 import { collectPilotReadiness } from "./pilot-readiness";
 
-const databaseUrl = z.string().startsWith("mysql://").parse(process.env.DATABASE_URL);
+const databaseUrl = databaseUrlSchema.parse(
+  process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+);
 const prisma = createDatabaseClient(databaseUrl);
 
 async function main() {

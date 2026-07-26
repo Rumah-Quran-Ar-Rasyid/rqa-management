@@ -8,6 +8,7 @@ import { pilotDataSchema } from "./pilot-data-schema";
 import {
   createDatabaseClient,
   databaseDate,
+  databaseUrlSchema,
   hasFlag,
   readArgument,
 } from "./operational-utils";
@@ -21,7 +22,9 @@ if (!filePath) {
   );
 }
 
-const databaseUrl = z.string().startsWith("mysql://").parse(process.env.DATABASE_URL);
+const databaseUrl = databaseUrlSchema.parse(
+  process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+);
 const prisma = createDatabaseClient(databaseUrl);
 
 async function main() {

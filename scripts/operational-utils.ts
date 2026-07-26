@@ -1,13 +1,28 @@
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { z } from "zod";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 
-export const databaseUrlSchema = z.string().startsWith("mysql://");
+export const databaseUrlSchema = z.string().url().refine(
+  (value) => {
+    const protocol = new URL(value).protocol;
+    return protocol === "postgres:" || protocol === "postgresql:";
+  },
+  "URL database harus memakai protokol PostgreSQL.",
+);
+
+export function databaseIdentity(databaseUrl: string) {
+  const url = new URL(databaseUrlSchema.parse(databaseUrl));
+  const port = url.port || "5432";
+  return `${url.hostname.toLowerCase()}:${port}${url.pathname}`;
+}
 
 export function createDatabaseClient(databaseUrl: string) {
   return new PrismaClient({
-    adapter: new PrismaMariaDb(databaseUrlSchema.parse(databaseUrl)),
+    adapter: new PrismaPg({
+      connectionString: databaseUrlSchema.parse(databaseUrl),
+      max: 2,
+    }),
   });
 }
 
@@ -26,17 +41,6 @@ export function currentDateInTimezone(timezone: string, now = new Date()) {
     parts.find((part) => part.type === type)?.value;
 
   return `${value("year")}-${value("month")}-${value("day")}`;
-}
-
-export function replaceDatabaseName(databaseUrl: string, databaseName: string) {
-  const queryIndex = databaseUrl.indexOf("?");
-  const base = queryIndex >= 0 ? databaseUrl.slice(0, queryIndex) : databaseUrl;
-  const query = queryIndex >= 0 ? databaseUrl.slice(queryIndex) : "";
-  const authorityEnd = base.indexOf("/", "mysql://".length);
-  if (authorityEnd < 0) {
-    throw new Error("DATABASE_URL harus memuat nama database.");
-  }
-  return `${base.slice(0, authorityEnd)}/${databaseName}${query}`;
 }
 
 export function readArgument(name: string) {

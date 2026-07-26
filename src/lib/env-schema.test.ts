@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { parseServerEnv } from "./env-schema";
 
 const validEnv = {
-  DATABASE_URL: "mysql://user:password@localhost:3306/rqa",
+  DATABASE_URL: "postgresql://user:password@localhost:5432/rqa",
   AUTH_SECRET: "a-secure-secret-with-at-least-32-characters",
   APP_URL: "http://localhost:3000",
 };
@@ -13,13 +13,13 @@ describe("parseServerEnv", () => {
     expect(parseServerEnv(validEnv)).toEqual(validEnv);
   });
 
-  it("menolak provider database selain MySQL", () => {
+  it("menolak provider database selain PostgreSQL", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     expect(() =>
       parseServerEnv({
         ...validEnv,
-        DATABASE_URL: "postgresql://localhost/rqa",
+        DATABASE_URL: "mysql://localhost/rqa",
       }),
     ).toThrow("Invalid server environment variables");
   });

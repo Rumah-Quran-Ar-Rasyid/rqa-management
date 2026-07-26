@@ -28,6 +28,7 @@ Dokumentasi utama:
 - [docs/ACCEPTANCE_CRITERIA.md](./docs/ACCEPTANCE_CRITERIA.md): kriteria MVP dianggap selesai.
 - [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md): rencana vertical slice.
 - [docs/OPERATIONS.md](./docs/OPERATIONS.md): backup, restore aman, dan checklist pilot.
+- [docs/NETLIFY_SUPABASE_SETUP.md](./docs/NETLIFY_SUPABASE_SETUP.md): setup Netlify Free dan Supabase PostgreSQL Free.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
 
@@ -75,7 +76,9 @@ npm run db:migrate:deploy
 npm run db:seed
 ```
 
-Container lokal memakai MySQL 8.4 pada `127.0.0.1:3306` dan menyimpan data pada Docker volume agar tetap tersedia setelah container dihentikan.
+Container lokal memakai PostgreSQL 17 pada `127.0.0.1:5432` dan menyimpan data pada Docker volume agar tetap tersedia setelah container dihentikan.
+
+Untuk pilot cloud, gunakan Netlify untuk aplikasi dan Supabase PostgreSQL untuk database. `DATABASE_URL` memakai transaction pooler untuk runtime; `DIRECT_URL` memakai direct/session connection untuk migrasi, seed, backup, restore, dan preflight. Self-authentication aplikasi tetap digunakan—Supabase Auth tidak diaktifkan. Panduan lengkap ada di [docs/OPERATIONS.md](./docs/OPERATIONS.md).
 
 Jalankan aplikasi:
 

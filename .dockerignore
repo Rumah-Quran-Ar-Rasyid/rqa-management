@@ -1,9 +1,0 @@
-.git
-.next
-backups
-node_modules
-npm-debug.log*
-.env*
-pilot-data*.json
-docs
-coverage

@@ -206,7 +206,8 @@ Then sistem menolak permintaan
 - Health endpoint tersedia.
 - Seed pilot menerima file data yang divalidasi, tidak menyimpan kata sandi di file, menyediakan dry-run, idempotent, dan menolak berjalan setelah data akademik/laporan digunakan.
 - Preflight pilot memeriksa quality gate, build, migrasi, data minimum, HTTP health, serta viewport 360 piksel.
-- Deployment memakai satu aplikasi Next.js, satu database MySQL, HTTPS pada reverse proxy, dan database tidak diekspos ke internet.
+- Deployment pilot memakai satu aplikasi Next.js di Netlify dan satu Supabase PostgreSQL. HTTPS serta domain `netlify.app` disediakan Netlify; kredensial database hanya tersedia pada fungsi server dan Supabase Auth tidak digunakan.
+- Runtime memakai URL pooler Supabase, sedangkan migrasi, seed, backup, dan restore memakai direct connection terpisah.
 - Database hasil restore memiliki verifikasi baca-saja untuk tabel serta relasi penting.
 
 ## Definition of Done Pilot

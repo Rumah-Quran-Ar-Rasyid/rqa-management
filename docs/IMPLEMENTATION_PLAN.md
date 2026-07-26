@@ -128,7 +128,7 @@ Isi:
 - Inisialisasi minimal `shadcn/ui` dengan Button, Input, Card, dan fondasi Form beserta primitive internalnya.
 - Token warna, tipografi, focus state, dan ukuran kontrol yang konsisten serta mudah dibaca.
 - Validasi environment server-side.
-- Database MySQL schema awal, migration, Prisma v7 driver adapter, seed role, dan seed master surah.
+- Database PostgreSQL schema awal, migration, Prisma v7 driver adapter `pg`, seed role, dan seed master surah.
 - Seed akun awal `ADMIN` + `HEAD`.
 - Health endpoint tanpa data sensitif.
 - Helper authorization server-side berbasis organisasi dan role.
@@ -142,7 +142,7 @@ DoD:
 - Nama produk dan istilah yang tampil tidak menggunakan placeholder atau enum teknis.
 
 Status implementasi per 25 Juli 2026:
-- Slice 0 selesai dan terverifikasi pada MySQL 8.4 lokal melalui OrbStack/Docker Compose.
+- Slice 0 awalnya diverifikasi pada MySQL 8.4; baseline kemudian dimigrasikan ke PostgreSQL 17 agar development lokal dan Supabase memakai provider yang sama.
 - Schema, migration awal, Prisma Client server-only, seed idempotent, validasi environment, health endpoint, dan halaman fondasi telah dibuat.
 - Seed memuat role `ADMIN`, `HEAD`, `TEACHER`, 114 surah, satu organisasi, dan satu akun awal `ADMIN` + `HEAD`.
 - Test fondasi mencakup environment, batas organisasi, pengguna nonaktif, pengelolaan role, perlindungan Kepala terakhir, dan integritas master surah.
@@ -177,7 +177,7 @@ Status implementasi per 25 Juli 2026:
 - Login MVP mengharuskan tepat satu organisasi aktif per instalasi agar organisasi tidak dipilih secara ambigu.
 - Permission multi-role, pemisahan pengelolaan role, batas organisasi, dan perlindungan Kepala aktif terakhir sudah tersedia sebagai policy yang dites. Endpoint mutasi role baru dibuat pada Slice 2 dan wajib memakai policy tersebut.
 - UI halaman masuk dan kerangka internal menggunakan komponen Slice 0, Bahasa Indonesia, target sentuh minimal 44 piksel, dan tidak menampilkan enum teknis.
-- Smoke test MySQL memverifikasi login, redirect, atribut cookie, akses halaman internal, logout, pencabutan session, dan penolakan cookie lama.
+- Smoke test database memverifikasi login, redirect, atribut cookie, akses halaman internal, logout, pencabutan session, dan penolakan cookie lama.
 - Login dibatasi lima kegagalan per email dalam 15 menit; kegagalan kelima mengunci percobaan selama 15 menit. Kunci dan reset dihitung server-side dengan email yang di-HMAC, lalu dilindungi test policy.
 
 ### Slice 2 — Setup Minimal Halaqah
@@ -348,12 +348,13 @@ DoD:
 
 Status implementasi per 26 Juli 2026:
 - Pembatasan login selesai: lima kegagalan pada email yang sama dalam 15 menit mengunci percobaan selama 15 menit. Kunci disimpan dengan hash HMAC email, tidak menyimpan email mentah percobaan gagal, dan dihapus setelah login berhasil.
-- Migrasi `20260726010000_add_login_throttles` telah diterapkan pada MySQL lokal. Test policy mencakup penguncian, reset jendela waktu, dan berakhirnya waktu kunci.
-- Backup dan restore diuji pada 26 Juli 2026: dump MySQL dibuat melalui `npm run db:backup`, lalu dipulihkan ke database pemeriksaan baru melalui `npm run db:restore -- ... --confirm-restore`. Database aplikasi tidak disentuh; hasil pemeriksaan memuat 1 organisasi, 2 pengguna, 8 setoran, dan 1 laporan.
+- Login throttle menjadi bagian baseline PostgreSQL. Test policy mencakup penguncian, reset jendela waktu, dan berakhirnya waktu kunci.
+- Tooling backup/restore memakai format custom PostgreSQL, checksum SHA-256, direct connection, target restore terpisah, dan verifikasi baca-saja.
 - Panduan pelaksanaan pilot, skenario uji per role, target mobile, dan format log temuan tersedia di `PILOT_GUIDE.md`.
 - Seed pilot tervalidasi tersedia dengan dry-run, apply eksplisit, referensi password melalui environment, guard database belum digunakan, dan operasi idempotent tanpa hard delete.
 - Preflight pilot menggabungkan quality gate, build, status migrasi, data minimum, smoke HTTP, dan pemeriksaan viewport 360 piksel. Verifikasi restore baca-saja dan deployment container satu aplikasi juga tersedia.
 - Sisa yang membutuhkan pelaksanaan yayasan adalah mengisi data pilot yang disetujui, menjalankan uji pengguna pada perangkat target, mengaktifkan HTTPS serta allowlist IP/VPN atau WAF, dan mencatat keputusan go/no-go.
+- Target deployment pemula adalah Netlify Free dengan domain `netlify.app` dan Supabase PostgreSQL Free. Self-authentication aplikasi dipertahankan; Supabase hanya menyediakan database.
 
 ### Backlog Pasca-MVP — Rapor Pencapaian dan Administrasi
 Status: belum dijadwalkan. Mulai hanya setelah Slice 7 selesai, hasil pilot stabil, dan keputusan bisnis di bawah disetujui. Backlog ini tidak memperluas MVP yang sedang berjalan.

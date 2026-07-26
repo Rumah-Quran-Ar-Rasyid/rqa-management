@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const serverEnvSchema = z.object({
-  DATABASE_URL: z.string().startsWith("mysql://"),
+  DATABASE_URL: z.string().refine(
+    (value) => value.startsWith("postgresql://") || value.startsWith("postgres://"),
+    "DATABASE_URL harus berupa URL PostgreSQL.",
+  ),
   AUTH_SECRET: z.string().min(32),
   APP_URL: z.url(),
 });
