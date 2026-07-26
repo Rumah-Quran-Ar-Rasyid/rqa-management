@@ -20,6 +20,8 @@
 # production
 /build
 /backups
+/pilot-data*.json
+!/prisma/pilot-data.example.json
 
 # misc
 .DS_Store

@@ -15,10 +15,16 @@
     "db:validate": "prisma validate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:status": "prisma migrate status",
     "db:seed": "prisma db seed",
     "db:seed:demo": "tsx prisma/seed-demo.ts",
+    "db:seed:pilot": "tsx scripts/seed-pilot.ts",
     "db:backup": "bash scripts/backup-mysql.sh",
-    "db:restore": "bash scripts/restore-mysql.sh"
+    "db:restore": "bash scripts/restore-mysql.sh",
+    "db:verify-restore": "tsx scripts/verify-restored-database.ts",
+    "pilot:preflight": "tsx scripts/pilot-preflight.ts",
+    "pilot:smoke": "tsx scripts/pilot-smoke.ts",
+    "pilot:check": "npm run check && npm run build && npm run db:migrate:status && npm run pilot:preflight && npm run pilot:smoke"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

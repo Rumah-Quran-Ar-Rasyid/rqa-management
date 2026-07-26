@@ -11,9 +11,11 @@ Memastikan Rumah Qur'an Ar-Rasyid dapat dipakai dalam alur harian oleh Admin, Ke
 
 ## Persiapan
 - Catat revision aplikasi, tanggal, fasilitator, dan peserta pilot.
-- Jalankan `npm run check`, `npm run build`, `npm run db:migrate:deploy`, serta backup sebelum mulai.
+- Siapkan data yayasan melalui dry-run dan apply `db:seed:pilot`; jangan simpan file data atau kata sandi pilot di repository.
+- Jalankan `npm run db:migrate:deploy`, `npm run pilot:check`, serta backup sebelum mulai.
 - Buat akun Pengajar dengan kata sandi awal yang aman dan aktifkan satu periode pembelajaran.
 - Siapkan minimal satu santri aktif pada tiap halaqah dan assignment Pengajar yang berlaku.
+- Pastikan reverse proxy memakai HTTPS dan allowlist IP/VPN atau WAF bila URL dapat dijangkau internet.
 
 ## Skenario Uji
 
@@ -46,6 +48,17 @@ Catat satu baris per temuan:
 |  |  |  |  | Lulus/Gagal | Blocker/Tinggi/Rendah |  |
 
 Blocker berarti pengguna tidak dapat menyelesaikan alur utama atau ada risiko akses/data. Blocker harus diperbaiki sebelum pilot dilanjutkan.
+
+## Keputusan Go/No-Go
+Pilot hanya dimulai jika seluruh item berikut terpenuhi:
+- `pilot:check` lulus pada revision yang sama dengan image deployment.
+- Backup terbaru berhasil dan restore pemeriksaan pernah lulus.
+- Tidak ada temuan Blocker terbuka.
+- Kepala dapat membuka dashboard dan Admin/Kepala dapat mengunduh PDF dari snapshot.
+- Pengajar hanya dapat melihat halaqah yang ditugaskan.
+- Pengujian manual pada perangkat target tidak menemukan scroll horizontal halaman.
+
+Temuan Tinggi memerlukan keputusan tertulis Kepala/Admin beserta mitigasi dan penanggung jawab. Temuan Rendah dapat masuk backlog dengan tanggal tinjau.
 
 ## Penutupan Pilot
 - Rekap median waktu input, jumlah setoran yang berhasil dicatat, dan persentase pengguna yang dapat memakai form tanpa bantuan.

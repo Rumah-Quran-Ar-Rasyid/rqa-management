@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "organization": {
+    "name": "Rumah Qur'an Ar-Rasyid",
+    "slug": "rumah-quran-ar-rasyid",
+    "timezone": "Asia/Jakarta"
+  },
+  "period": {
+    "name": "Pilot 2026",
+    "startDate": "2026-07-01",
+    "endDate": "2026-12-31"
+  },
+  "users": [
+    {
+      "name": "Admin Pilot",
+      "email": "admin.pilot@example.com",
+      "phone": null,
+      "roles": ["ADMIN"],
+      "passwordEnv": "PILOT_ADMIN_PASSWORD"
+    },
+    {
+      "name": "Pengajar Pilot 1",
+      "email": "pengajar1.pilot@example.com",
+      "phone": null,
+      "roles": ["TEACHER"],
+      "passwordEnv": "PILOT_TEACHER_1_PASSWORD"
+    },
+    {
+      "name": "Pengajar Pilot 2",
+      "email": "pengajar2.pilot@example.com",
+      "phone": null,
+      "roles": ["TEACHER"],
+      "passwordEnv": "PILOT_TEACHER_2_PASSWORD"
+    }
+  ],
+  "halaqahs": [
+    {
+      "name": "Halaqah Pilot A",
+      "description": "Kelompok pilot pertama",
+      "teacherEmail": "pengajar1.pilot@example.com"
+    },
+    {
+      "name": "Halaqah Pilot B",
+      "description": "Kelompok pilot kedua",
+      "teacherEmail": "pengajar2.pilot@example.com"
+    }
+  ],
+  "students": [
+    { "studentNumber": "PILOT-001", "fullName": "Santri Pilot 01", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot A" },
+    { "studentNumber": "PILOT-002", "fullName": "Santri Pilot 02", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot A" },
+    { "studentNumber": "PILOT-003", "fullName": "Santri Pilot 03", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot A" },
+    { "studentNumber": "PILOT-004", "fullName": "Santri Pilot 04", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot A" },
+    { "studentNumber": "PILOT-005", "fullName": "Santri Pilot 05", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot A" },
+    { "studentNumber": "PILOT-006", "fullName": "Santri Pilot 06", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot B" },
+    { "studentNumber": "PILOT-007", "fullName": "Santri Pilot 07", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot B" },
+    { "studentNumber": "PILOT-008", "fullName": "Santri Pilot 08", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot B" },
+    { "studentNumber": "PILOT-009", "fullName": "Santri Pilot 09", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot B" },
+    { "studentNumber": "PILOT-010", "fullName": "Santri Pilot 10", "preferredName": null, "joinedAt": "2026-07-01", "halaqahName": "Halaqah Pilot B" }
+  ]
+}

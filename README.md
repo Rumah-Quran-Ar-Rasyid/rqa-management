@@ -101,7 +101,7 @@ Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Peng
 
 Jangan jalankan seed demo pada database pilot atau produksi.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), Slice 3 (input setoran, riwayat berfilter Pengajar, dan ringkasan dashboard Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala), serta Slice 6 (laporan PDF berbasis snapshot) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Status pengembangan saat ini: Slice 0-6 telah tersedia. Artefak repository Slice 7 mencakup seed pilot tervalidasi, preflight readiness, smoke test mobile 360 piksel, verifikasi restore, deployment satu container, dan runbook. Uji pengguna nyata, data pilot yang disetujui, serta proteksi jaringan tetap harus diselesaikan pada lingkungan yayasan sesuai [docs/OPERATIONS.md](./docs/OPERATIONS.md) dan [docs/PILOT_GUIDE.md](./docs/PILOT_GUIDE.md).
 
 ## Quality Gate
 
@@ -110,6 +110,12 @@ Sebelum menyelesaikan task implementasi:
 ```bash
 npm run check
 npm run build
+```
+
+Untuk calon revision pilot, gunakan quality gate lengkap berikut setelah migrasi dan data pilot disiapkan:
+
+```bash
+npm run pilot:check
 ```
 
 ## Learn More

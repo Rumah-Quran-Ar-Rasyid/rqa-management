@@ -123,7 +123,7 @@ export function AppNavigation({
       className={cn(
         variant === "desktop"
           ? "flex flex-col gap-1"
-          : "flex items-center gap-1 overflow-x-auto px-4 py-2",
+          : "flex max-w-full items-center gap-1 overflow-x-auto overscroll-x-contain px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
       )}
     >
       {navigation
@@ -174,7 +174,7 @@ export function AppNavigation({
               href={item.href}
               className={cn(
                 "flex shrink-0 items-center gap-3 rounded-[8px] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                variant === "desktop" ? "h-11 px-3" : "h-10 px-3",
+                "h-11 px-3",
                 active
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",

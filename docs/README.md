@@ -35,6 +35,6 @@ Keputusan MVP yang sudah dikunci:
 - Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
 - Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri, Slice 3 (form setoran, riwayat berfilter, dan ringkasan Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala dengan filter dan detail akademik santri), serta Slice 6 (pratinjau dan PDF laporan berbasis snapshot) telah diimplementasikan. Tahap berikutnya adalah kesiapan pilot operasional.
+- Slice 0-6 telah diimplementasikan. Artefak repository Slice 7 juga tersedia: seed data pilot tervalidasi, preflight, smoke mobile, verifikasi restore, deployment satu container, dan runbook. Pelaksanaan uji pengguna serta konfigurasi proteksi jaringan tetap dilakukan yayasan pada lingkungan pilot.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

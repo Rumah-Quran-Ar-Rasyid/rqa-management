@@ -23,6 +23,21 @@ done
 [[ -f "$backup_file" && "$confirmed" == true ]] || usage
 [[ "$target_database" =~ ^[A-Za-z0-9_]+$ ]] || usage
 [[ -f .env ]] || { echo "File .env tidak ditemukan." >&2; exit 1; }
+gzip -t "$backup_file"
+
+checksum_file="${backup_file}.sha256"
+if [[ -f "$checksum_file" ]]; then
+  checksum_dir="$(cd "$(dirname "$checksum_file")" && pwd)"
+  checksum_name="$(basename "$checksum_file")"
+  if command -v shasum >/dev/null 2>&1; then
+    (cd "$checksum_dir" && shasum -a 256 -c "$checksum_name")
+  elif command -v sha256sum >/dev/null 2>&1; then
+    (cd "$checksum_dir" && sha256sum -c "$checksum_name")
+  else
+    echo "Checksum tersedia tetapi tool verifikasi SHA-256 tidak ditemukan." >&2
+    exit 1
+  fi
+fi
 
 set -a
 source .env

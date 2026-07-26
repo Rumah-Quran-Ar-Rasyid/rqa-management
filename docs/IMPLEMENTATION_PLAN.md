@@ -351,7 +351,9 @@ Status implementasi per 26 Juli 2026:
 - Migrasi `20260726010000_add_login_throttles` telah diterapkan pada MySQL lokal. Test policy mencakup penguncian, reset jendela waktu, dan berakhirnya waktu kunci.
 - Backup dan restore diuji pada 26 Juli 2026: dump MySQL dibuat melalui `npm run db:backup`, lalu dipulihkan ke database pemeriksaan baru melalui `npm run db:restore -- ... --confirm-restore`. Database aplikasi tidak disentuh; hasil pemeriksaan memuat 1 organisasi, 2 pengguna, 8 setoran, dan 1 laporan.
 - Panduan pelaksanaan pilot, skenario uji per role, target mobile, dan format log temuan tersedia di `PILOT_GUIDE.md`.
-- Sisa Slice 7 adalah pelaksanaan kesiapan operasional: uji pilot mobile dengan Pengajar, data pilot yang disetujui yayasan, serta konfigurasi deployment dan perlindungan berbasis IP/WAF bila aplikasi dibuka ke internet.
+- Seed pilot tervalidasi tersedia dengan dry-run, apply eksplisit, referensi password melalui environment, guard database belum digunakan, dan operasi idempotent tanpa hard delete.
+- Preflight pilot menggabungkan quality gate, build, status migrasi, data minimum, smoke HTTP, dan pemeriksaan viewport 360 piksel. Verifikasi restore baca-saja dan deployment container satu aplikasi juga tersedia.
+- Sisa yang membutuhkan pelaksanaan yayasan adalah mengisi data pilot yang disetujui, menjalankan uji pengguna pada perangkat target, mengaktifkan HTTPS serta allowlist IP/VPN atau WAF, dan mencatat keputusan go/no-go.
 
 ### Backlog Pasca-MVP — Rapor Pencapaian dan Administrasi
 Status: belum dijadwalkan. Mulai hanya setelah Slice 7 selesai, hasil pilot stabil, dan keputusan bisnis di bawah disetujui. Backlog ini tidak memperluas MVP yang sedang berjalan.

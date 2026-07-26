@@ -204,6 +204,10 @@ Then sistem menolak permintaan
 - Backup harian dan prosedur restore tersedia serta diuji.
 - Source code tersimpan di repository yayasan.
 - Health endpoint tersedia.
+- Seed pilot menerima file data yang divalidasi, tidak menyimpan kata sandi di file, menyediakan dry-run, idempotent, dan menolak berjalan setelah data akademik/laporan digunakan.
+- Preflight pilot memeriksa quality gate, build, migrasi, data minimum, HTTP health, serta viewport 360 piksel.
+- Deployment memakai satu aplikasi Next.js, satu database MySQL, HTTPS pada reverse proxy, dan database tidak diekspos ke internet.
+- Database hasil restore memiliki verifikasi baca-saja untuk tabel serta relasi penting.
 
 ## Definition of Done Pilot
 Semua alur utama berjalan, lint/typecheck/test kritis lulus, tidak ada bug blocker, pencatatan nyaman di HP, dashboard kepala berfungsi, laporan PDF dapat dibuat, dan backup/restore sudah diuji.
