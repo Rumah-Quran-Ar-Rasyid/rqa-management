@@ -9,6 +9,7 @@
 - `IMPLEMENTATION_PLAN.md`: urutan development.
 - `OPERATIONS.md`: backup, restore aman, dan checklist pilot.
 - `PILOT_GUIDE.md`: persiapan, skenario uji per peran, dan log temuan pilot.
+- `NETLIFY_SUPABASE_SETUP.md`: langkah pemula untuk Supabase PostgreSQL dan Netlify Free.
 
 Prinsip utama: MVP fokus pada pencatatan hafalan internal dan laporan PDF/cetak. Wali belum login dan infaq tetap memakai aplikasi eksternal.
 
@@ -32,9 +33,9 @@ Keputusan MVP yang sudah dikunci:
 - Form input setoran dirancang mobile-first dengan tombol utama yang jelas.
 - Komponen UI ditambahkan secara minimal sesuai kebutuhan slice aktif.
 - Katalog komponen awal dibatasi pada daftar yang dikunci di `IMPLEMENTATION_PLAN.md`; feedback toast menggunakan Sonner.
-- Database MVP menggunakan MySQL/MariaDB dengan Prisma ORM; akses database hanya dari server.
-- Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume.
+- Database MVP menggunakan PostgreSQL dengan Prisma ORM; akses database hanya dari server.
+- Database lokal dijalankan melalui OrbStack/Docker Compose dan mempertahankan data dalam Docker volume. Pilot memakai Supabase PostgreSQL tanpa Supabase Auth.
 - Session login disimpan di database selama tujuh hari; browser hanya menyimpan token acak dalam cookie yang dilindungi.
-- Slice 0, Slice 1, Slice 2B (pengguna/role, periode, serta halaqah), potongan 2C untuk santri/wali utama, penugasan Pengajar, dan membership santri, Slice 3 (form setoran, riwayat berfilter, dan ringkasan Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala dengan filter dan detail akademik santri), serta Slice 6 (pratinjau dan PDF laporan berbasis snapshot) telah diimplementasikan. Tahap berikutnya adalah kesiapan pilot operasional.
+- Slice 0-6 telah diimplementasikan. Artefak repository Slice 7 juga tersedia: seed data pilot tervalidasi, preflight, smoke mobile, verifikasi restore, deployment satu container, dan runbook. Pelaksanaan uji pengguna serta konfigurasi proteksi jaringan tetap dilakukan yayasan pada lingkungan pilot.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.

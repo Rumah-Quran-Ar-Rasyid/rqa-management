@@ -1,13 +1,16 @@
 import "dotenv/config";
 
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "bcryptjs";
 import { z } from "zod";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 
 const demoEnvSchema = z.object({
-  DATABASE_URL: z.string().startsWith("mysql://"),
+  DIRECT_URL: z.string().url().refine(
+    (value) => ["postgres:", "postgresql:"].includes(new URL(value).protocol),
+    "DIRECT_URL harus berupa URL PostgreSQL.",
+  ),
   SEED_ORGANIZATION_SLUG: z
     .string()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
@@ -27,7 +30,7 @@ if (!parsedDemoEnv.success) {
 }
 
 const demoEnv = parsedDemoEnv.data;
-const adapter = new PrismaMariaDb(demoEnv.DATABASE_URL);
+const adapter = new PrismaPg({ connectionString: demoEnv.DIRECT_URL, max: 2 });
 const prisma = new PrismaClient({ adapter });
 
 const DEMO_START = "2026-01-01";

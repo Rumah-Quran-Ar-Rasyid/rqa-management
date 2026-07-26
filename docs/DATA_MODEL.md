@@ -1,6 +1,8 @@
 # Initial Data Model
 
-Implementasi awal menggunakan MySQL/MariaDB dengan Prisma ORM v7 dan driver adapter MariaDB. Database access hanya dilakukan dari server.
+Implementasi menggunakan PostgreSQL dengan Prisma ORM v7 dan driver adapter `pg`. Database access hanya dilakukan dari server. Deployment pilot memakai Supabase PostgreSQL sebagai database terkelola; Supabase Auth tidak digunakan karena autentikasi, session, role, dan authorization tetap dimiliki aplikasi.
+
+`DATABASE_URL` digunakan aplikasi melalui Supabase transaction pooler dengan pool kecil per instance serverless. `DIRECT_URL` digunakan hanya oleh tooling terpercaya untuk migrasi, seed, backup, restore, dan verifikasi. Kedua secret hanya tersedia di server dan tidak memakai prefix `NEXT_PUBLIC_`.
 
 ## Entitas
 - Organization
@@ -198,10 +200,10 @@ Aturan:
 - `quran_surahs.surah_number` unik.
 - `generated_reports.report_number` unik per organisasi.
 - `user_sessions.token_hash` unik.
-- Periode `ACTIVE` tunggal divalidasi dalam transaction pada application layer karena MySQL tidak menyediakan partial unique index.
+- Periode `ACTIVE` tunggal tetap divalidasi dalam transaction serializable pada application layer agar pesan kegagalan konsisten dan seluruh transisi tercatat audit.
 - Query data organisasi wajib memfilter `organization_id`.
 - Foreign key entitas organisasi memakai pasangan `id` + `organization_id` agar relasi lintas organisasi ditolak oleh database.
-- Constraint rentang aktif yang saling overlap, satu membership santri aktif, dan satu pengajar `PRIMARY` aktif tetap harus divalidasi dalam transaction pada application layer karena MySQL tidak menyediakan partial unique index.
+- Constraint rentang aktif yang saling overlap, satu membership santri aktif, dan satu pengajar `PRIMARY` aktif tetap divalidasi dalam transaction serializable pada application layer. PostgreSQL menjadi lapisan integritas relasional, sedangkan aturan interval domain tetap berada di service yang diuji.
 
 ## Belum Dibuat
 Finance, payments, attendance, notifications, guardian login, audio, certificate, achievement, dan WhatsApp.

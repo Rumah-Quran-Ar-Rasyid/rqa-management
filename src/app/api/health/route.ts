@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  return NextResponse.json(
+  const response = NextResponse.json(
     {
       status: "ok",
       service: "rumah-quran-ar-rasyid",
@@ -11,4 +11,7 @@ export async function GET() {
       status: 200,
     },
   );
+
+  response.headers.set("Cache-Control", "no-store");
+  return response;
 }

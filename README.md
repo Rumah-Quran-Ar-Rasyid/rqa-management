@@ -28,6 +28,7 @@ Dokumentasi utama:
 - [docs/ACCEPTANCE_CRITERIA.md](./docs/ACCEPTANCE_CRITERIA.md): kriteria MVP dianggap selesai.
 - [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md): rencana vertical slice.
 - [docs/OPERATIONS.md](./docs/OPERATIONS.md): backup, restore aman, dan checklist pilot.
+- [docs/NETLIFY_SUPABASE_SETUP.md](./docs/NETLIFY_SUPABASE_SETUP.md): setup Netlify Free dan Supabase PostgreSQL Free.
 
 Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
 
@@ -75,7 +76,9 @@ npm run db:migrate:deploy
 npm run db:seed
 ```
 
-Container lokal memakai MySQL 8.4 pada `127.0.0.1:3306` dan menyimpan data pada Docker volume agar tetap tersedia setelah container dihentikan.
+Container lokal memakai PostgreSQL 17 pada `127.0.0.1:5432` dan menyimpan data pada Docker volume agar tetap tersedia setelah container dihentikan.
+
+Untuk pilot cloud, gunakan Netlify untuk aplikasi dan Supabase PostgreSQL untuk database. `DATABASE_URL` memakai transaction pooler untuk runtime; `DIRECT_URL` memakai direct/session connection untuk migrasi, seed, backup, restore, dan preflight. Self-authentication aplikasi tetap digunakan—Supabase Auth tidak diaktifkan. Panduan lengkap ada di [docs/OPERATIONS.md](./docs/OPERATIONS.md).
 
 Jalankan aplikasi:
 
@@ -101,7 +104,7 @@ Script ini dapat dijalankan ulang tanpa menghapus data. Script membuat akun Peng
 
 Jangan jalankan seed demo pada database pilot atau produksi.
 
-Status pengembangan saat ini: Slice 0 (fondasi), Slice 1 (login, logout, database session, serta proteksi halaman internal), Slice 2 (pengguna/role, periode, halaqah, santri/wali utama, penugasan, dan membership), Slice 3 (input setoran, riwayat berfilter Pengajar, dan ringkasan dashboard Kepala), Slice 4 (koreksi, pembatalan, dan audit akademik), Slice 5 (dashboard Kepala), serta Slice 6 (laporan PDF berbasis snapshot) telah tersedia. Urutan berikutnya tetap mengikuti [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md).
+Status pengembangan saat ini: Slice 0-6 telah tersedia. Artefak repository Slice 7 mencakup seed pilot tervalidasi, preflight readiness, smoke test mobile 360 piksel, verifikasi restore, deployment satu container, dan runbook. Uji pengguna nyata, data pilot yang disetujui, serta proteksi jaringan tetap harus diselesaikan pada lingkungan yayasan sesuai [docs/OPERATIONS.md](./docs/OPERATIONS.md) dan [docs/PILOT_GUIDE.md](./docs/PILOT_GUIDE.md).
 
 ## Quality Gate
 
@@ -110,6 +113,12 @@ Sebelum menyelesaikan task implementasi:
 ```bash
 npm run check
 npm run build
+```
+
+Untuk calon revision pilot, gunakan quality gate lengkap berikut setelah migrasi dan data pilot disiapkan:
+
+```bash
+npm run pilot:check
 ```
 
 ## Learn More

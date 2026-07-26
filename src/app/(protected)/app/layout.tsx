@@ -61,7 +61,7 @@ export default async function ProtectedLayout({
       </aside>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="shrink-0 border-b bg-card lg:hidden">
+        <header className="shrink-0 overflow-hidden border-b bg-card lg:hidden">
           <div className="flex min-h-16 items-center justify-between gap-3 px-4">
             <AppBrand />
             <form action={logoutAction}>
@@ -91,7 +91,7 @@ export default async function ProtectedLayout({
         <div className="hidden h-16 shrink-0 items-center border-b bg-card px-8 lg:flex">
           <p className="text-sm text-muted-foreground">Rumah Qur’an Ar-Rasyid</p>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
           {children}
         </div>
       </div>
