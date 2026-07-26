@@ -1,0 +1,209 @@
+# MVP Acceptance Criteria
+
+## Login
+- Akun aktif dengan kredensial benar dapat login dan diarahkan sesuai role.
+- Akun nonaktif ditolak.
+- Akun aktif tanpa role aktif ditolak.
+- Akses langsung ke halaman internal tanpa session valid diarahkan ke halaman masuk oleh server.
+- Logout mencabut session di database sehingga cookie lama tidak dapat digunakan kembali.
+- Session lama pengguna atau organisasi yang dinonaktifkan langsung ditolak.
+- Cookie session memakai `HttpOnly`, `SameSite=Lax`, `Path=/`, dan `Secure` pada production.
+- Login dibatasi maksimal lima kegagalan untuk email yang sama dalam 15 menit. Percobaan berikutnya ditolak selama 15 menit dengan pesan yang tidak mengungkapkan status akun.
+
+## Pengguna dan Role
+- Seed pertama membuat satu akun awal dengan role `ADMIN` + `HEAD`.
+- Admin dapat membuat user operasional.
+- Akun Pengajar baru dibuat aktif dengan role `TEACHER` dan kata sandi awal yang divalidasi minimal 12 karakter.
+- Admin dapat assign/revoke role `TEACHER`.
+- Admin tidak dapat assign/revoke role `ADMIN` atau `HEAD`.
+- Kepala dapat assign/revoke role `ADMIN` dan `HEAD`.
+- Role `HEAD` terakhir tidak dapat dicabut.
+- Pengguna aktif terakhir dengan role `HEAD` tidak dapat dinonaktifkan.
+- Admin tanpa role `HEAD` tidak dapat mengubah status pengguna yang masih memiliki role `HEAD` aktif.
+- Pengguna tidak dapat mengubah status akun sendiri.
+- Menonaktifkan pengguna mencabut session aktif pengguna tersebut.
+- Perubahan role `ADMIN` dan `HEAD` masuk audit operasional.
+
+```gherkin
+Given hanya ada satu pengguna aktif dengan role HEAD
+When pengguna mencoba mencabut role HEAD dari pengguna tersebut
+Then sistem menolak permintaan
+```
+
+```gherkin
+Given pengguna hanya memiliki role ADMIN
+When pengguna mencoba assign role HEAD
+Then sistem menolak permintaan
+```
+
+## Santri dan Halaqah
+- Admin dapat membuat santri dengan nomor unik.
+- Santri memakai status Aktif, Nonaktif, atau Diarsipkan dan tidak di-hard delete.
+- Form santri dapat mencatat satu wali utama opsional sebagai kontak; wali tidak dapat login.
+- Kontak wali yang mulai diisi wajib memiliki nama, hubungan dengan santri, dan nomor telepon.
+- Admin dapat membuat halaqah, menetapkan pengajar, dan memasukkan santri.
+- Nama halaqah unik per organisasi. Halaqah memakai status Aktif, Nonaktif, atau Diarsipkan dan tidak di-hard delete.
+- Halaqah yang sudah diarsipkan tidak dapat diubah atau diaktifkan kembali pada MVP.
+- Pengajar hanya melihat halaqah yang diampu.
+- Akses langsung ke halaqah lain ditolak di server.
+- Satu santri tidak dapat memiliki dua membership halaqah aktif pada waktu yang sama.
+- Satu halaqah tidak dapat memiliki dua pengajar `PRIMARY` aktif pada waktu yang sama.
+- Admin hanya dapat menetapkan akun Pengajar aktif pada halaqah aktif dalam organisasinya.
+- Kepala dapat melihat penugasan Pengajar, tetapi tidak dapat mengubahnya tanpa role Admin.
+- Penugasan Pengajar Pengganti wajib memiliki tanggal selesai.
+- Penugasan tidak dihapus; Admin mengakhirinya dengan tanggal selesai yang tidak boleh mendahului tanggal mulai.
+- Admin hanya dapat menempatkan santri aktif pada halaqah aktif dalam organisasinya.
+- Kepala dapat melihat keanggotaan halaqah, tetapi tidak dapat mengubahnya tanpa role Admin.
+- Memindahkan santri menutup membership aktif lama sehari sebelum tanggal mulai baru dan membuat membership baru dalam satu transaksi.
+- Tanggal pindah harus setelah tanggal mulai membership lama; riwayat membership yang bertumpang tindih ditolak.
+
+## Setoran
+Given pengajar login dan mengampu halaqah santri, ketika kategori, satu surah, rentang ayat, dan kelancaran valid disimpan, maka setoran muncul pada riwayat dan dashboard kepala.
+
+- Kategori wajib.
+- Kelancaran wajib.
+- Ayat di luar batas surah ditolak.
+- Satu setoran hanya mendukung satu surah.
+- Jika pengajar perlu mencatat dua surah, pengajar membuat dua record setoran terpisah.
+- Pengajar tidak dapat mencatat santri halaqah lain.
+- Admin dan Kepala tanpa role Pengajar tidak dapat membuka atau mengirim setoran baru.
+- Pengajar hanya dapat memilih halaqah yang assignment-nya masih berlaku serta santri dengan membership aktif pada tanggal setoran.
+- Identitas pembuat dan waktu tersimpan.
+- Setoran pada periode `CLOSED` ditolak untuk semua role.
+- Setoran berpotensi duplikat hanya dapat disimpan jika pengguna mengonfirmasi dan mengisi alasan override.
+- Pembuatan setoran membuat audit akademik `CREATE` dalam transaksi yang sama.
+
+Contoh:
+
+```gherkin
+Given pengajar memilih Surah An-Naba
+When pengajar memasukkan ayat 1 sampai 20
+Then sistem memvalidasi kedua ayat terhadap Surah An-Naba
+```
+
+```gherkin
+Given sistem menemukan setoran yang berpotensi duplikat
+When pengajar memilih tetap menyimpan
+And tidak memberikan alasan
+Then sistem menolak penyimpanan
+```
+
+## Riwayat dan Koreksi
+- Riwayat Pengajar hanya memuat setoran yang dibuat oleh Pengajar tersebut, diurutkan terbaru, dan dapat difilter berdasarkan periode serta kategori.
+- Filter riwayat dilakukan di server dan hasilnya dipaginasi 20 setoran per halaman.
+- Pengajar dapat mengoreksi miliknya dalam 24 jam sejak record dibuat dengan alasan.
+- Setelah 24 jam, perubahan pengajar ditolak.
+- Kepala dapat mengoreksi dengan alasan.
+- Admin dapat mengoreksi hanya jika akun juga memiliki role `HEAD`.
+- Koreksi pada periode `CLOSED` ditolak untuk semua role.
+- Audit menyimpan data sebelum dan sesudah.
+- Koreksi memperbarui record yang sama dan status tetap `ACTIVE`.
+
+## Void
+- Kepala dapat melakukan void setoran dengan alasan.
+- Admin dapat melakukan void hanya jika akun juga memiliki role `HEAD`.
+- Pengajar tidak dapat melakukan void.
+- Void mengubah status record menjadi `VOID`.
+- Void masuk audit akademik.
+- Void pada periode `CLOSED` ditolak untuk semua role sampai periode dibuka kembali oleh Kepala.
+- Data setoran tidak di-hard delete.
+
+## Dashboard
+Menampilkan santri/halaqah aktif, setoran hari/minggu, jumlah per kategori, santri perlu perhatian, dan aktivitas terbaru dengan angka yang sesuai data.
+
+Potongan awal dashboard Kepala:
+- Hanya Kepala yang dapat melihat ringkasan akademik organisasi.
+- Setoran hari ini memakai tanggal organisasi; setoran minggu ini dihitung sejak Senin sampai hari ini menurut timezone organisasi.
+- Ringkasan dan aktivitas terbaru hanya menghitung record setoran berstatus aktif.
+- Filter periode dan halaqah diproses di server, divalidasi terhadap organisasi, dan memengaruhi jumlah setoran, jumlah kategori, serta aktivitas terbaru.
+- Jika query filter tidak valid atau tidak berada dalam organisasi yang sama, dashboard mengabaikan filter tersebut.
+- Jumlah santri/halaqah aktif dan daftar santri perlu perhatian tetap memakai snapshot kondisi aktif organisasi saat ini agar filter periode historis tidak menimbulkan kesimpulan yang menyesatkan.
+- Kepala dapat membuka detail akademik santri aktif dari daftar perhatian. Detail hanya memuat ringkasan setoran aktif, halaqah saat ini, status perhatian, dan maksimal 10 setoran aktif terbaru; kontak wali tidak ditampilkan.
+- Detail santri divalidasi di server terhadap role Kepala, organisasi, dan status santri Aktif. URL santri dari organisasi lain atau santri nonaktif tidak mengungkapkan data.
+
+Santri perlu perhatian apabila:
+- Belum pernah memiliki setoran aktif, atau tanggal setoran aktif terakhir sama dengan atau sebelum tujuh hari kalender sebelum hari ini menurut timezone organisasi.
+- Mendapat predikat `LESS_FLUENT` pada setoran terakhir.
+
+Daftar perhatian hanya memuat santri aktif dan hanya memakai record setoran aktif.
+
+## Laporan
+- Kepala/Admin dapat memilih santri dan periode pembelajaran atau rentang tanggal khusus.
+- Ada pratinjau.
+- PDF memuat identitas, ringkasan, riwayat, catatan, dan tanggal pembuatan.
+- PDF dapat didownload dan dicetak.
+- Periode tanpa data menampilkan pesan dan tidak otomatis membuat PDF kosong.
+- Metadata dan snapshot laporan tersimpan.
+- PDF dibuat dari snapshot agar laporan lama tidak berubah ketika data sumber dikoreksi.
+- Snapshot adalah checkpoint resmi ketika laporan diterbitkan. Rentang periode laporan dan tanggal penerbitan disimpan sebagai informasi terpisah.
+- Periode `CLOSED` tetap dapat dipakai untuk membaca data, membuat pratinjau, dan menerbitkan laporan; reopen hanya diperlukan untuk mengubah data akademik.
+- Jika laporan berlaku pada scope santri dan periode/rentang yang sama perlu diperbarui, pengguna memilih penerbitan versi pembaruan secara eksplisit. Laporan lama berstatus digantikan dan tetap dapat diunduh.
+- Mengunduh ulang laporan yang masih berlaku tidak membuat versi atau snapshot baru.
+- Hanya Admin dan Kepala dapat membuat pratinjau, membuat laporan, dan mengunduh PDF; seluruh proses memvalidasi organisasi di server.
+- Tombol unduh hanya menerima identifier laporan. Server memuat snapshot tersimpan, merender PDF saat diminta, dan tidak menyimpan file PDF permanen.
+
+## Periode
+- Admin dapat membuat dan mengelola periode `PLANNED`/`ACTIVE`.
+- Satu organisasi hanya dapat memiliki satu periode aktif. Aktivasi atau reopen ditolak jika masih ada periode aktif lain.
+- Admin tanpa role `HEAD` tidak dapat reopen periode `CLOSED`.
+- Kepala dapat menutup dan reopen periode dengan alasan.
+- Reopen dan penutupan periode masuk audit operasional.
+- Kepala dapat melihat detail audit event periode, termasuk status sebelumnya, status baru, alasan, pelaku, dan waktu.
+- Banner tampil selama periode hasil reopen masih aktif.
+
+```gherkin
+Given periode berstatus CLOSED
+And pengguna hanya memiliki role ADMIN
+When pengguna mencoba membuka kembali periode
+Then sistem menolak permintaan
+```
+
+```gherkin
+Given periode berstatus CLOSED
+And pengguna memiliki role HEAD
+When pengguna memasukkan alasan dan membuka kembali periode
+Then status periode menjadi ACTIVE
+And event PERIOD_REOPENED tersimpan dalam audit operasional
+```
+
+```gherkin
+Given sudah ada periode ACTIVE pada organisasi
+When Admin mencoba mengaktifkan periode PLANNED lain
+Then sistem menolak permintaan
+```
+
+## Audit
+- Audit operasional menyimpan perubahan pengguna, role, santri, wali, halaqah, assignment, membership, dan periode.
+- Audit akademik menyimpan pembuatan, koreksi, void setoran, perubahan field akademik, dan duplicate override.
+- Admin dapat melihat detail audit operasional, tetapi tidak melihat detail akademik sensitif.
+- Hak melihat audit operasional tidak memberi Admin hak untuk melakukan semua aksi yang tercatat di audit.
+- Admin hanya dapat melihat audit perubahan role `HEAD` secara read-only.
+- Kepala dapat melihat detail audit akademik dan event periode yang menjadi kewenangannya.
+- Pengajar hanya dapat melihat riwayat perubahan setoran miliknya secara terbatas.
+
+## Mobile Usability
+- Nama “Rumah Qur’an Ar-Rasyid” tampil konsisten pada halaman masuk dan kerangka aplikasi.
+- Teks antarmuka tidak menampilkan enum, permission, atau identifier teknis secara mentah.
+- Form setoran nyaman digunakan pada viewport selebar 360 piksel.
+- Field setoran disusun satu kolom pada mobile dengan label yang selalu terlihat.
+- Tombol utama memiliki hierarki visual yang jelas dan label aksi yang spesifik, seperti “Simpan Setoran”.
+- Target sentuh kontrol utama minimal 44 × 44 piksel.
+- Minimal 4 dari 5 pengguna pilot dapat mencatat tanpa bantuan.
+- Median input maksimal 90 detik.
+- Tidak ada horizontal scroll pada halaman; data tabel tetap dapat dibaca sebagai daftar pada mobile.
+- Pada shell aplikasi internal, header dan sidebar tetap terlihat; hanya area konten utama yang menggulir.
+- Pesan validasi tampil dekat field terkait, jelas, dan data form tidak hilang.
+- Status menyimpan, berhasil, gagal, dan data kosong terlihat jelas.
+
+## Keamanan dan Operasional
+- Semua halaman data membutuhkan login.
+- Authorization di server.
+- Password tidak plaintext.
+- Cookie HttpOnly, Secure, SameSite.
+- Secret tidak masuk client.
+- Backup harian dan prosedur restore tersedia serta diuji.
+- Source code tersimpan di repository yayasan.
+- Health endpoint tersedia.
+
+## Definition of Done Pilot
+Semua alur utama berjalan, lint/typecheck/test kritis lulus, tidak ada bug blocker, pencatatan nyaman di HP, dashboard kepala berfungsi, laporan PDF dapat dibuat, dan backup/restore sudah diuji.

@@ -1,5 +1,62 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Project Instructions for Coding Agents
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## Context
+Aplikasi ini digunakan Rumah Qur’an Ar-Rasyid untuk mencatat dan memonitor setoran hafalan santri.
+
+Selalu baca seluruh file di folder `docs/` sebelum mengubah kode.
+
+## MVP Scope
+- Pengguna: Admin, Kepala, Pengajar.
+- Data santri, wali sebagai kontak, pengajar, halaqah, dan periode.
+- Pencatatan Sabaq, Sabqi, dan Manzil.
+- Predikat Lancar, Cukup Lancar, dan Kurang Lancar.
+- Riwayat setoran, dashboard kepala, dan laporan PDF.
+- Wali belum memiliki akun login.
+- Infaq tetap memakai aplikasi eksternal.
+
+## Architecture
+- Satu aplikasi Next.js full-stack.
+- Modular monolith.
+- Database access hanya di server.
+- Authorization diperiksa di server.
+- Jangan membuat microservices atau menambah infrastruktur tanpa kebutuhan nyata.
+
+## UI dan Bahasa
+- Gunakan nama “Rumah Qur’an Ar-Rasyid” pada tampilan pengguna.
+- Gunakan Bahasa Indonesia dan istilah yang dipahami pengguna, seperti Kepala, Pengajar, Aktif, Ditutup, dan Dibatalkan. Jangan tampilkan enum, permission, atau identifier teknis secara mentah.
+- Form input setoran wajib mobile-first, cepat dipindai, dan nyaman digunakan dengan satu tangan.
+- Tombol utama harus mudah dikenali dan memakai label aksi yang spesifik, misalnya “Simpan Setoran”, bukan “Submit”.
+- Hindari horizontal scroll pada halaman. Tampilan tabel desktop harus memiliki alternatif daftar yang mudah dipakai di mobile.
+- Jika memakai `shadcn/ui`, instal hanya komponen yang dibutuhkan oleh slice aktif. UI library bukan fokus produk.
+- Katalog komponen awal dibatasi pada Button, Input, Select, Textarea, Card, Table, Dialog, Alert Dialog, Badge, Tabs, Dropdown Menu, Date Picker, Form, dan Sonner.
+- Form menggunakan React Hook Form + Zod. `Field`, Label, Separator, Calendar, dan Popover boleh digunakan sebagai primitive internal pendukung komponen katalog.
+- Gunakan Sonner sebagai satu-satunya sistem toast. CLI `shadcn` dijalankan melalui `npx` dan tidak disimpan sebagai dependency runtime.
+
+## Engineering Rules
+- TypeScript strict mode.
+- Validasi input menggunakan Zod.
+- Jangan mengekspos secret ke client.
+- Hindari `any`.
+- Gunakan audit untuk perubahan setoran.
+- Gunakan status/arsip, bukan hard delete.
+- Tambahkan test untuk authorization dan business rule penting.
+- Jalankan lint, typecheck, dan test sebelum menyelesaikan task.
+- Setiap perubahan requirement, business rule, authorization, data model, atau rencana implementasi harus memperbarui dokumen terkait sebelum atau bersama perubahan kode.
+- Jika ada perubahan scope atau keputusan MVP, update `README.md` dan file terkait di `docs/`.
+
+## Locked MVP Decisions
+- Admin mengelola data operasional, bukan penilaian hafalan.
+- Kepala memegang otorisasi akademik seperti koreksi/void setoran dan reopen periode.
+- Hak melihat audit dipisahkan dari hak melakukan aksi yang tercatat di audit.
+- Role Kepala hanya dapat dikelola oleh pengguna aktif yang sudah memiliki role Kepala.
+- Sistem wajib menjaga minimal satu pengguna aktif dengan role Kepala.
+- Wali hanya kontak dan tidak memiliki akun login.
+- Satu record setoran hanya mencakup satu surah.
+- PDF laporan dibuat dari snapshot data laporan, bukan file permanen.
+
+## Out of Scope
+Jangan membuat login wali, portal wali, absensi, infaq internal, WhatsApp otomatis, payment gateway, aplikasi native, fitur AI, audio recording, microservices, atau Kubernetes.
+
+## Working Method
+Sebelum coding: baca konteks, tulis asumsi, file terdampak, dan rencana kecil.
+Setelah coding: ringkas perubahan, test yang dijalankan, hasil lint/typecheck, dan risiko tersisa.

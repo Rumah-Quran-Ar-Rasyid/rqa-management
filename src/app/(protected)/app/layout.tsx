@@ -1,0 +1,100 @@
+import { LogOut } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { logoutAction } from "@/modules/auth/application/actions";
+import { requireUser } from "@/modules/auth/application/session";
+import { canAccessUserDirectory } from "@/modules/users/domain/user-management-policy";
+import { canAccessAcademicPeriods } from "@/modules/periods/domain/academic-period-policy";
+import { canAccessHalaqahDirectory } from "@/modules/halaqahs/domain/halaqah-policy";
+import { canAccessStudentDirectory } from "@/modules/students/domain/student-policy";
+import { canAccessTeacherAssignments } from "@/modules/assignments/domain/teacher-assignment-policy";
+import { canAccessHalaqahMemberships } from "@/modules/memberships/domain/halaqah-membership-policy";
+import { canCreateMemorizationRecord } from "@/modules/memorization/domain/memorization-policy";
+import { canGenerateReports } from "@/modules/reports/domain/report-policy";
+import { AppBrand, AppNavigation } from "./app-navigation";
+
+export default async function ProtectedLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const user = await requireUser();
+  const canAccessUsers = canAccessUserDirectory(user.roles);
+  const canAccessPeriods = canAccessAcademicPeriods(user.roles);
+  const canAccessHalaqahs = canAccessHalaqahDirectory(user.roles);
+  const canAccessStudents = canAccessStudentDirectory(user.roles);
+  const canAccessAssignments = canAccessTeacherAssignments(user.roles);
+  const canAccessMemberships = canAccessHalaqahMemberships(user.roles);
+  const canCreateMemorization = canCreateMemorizationRecord(user.roles);
+  const canAccessReports = canGenerateReports(user.roles);
+
+  return (
+    <div className="flex h-svh flex-col overflow-hidden bg-muted/35 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+      <aside className="hidden border-r bg-card lg:flex lg:min-h-0 lg:flex-col lg:overflow-y-auto lg:p-4">
+        <AppBrand />
+        <div className="my-7 h-px bg-border" />
+        <AppNavigation
+          canAccessUserDirectory={canAccessUsers}
+          canAccessAcademicPeriods={canAccessPeriods}
+          canAccessHalaqahs={canAccessHalaqahs}
+          canAccessStudents={canAccessStudents}
+          canAccessTeacherAssignments={canAccessAssignments}
+          canAccessHalaqahMemberships={canAccessMemberships}
+          canCreateMemorizationRecord={canCreateMemorization}
+          canGenerateReports={canAccessReports}
+          variant="desktop"
+        />
+        <div className="mt-auto border-t pt-4">
+          <div className="mb-3 min-w-0 px-3">
+            <p className="truncate text-sm font-medium">{user.name}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+          <form action={logoutAction}>
+            <Button type="submit" variant="ghost" className="w-full justify-start">
+              <LogOut aria-hidden="true" />
+              Keluar
+            </Button>
+          </form>
+        </div>
+      </aside>
+
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="shrink-0 border-b bg-card lg:hidden">
+          <div className="flex min-h-16 items-center justify-between gap-3 px-4">
+            <AppBrand />
+            <form action={logoutAction}>
+              <Button
+                type="submit"
+                variant="outline"
+                size="icon"
+                title="Keluar"
+                aria-label="Keluar"
+              >
+                <LogOut aria-hidden="true" />
+              </Button>
+            </form>
+          </div>
+          <AppNavigation
+            canAccessUserDirectory={canAccessUsers}
+            canAccessAcademicPeriods={canAccessPeriods}
+            canAccessHalaqahs={canAccessHalaqahs}
+            canAccessStudents={canAccessStudents}
+            canAccessTeacherAssignments={canAccessAssignments}
+            canAccessHalaqahMemberships={canAccessMemberships}
+            canCreateMemorizationRecord={canCreateMemorization}
+            canGenerateReports={canAccessReports}
+            variant="mobile"
+          />
+        </header>
+        <div className="hidden h-16 shrink-0 items-center border-b bg-card px-8 lg:flex">
+          <p className="text-sm text-muted-foreground">Rumah Qur’an Ar-Rasyid</p>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}

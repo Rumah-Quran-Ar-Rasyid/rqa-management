@@ -1,0 +1,89 @@
+# Product Specification — Rumah Qur’an Ar-Rasyid
+
+## Latar Belakang
+Pencatatan hafalan masih manual. Pertumbuhan santri membuat pengajar dan Kepala Rumah Qur’an Ar-Rasyid semakin sulit melakukan pencatatan, monitoring, ri'ayah, dan rekap secara konsisten.
+
+## Tujuan
+- Memudahkan pengajar mencatat setoran melalui HP.
+- Menyimpan riwayat hafalan secara terpusat.
+- Memudahkan kepala melakukan monitoring.
+- Menghasilkan laporan perkembangan untuk wali dalam bentuk PDF atau hard copy.
+- Mengurangi rekap manual.
+
+## Pengguna MVP
+### Admin
+Mengelola data operasional: pengguna, santri, wali sebagai kontak, pengajar, halaqah, periode, assignment, dan membership. Admin tidak mencatat, mengoreksi, atau membatalkan hasil setoran secara default.
+
+### Pengajar
+Melihat halaqahnya, mencatat setoran, melihat riwayat, dan melakukan koreksi sesuai aturan.
+
+### Kepala
+Melihat seluruh data, dashboard, perkembangan santri, audit akademik, koreksi/void setoran sesuai aturan, reopen periode, menjaga role penting, dan membuat laporan.
+
+### Wali Santri
+Belum memiliki akun. Menerima laporan PDF/hard copy secara manual.
+
+## Scope MVP
+- Login dan role Admin, Kepala, Pengajar.
+- Data santri, wali, pengajar, halaqah, dan periode.
+- Assignment pengajar dan membership santri.
+- Sabaq, Sabqi, Manzil.
+- Lancar, Cukup Lancar, Kurang Lancar.
+- Riwayat dan koreksi setoran.
+- Dashboard kepala.
+- Generate, download, dan print laporan PDF.
+- Audit operasional dan audit akademik sederhana sesuai role.
+
+## Out of Scope
+Login wali, portal wali, absensi, infaq internal, WhatsApp/email otomatis, payment gateway, aplikasi native, AI, audio, gamifikasi, dan multi-cabang kompleks.
+
+## Kandidat Iterasi Pasca-MVP
+Bagian ini adalah backlog setelah MVP stabil, pilot terbatas selesai, dan yayasan menyetujui scope baru. Bagian ini bukan komitmen implementasi MVP dan tidak mengubah keputusan bahwa wali belum memiliki akun login maupun infaq memakai aplikasi eksternal.
+
+### Laporan Pencapaian Akademik Lanjutan
+- Identitas laporan: NIS, nama santri, dan kelas. Istilah serta relasi kelas perlu diputuskan terpisah dari halaqah.
+- Pencapaian Tilawati/Tahsin per bulan.
+- Persentase target hafalan, Sabqi, dan Manzil beserta predikatnya.
+- Catatan wali kelas/Pengajar pada periode laporan.
+
+Sebelum dikerjakan, yayasan perlu menyetujui definisi target, sumber data Tilawati/Tahsin, kalender hari efektif, rumus dan ambang predikat, serta apakah penyebut Sabqi/Manzil selalu 31 hari atau mengikuti hari efektif/periode. Nilai akhir harus disimpan dalam snapshot laporan agar versi lama tidak berubah.
+
+### Absensi
+Persentase kehadiran menjadi kandidat modul terpisah. Implementasinya membutuhkan data kehadiran, kalender hari efektif, aturan izin/sakit/alpa, otorisasi input, dan snapshot laporan; karena itu tetap di luar MVP saat ini.
+
+### Administrasi Infaq
+Rincian SPP, potongan dhuafa/yatim, Kencleng Subuh, Infaq Program, tanggal input, dan metode infaq adalah kandidat keputusan bisnis terpisah. Prioritas awalnya adalah menentukan apakah aplikasi hanya menampilkan data dari sistem infaq eksternal atau benar-benar mengelola transaksi internal. Modul transaksi internal, termasuk metode TF/QRIS/CASH, tidak boleh dimulai tanpa scope, audit, privasi, rekonsiliasi, dan otorisasi keuangan yang disetujui.
+
+## Indikator Keberhasilan
+- Minimal 90% setoran pilot tercatat.
+- Median input satu setoran maksimal 90 detik.
+- Kepala tidak perlu meminta rekap manual.
+- Laporan santri dapat dibuat langsung dari data.
+- Minimal 80% pengguna pilot menyatakan aplikasi mudah digunakan.
+- Tidak ada kebocoran akses antarhalaqah.
+- Admin tidak dapat mengubah penilaian hafalan tanpa role Kepala.
+- Admin tidak dapat mengubah role Kepala.
+- Sistem selalu memiliki minimal satu pengguna aktif dengan role Kepala.
+
+## Prinsip Pengalaman Pengguna
+- Nama produk yang tampil adalah “Rumah Qur’an Ar-Rasyid”.
+- Tampilan harus jelas, cepat, konsisten, bersih, dan mudah dipakai pada layar mobile.
+- Alur pengajar, terutama input setoran, dirancang mobile-first dan menjadi prioritas ergonomi.
+- Tombol utama harus menonjol secara visual dan memakai label aksi yang spesifik.
+- Pesan kesalahan tampil dekat field terkait dan tidak menghapus data yang sudah diisi.
+- Status loading, berhasil, kosong, dan gagal harus terlihat jelas tanpa menghambat alur kerja.
+- Enum, permission, nama tabel, dan identifier teknis tidak ditampilkan secara mentah kepada pengguna.
+
+Contoh istilah pada tampilan:
+
+| Istilah internal | Teks untuk pengguna |
+|---|---|
+| `HEAD` | Kepala |
+| `TEACHER` | Pengajar |
+| `ACTIVE` | Aktif |
+| `CLOSED` | Ditutup |
+| `LESS_FLUENT` | Kurang Lancar |
+| `VOID` | Dibatalkan |
+
+## Pilot
+1 kepala, 1 admin, 2 pengajar, 1–2 halaqah, dan 10–20 santri.
