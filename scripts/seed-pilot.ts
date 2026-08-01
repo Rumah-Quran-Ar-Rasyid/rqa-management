@@ -299,7 +299,11 @@ async function main() {
       }
 
       return { ...summary, organizationId: organization.id };
-    }, { isolationLevel: "Serializable" });
+    }, {
+      isolationLevel: "Serializable",
+      maxWait: 10_000,
+      timeout: 30_000,
+    });
 
     console.info("Data pilot siap:", result);
   }

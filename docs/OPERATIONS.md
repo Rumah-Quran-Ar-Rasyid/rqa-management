@@ -61,7 +61,7 @@ npm run db:seed:pilot -- --file /lokasi/aman/pilot-data.json
 npm run db:seed:pilot -- --file /lokasi/aman/pilot-data.json --apply
 ```
 
-Seed pilot memakai `DIRECT_URL`, idempotent berdasarkan email/nama halaqah/nomor santri, tidak menghapus data, dan menolak apply setelah ada setoran atau laporan.
+Seed pilot memakai `DIRECT_URL`, idempotent berdasarkan email/nama halaqah/nomor santri, tidak menghapus data, dan menolak apply setelah ada setoran atau laporan. Untuk koneksi Supabase yang memiliki latensi lebih tinggi, transaction seed diberi batas 30 detik dan tetap atomik.
 
 ## Backup PostgreSQL
 
