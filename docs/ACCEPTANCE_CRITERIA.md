@@ -204,6 +204,7 @@ Then sistem menolak permintaan
 - Backup harian dan prosedur restore tersedia serta diuji.
 - Source code tersimpan di repository yayasan.
 - Health endpoint tersedia.
+- Navigasi antarhalaman internal menampilkan indikator memuat sampai halaman tujuan siap ditampilkan.
 - Seed pilot menerima file data yang divalidasi, tidak menyimpan kata sandi di file, menyediakan dry-run, idempotent, dan menolak berjalan setelah data akademik/laporan digunakan.
 - Preflight pilot memeriksa quality gate, build, migrasi, data minimum, HTTP health, serta viewport 360 piksel.
 - Deployment pilot memakai satu aplikasi Next.js di Netlify dan satu Supabase PostgreSQL. HTTPS serta domain `netlify.app` disediakan Netlify; kredensial database hanya tersedia pada fungsi server dan Supabase Auth tidak digunakan.

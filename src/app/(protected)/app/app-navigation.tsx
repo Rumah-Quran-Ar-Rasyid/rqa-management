@@ -13,7 +13,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -116,6 +117,10 @@ export function AppNavigation({
   variant: "desktop" | "mobile";
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  const isPending = (href: string) => pendingHref === href && pathname !== href;
 
   return (
     <nav
@@ -172,6 +177,23 @@ export function AppNavigation({
             <Link
               key={item.href}
               href={item.href}
+              aria-busy={isPending(item.href) || undefined}
+              onClick={(event) => {
+                if (
+                  active ||
+                  event.defaultPrevented ||
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                ) {
+                  return;
+                }
+
+                setPendingHref(item.href);
+                router.prefetch(item.href);
+              }}
               className={cn(
                 "flex shrink-0 items-center gap-3 rounded-[8px] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                 "h-11 px-3",
@@ -182,6 +204,13 @@ export function AppNavigation({
             >
               <Icon className="size-4" aria-hidden="true" />
               {item.label}
+              {isPending(item.href) ? (
+                <span
+                  aria-label={`Memuat halaman ${item.label}`}
+                  className="ml-auto size-3 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  role="status"
+                />
+              ) : null}
             </Link>
           );
         })}
