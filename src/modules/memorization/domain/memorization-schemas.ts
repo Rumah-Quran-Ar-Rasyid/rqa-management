@@ -1,7 +1,12 @@
 import { z } from "zod";
 
 const optionalText = (maxLength: number, message: string) =>
-  z.string().trim().max(maxLength, message).transform((value) => value || undefined);
+  z
+    .string()
+    .trim()
+    .max(maxLength, message)
+    .optional()
+    .transform((value) => value || undefined);
 
 const optionalPositiveInteger = z.preprocess(
   (value) => (value === "" || value === undefined ? undefined : value),

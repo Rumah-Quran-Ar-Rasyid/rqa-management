@@ -47,6 +47,18 @@ describe("memorization record schema", () => {
     expect(result.teacherNote).toBeUndefined();
     expect(result.pageNumber).toBeUndefined();
   });
+
+  it("menerima field opsional yang tidak dikirim oleh Server Action", () => {
+    const result = createMemorizationRecordSchema.parse({
+      ...values,
+      teacherNote: undefined,
+      nextTarget: undefined,
+      pageNumber: undefined,
+      duplicateOverrideReason: undefined,
+    });
+
+    expect(result.duplicateOverrideReason).toBeUndefined();
+  });
 });
 
 describe("memorization correction schemas", () => {

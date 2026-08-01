@@ -54,5 +54,5 @@ export async function recordFailedLogin(email: string, now = new Date()) {
 }
 
 export async function clearFailedLogins(email: string) {
-  await db.loginThrottle.delete({ where: { emailHash: emailHash(email) } }).catch(() => undefined);
+  await db.loginThrottle.deleteMany({ where: { emailHash: emailHash(email) } });
 }
