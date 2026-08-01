@@ -3,6 +3,8 @@
 ## Arsitektur Deployment
 Pilot memakai Netlify Free untuk aplikasi Next.js dan Supabase PostgreSQL Free untuk database. Domain awal memakai alamat `*.netlify.app` dengan HTTPS otomatis. Supabase hanya dipakai sebagai PostgreSQL terkelola; autentikasi, session cookie, role, authorization, dan audit tetap berada di aplikasi.
 
+Aplikasi pilot tidak diindeks mesin pencari. `robots.txt`, metadata halaman, dan header Netlify mengirim instruksi `noindex, nofollow`. Ini bukan pengganti authentication atau pembatasan akses jaringan.
+
 Pisahkan koneksi database:
 
 - `DATABASE_URL`: URL Supabase transaction pooler untuk runtime Netlify. Gunakan port pooler yang diberikan Supabase dan parameter `sslmode=require`, `pgbouncer=true`, serta `connection_limit=1`.

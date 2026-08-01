@@ -9,6 +9,10 @@ export const metadata: Metadata = {
     template: "%s | Rumah Qur’an Ar-Rasyid",
   },
   description: "Sistem pencatatan dan monitoring hafalan santri.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
