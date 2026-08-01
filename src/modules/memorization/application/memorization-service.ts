@@ -711,7 +711,11 @@ export async function createMemorizationRecord(
         },
       });
     },
-    { isolationLevel: "Serializable" },
+    {
+      isolationLevel: "Serializable",
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }
 
@@ -982,7 +986,11 @@ export async function correctMemorizationRecord(
         },
       });
     },
-    { isolationLevel: "Serializable" },
+    {
+      isolationLevel: "Serializable",
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }
 
@@ -1081,6 +1089,10 @@ export async function voidMemorizationRecord(
         },
       });
     },
-    { isolationLevel: "Serializable" },
+    {
+      isolationLevel: "Serializable",
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }
