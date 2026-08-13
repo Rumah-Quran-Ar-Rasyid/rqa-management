@@ -14,7 +14,7 @@ fi
 
 backup_url="$(node -e '
   const url = new URL(process.env.DIRECT_URL);
-  for (const key of ["schema", "pgbouncer", "connection_limit"]) url.searchParams.delete(key);
+  for (const key of ["schema", "pgbouncer", "connection_limit", "uselibpqcompat"]) url.searchParams.delete(key);
   if (!process.env.PG_DUMP_NATIVE && ["127.0.0.1", "localhost"].includes(url.hostname)) url.hostname = "host.docker.internal";
   process.stdout.write(url.toString());
 ')"
